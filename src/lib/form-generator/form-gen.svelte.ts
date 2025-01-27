@@ -1,5 +1,5 @@
 
-import { z } from "zod";
+import { codeToHtml } from "shiki";
 export type InputType = {
   id?: string;
   name: string;
@@ -27,9 +27,9 @@ let dummyInput: InputType[] = [
     name: 'Password',
     type: 'password',
     label: 'Password',
-    description: 'This is your password',
-    placeholder: 'Enter your password',
-    min: 8,
+    placeholder: 'password',
+    description: 'Enter your password',
+    min: 0,
     max: 0,
   },
   {
@@ -41,22 +41,36 @@ let dummyInput: InputType[] = [
     min: 0,
     max: 0,
   },
+  {
+    name: 'Switch',
+    type: 'boolean',
+    label: 'Marketing Email',
+    description: 'Receive emails about new products, features, and more.',
+    placeholder: 'Placeholder',
+    min: 0,
+    max: 0,
+  },
+  {
+    name: 'Checkbox',
+    type: 'boolean',
+    label: 'Use different settings for my mobile devices',
+    description: 'You can manage your mobile notifications in the mobile settings page.',
+    placeholder: 'Placeholder',
+    min: 0,
+    max: 0,
+  },
 ]
 
 
+let min_max_types = ['number', 'password', 'text'];
 
 
 class FormGenerator {
   inputs: InputType[] = dummyInput;
   selected_inputs: InputType[] = $state([]);
-  zod_schema = $derived.by(() => {
-    let schema = {};
-
-    let title = `export let schama = ${schema}`;
-  })
 
   add_input = (item: InputType) => {
-    let id = crypto.randomUUID().slice(0, 8);
+    let id = crypto.randomUUID().slice(0, 5);
     let random_id = `name_${crypto.randomUUID().slice(0, 5)}`;
     let new_input: InputType = {
       id: id,
@@ -71,8 +85,11 @@ class FormGenerator {
       max: item.max || 0,
     };
     this.selected_inputs.push(new_input);
-  };
+  }
 
+  remove_input = (id: string) => {
+    this.selected_inputs = this.selected_inputs.filter((input) => input.id !== id);
+  }
 
   handleDndConsider = (e: CustomEvent) => {
     this.selected_inputs = e.detail.items;
@@ -87,15 +104,19 @@ class FormGenerator {
 
     inputs.forEach((input) => {
       let fieldSchema = `z.string()`;
-      if(input.type === 'number') {
+
+      if (input.type === 'number') {
         fieldSchema = `z.number().int()`;
       }
-
-      if (input.type === 'email') {
+      else if (input.type === 'boolean') {
+        fieldSchema = `z.boolean()`;
+      }
+      else if (input.type === 'email') {
         fieldSchema = `z.string().email()`;
       }
-      else {
-        // Add `min` and `max` constraints if available
+
+      // Add `min` and `max` constraints if available for number, password, and text fields
+      if (min_max_types.includes(input.type)) {
         if (input.min !== undefined && input.min > 0) {
           fieldSchema += `.min(${input.min})`;
         }

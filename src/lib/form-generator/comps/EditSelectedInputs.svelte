@@ -1,13 +1,14 @@
 <script lang="ts">
   import { buttonVariants } from "$lib/components/ui/button";
+  import Button from "$lib/components/ui/button/button.svelte";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Dialog from "$lib/components/ui/dialog/index";
   import Input from "$lib/components/ui/input/input.svelte";
   import Label from "$lib/components/ui/label/label.svelte";
   import * as Select from "$lib/components/ui/select/index";
-  import type { InputType } from "../form-gen.svelte";
+  import { form_generator, type InputType } from "../form-gen.svelte";
   let {
-    item = $bindable(),
+    item,
   }: {
     item: InputType;
   } = $props();
@@ -20,10 +21,12 @@
       item.max = item.min;
     }
   });
+  let isOpen = $state(false);
 </script>
 
-<Dialog.Root>
+<Dialog.Root bind:open={isOpen}>
   <Dialog.Trigger
+    onclick={() => (isOpen = true)}
     class={buttonVariants({ variant: "secondary", size: "icon" })}
   >
     <svg
@@ -46,7 +49,7 @@
     </Dialog.Header>
     <div class="space-y-2.5">
       <div>
-        <Label for="name">Name</Label>
+        <Label for="name">Label</Label>
         <Input type="text" id="name" bind:value={item.label} />
       </div>
       <div>
@@ -58,10 +61,20 @@
         <Input type="text" id="placeholder" bind:value={item.placeholder} />
       </div>
       <div>
-        <Label for="name">Placeholder</Label>
-        <Input type="text" id="name" bind:value={item.named_id} />
+        <Label for="name">Zod Schema Name</Label>
+        <Input
+          type="text"
+          id="name"
+          bind:value={() => item.named_id,
+          (v) => {
+            return (item.named_id = v
+              ?.toString()
+              .replace(" ", "_")
+              .toLowerCase());
+          }}
+        />
       </div>
-      {#if item.type !== "number"}
+      {#if item.type !== "number" && item.type !== "password" && item.type !== "boolean"}
         <div>
           <Label for="type">Type</Label>
           <Select.Root
@@ -85,7 +98,7 @@
           </Select.Root>
         </div>
       {/if}
-      {#if item.type !== "email"}
+      {#if item.type !== "email" && item.type !== "url" && item.type !== "tel" && item.type !== "boolean"}
         <div class="grid grid-cols-2 gap-2">
           <div>
             <Label for="min">Min</Label>
@@ -107,6 +120,15 @@
         <Label for="required">Required</Label>
         <Checkbox id="required" bind:checked={item.required} />
       </div>
+    </div>
+    <div>
+      <Button
+        onclick={() => {
+          isOpen = false;
+        }}
+      >
+        Save
+      </Button>
     </div>
   </Dialog.Content>
 </Dialog.Root>
