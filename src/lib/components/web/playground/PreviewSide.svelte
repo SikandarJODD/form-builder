@@ -14,7 +14,7 @@
         in the <a href="/">README</a> for further instructions.
       </p>
     </div>
-    <div class="grid grid-cols-2 gap-10 max-w-6xl ">
+    <div class="grid grid-cols-2 gap-10 max-w-7xl">
       <InputsDragCode />
       <PreviewAndCode />
     </div>

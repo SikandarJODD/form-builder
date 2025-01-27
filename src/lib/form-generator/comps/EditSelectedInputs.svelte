@@ -12,15 +12,15 @@
   }: {
     item: InputType;
   } = $props();
-  $effect(() => {
-    if (
-      item.max !== undefined &&
-      item.min !== undefined &&
-      item.max < item.min
-    ) {
-      item.max = item.min;
-    }
-  });
+  // $effect(() => {
+  //   if (
+  //     item.max !== undefined &&
+  //     item.min !== undefined &&
+  //     item.max < item.min
+  //   ) {
+  //     item.max = item.min;
+  //   }
+  // });
   let isOpen = $state(false);
 </script>
 
@@ -109,7 +109,6 @@
             <Input
               type="number"
               id="max"
-              min={item.min}
               bind:value={item.max}
             />
           </div>

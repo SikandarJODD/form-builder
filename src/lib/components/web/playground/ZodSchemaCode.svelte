@@ -5,22 +5,23 @@
   import { onMount } from "svelte";
   import { watch } from "runed";
 
-  let codeContent = form_generator.zodSchema; // input code
+  let codeContent = $derived(form_generator.zodSchema); // input code
   let htmlCode = $state(""); // highlighted html code
   let getCode = async () => {
     htmlCode = await codeToHtml(form_generator.zodSchema, {
-      lang: "javascript",
+      lang: "typescript",
       theme: "vesper",
     });
   };
+
   onMount(async () => await getCode());
-  // watch(
-  //   () => form_generator.zodSchema,
-  //   () => {
-  //     getCode();
-  //     console.log("code changed");
-  //   }
-  // );
+  watch(
+    () => form_generator.zodSchema,
+    () => {
+      getCode();
+      console.log("code changed");
+    }
+  );
 
   let copied = $state(false);
 
@@ -78,7 +79,7 @@
 </div>
 
 <style>
-  :global(.shiki) {
+  /* :global(.shiki) {
     background-color: transparent;
-  }
+  } */
 </style>

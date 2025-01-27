@@ -1,19 +1,19 @@
 <script>
   import Button from "$lib/components/ui/button/button.svelte";
+  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import Label from "$lib/components/ui/label/label.svelte";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
   import { flip } from "svelte/animate";
-  import { scale, slide } from "svelte/transition";
-  let input_types = ["text", "email", "password", "number", "tel", "url"];
   // select and radio box need options
 </script>
 
 <div class="flex flex-col space-y-4 p-2">
-  <div>
+  <div class="space-y-2">
     {#each form_generator.selected_inputs as comp (comp.id)}
       <div animate:flip={{ duration: 300 }}>
-        {#if input_types.includes(comp.type)}
+        {#if comp.category === "text"}
           <div>
             <Label for={comp.named_id && "name"}>{comp.label}</Label>
             <Input
@@ -27,6 +27,21 @@
             </p>
           </div>
         {/if}
+        {#if comp.category === "switch"}
+          <div
+            class="flex flex-row items-center justify-between rounded-lg border p-4"
+          >
+            <div class="space-y-0.5">
+              <Label>
+                {comp.label}
+              </Label>
+              <p class="text-sm text-muted-foreground">
+                {comp.description}
+              </p>
+            </div>
+            <Switch />
+          </div>
+        {/if}
         {#if comp.type === "textarea"}
           <textarea placeholder={comp.name}></textarea>
         {/if}
@@ -37,9 +52,22 @@
         {/each}
       </select>
     {/if} -->
-        {#if comp.type === "checkbox"}
-          <input type="checkbox" id={comp.id} />
-          <label for={comp.id}>{comp.name}</label>
+        {#if comp.category === "checkbox"}
+          <div
+            class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+          >
+            <Checkbox />
+            <div class="space-y-1 leading-none">
+              <Label>Use different settings for my mobile devices</Label>
+              <p class='text-sm text-muted-foreground'>
+                You can manage your mobile notifications in the <a
+                  href="/examples/forms">mobile settings</a
+                > page.
+              </p>
+            </div>
+            <!-- add input for copy code -->
+            <!-- <input name= value={$formData.mobile} type="hidden" /> -->
+          </div>
         {/if}
         <!-- {#if comp.type === "radio"}
       {#each comp.options as option}

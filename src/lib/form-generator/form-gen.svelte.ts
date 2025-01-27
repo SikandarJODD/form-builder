@@ -1,5 +1,5 @@
 
-import { codeToHtml } from "shiki";
+
 export type InputType = {
   id?: string;
   name: string;
@@ -8,6 +8,7 @@ export type InputType = {
   min?: number;
   max?: number;
   label?: string;
+  category: string;
   description?: string;
   placeholder?: string;
   required?: boolean;
@@ -17,6 +18,7 @@ let dummyInput: InputType[] = [
   {
     name: "Input",
     type: "text",
+    category: 'text',
     label: "Username",
     description: "This is your public display name",
     placeholder: "Enter your username",
@@ -26,6 +28,7 @@ let dummyInput: InputType[] = [
   {
     name: 'Password',
     type: 'password',
+    category: 'text',
     label: 'Password',
     placeholder: 'password',
     description: 'Enter your password',
@@ -35,6 +38,7 @@ let dummyInput: InputType[] = [
   {
     name: 'Number',
     type: 'number',
+    category: 'text',
     label: 'Age',
     description: 'This is your age',
     placeholder: 'Enter your age',
@@ -44,6 +48,7 @@ let dummyInput: InputType[] = [
   {
     name: 'Switch',
     type: 'boolean',
+    category: 'switch',
     label: 'Marketing Email',
     description: 'Receive emails about new products, features, and more.',
     placeholder: 'Placeholder',
@@ -53,6 +58,7 @@ let dummyInput: InputType[] = [
   {
     name: 'Checkbox',
     type: 'boolean',
+    category: 'checkbox',
     label: 'Use different settings for my mobile devices',
     description: 'You can manage your mobile notifications in the mobile settings page.',
     placeholder: 'Placeholder',
@@ -77,6 +83,7 @@ class FormGenerator {
       named_id: random_id,
       name: item.name,
       type: item.type,
+      category: item.category,
       label: item.label,
       description: item.description,
       placeholder: item.placeholder,
@@ -100,7 +107,7 @@ class FormGenerator {
   }
 
   generateZodSchemaString(inputs: InputType[]): string {
-    let schemaString = `z.object({\n`;
+    let schemaString = `import { z } from 'zod';\nexport let schema = z.object({\n`;
 
     inputs.forEach((input) => {
       let fieldSchema = `z.string()`;
@@ -142,6 +149,76 @@ class FormGenerator {
     return sh;
   });
 
+  serverCode = `import type { Actions } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+
+import { fail, message, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+
+// add your own schema path here
+import { schema } from '$lib/schema/schema.ts';
+
+export const load: PageServerLoad = async ({ request }) => {
+    return { form: await superValidate(zod(schema)) }
+};
+
+export const actions: Actions = {
+    default: async ({ request }) => {
+        let form = await superValidate(request, zod(schema));
+        if (!form.valid) {
+            return fail(400, { form });
+        }
+        return message(form, 'Form Posted Successfully!');
+    }
+};`
+
+  clientCode = $derived.by(() => {
+    let clientCode = `<script lang="ts">
+	import { superForm } from 'sveltekit-superforms';
+	import type { PageData } from '../../../routes/docs/client-server/$types';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import Input from '$lib/components/ui/input/input.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { zod } from 'sveltekit-superforms/adapters';
+	import { schema } from './schema';
+
+	let {
+		data
+	}: {
+		data: PageData;
+	} = $props();
+	let { form, message, errors, enhance } = superForm(data.form, {
+		validators: zod(schema)
+	});
+</script>
+<div
+	class="flex min-h-[60vh] flex-col items-center justify-center border border-muted-foreground/70 dark:bg-zinc-900/60"
+>
+	{#if $message}
+		<p class="text-emerald-400">{$message}</p>
+	{/if}
+	<form method="post" use:enhance class="w-full md:w-80 space-y-2 p-4 lg:p-0">`
+    this.selected_inputs.map((input) => {
+      if (input.type === 'text' || input.type === 'password' || input.type === 'number') {
+        clientCode += `
+        <Label for="${input.named_id}" label="${input.label}" />
+        <Input type="${input.type}" id="${input.named_id}" bind:value={$form.${input.named_id}} />`
+      }
+      else if (input.type === 'boolean') {
+        clientCode += `
+        <Label for="${input.named_id}" label="${input.label}" />
+        <Input type="checkbox" id="${input.named_id}" bind:checked={$form.${input.named_id}} />`
+      }
+    })
+
+    clientCode += `
+    <Button type="submit" class="w-full">Submit</Button>
+  </form>
+</div>
+    `
+    return clientCode;
+  })
 }
 
 export let form_generator = new FormGenerator();
+
