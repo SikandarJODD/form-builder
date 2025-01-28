@@ -39,7 +39,10 @@
                 {comp.description}
               </p>
             </div>
-            <Switch />
+            <Switch
+              name={comp.named_id}
+              id={comp.named_id}
+            />
           </div>
         {/if}
         {#if comp.type === "textarea"}
@@ -56,10 +59,10 @@
           <div
             class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
           >
-            <Checkbox />
+            <Checkbox  />
             <div class="space-y-1 leading-none">
               <Label>Use different settings for my mobile devices</Label>
-              <p class='text-sm text-muted-foreground'>
+              <p class="text-sm text-muted-foreground">
                 You can manage your mobile notifications in the <a
                   href="/examples/forms">mobile settings</a
                 > page.

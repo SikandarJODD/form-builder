@@ -116,7 +116,7 @@ class FormGenerator {
         fieldSchema = `z.number().int()`;
       }
       else if (input.type === 'boolean') {
-        fieldSchema = `z.boolean()`;
+        fieldSchema = `z.boolean().default(false)`;
       }
       else if (input.type === 'email') {
         fieldSchema = `z.string().email()`;
@@ -156,7 +156,7 @@ import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 // add your own schema path here
-import { schema } from '$lib/schema/schema.ts';
+import { schema } from './schema.ts';
 
 export const load: PageServerLoad = async ({ request }) => {
     return { form: await superValidate(zod(schema)) }
@@ -173,13 +173,25 @@ export const actions: Actions = {
 };`
 
   clientCode = $derived.by(() => {
-    let clientCode = `<script lang="ts">
+    let clientrawCode = `<script lang="ts">
 	import { superForm } from 'sveltekit-superforms';
-	import type { PageData } from '../../../routes/docs/client-server/$types';
+  // add your own path
+	import type { PageData } from './$types';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import { zod } from 'sveltekit-superforms/adapters';
+	import Button from '$lib/components/ui/button/button.svelte';`;
+    this.selected_inputs.map((input) => {
+      if (input.category === 'switch') {
+        clientrawCode += `
+    import Switch from "$lib/components/ui/switch/switch.svelte";`
+      }
+      else if (input.category === 'checkbox') {
+        clientrawCode += `
+    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`
+      }
+    })
+    clientrawCode += `
+    import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 
 	let {
@@ -191,32 +203,62 @@ export const actions: Actions = {
 		validators: zod(schema)
 	});
 </script>
-<div
-	class="flex min-h-[60vh] flex-col items-center justify-center border border-muted-foreground/70 dark:bg-zinc-900/60"
->
+<div class="flex min-h-[60vh] flex-col items-center justify-center">
 	{#if $message}
 		<p class="text-emerald-400">{$message}</p>
 	{/if}
-	<form method="post" use:enhance class="w-full md:w-80 space-y-2 p-4 lg:p-0">`
+  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`
+
     this.selected_inputs.map((input) => {
-      if (input.type === 'text' || input.type === 'password' || input.type === 'number') {
-        clientCode += `
-        <Label for="${input.named_id}" label="${input.label}" />
-        <Input type="${input.type}" id="${input.named_id}" bind:value={$form.${input.named_id}} />`
+      if (input.type === 'text' || input.type === 'password' || input.type === 'number' || input.type === 'email' || input.type === 'tel' || input.type === 'url') {
+        clientrawCode += `
+    <div>
+      <Label for="${input.named_id}">${input.label}</Label>
+      <Input type="${input.type}" id="${input.named_id}" name="${input.named_id}" placeholder="${input.placeholder}" bind:value={$form.${input.named_id}} />
+      {#if $errors.${input.named_id}}
+        <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+      {/if}
+    </div>
+    `
       }
-      else if (input.type === 'boolean') {
-        clientCode += `
-        <Label for="${input.named_id}" label="${input.label}" />
-        <Input type="checkbox" id="${input.named_id}" bind:checked={$form.${input.named_id}} />`
+      else if (input.category === 'switch') {
+        clientrawCode += `
+    <div class="flex flex-row items-center justify-between rounded-lg border p-4">
+        <div class="space-y-0.5">
+            <Label for="${input.named_id}">
+              ${input.label}
+            </Label>
+            <p class="text-sm text-muted-foreground">
+              ${input.description}
+            </p>
+        </div>
+        <Switch bind:checked={$form.${input.named_id}} id="${input.named_id}" name="${input.named_id}"/>
+    </div>`
+      }
+      else if (input.category === 'checkbox') {
+        clientrawCode += `
+    <div class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+      <Checkbox id="${input.named_id}" name="${input.named_id}" bind:checked={$form.${input.named_id}} />
+      <div class="space-y-1 leading-none">
+        <Label>Use different settings for my mobile devices</Label>
+        <p class="text-sm text-muted-foreground">
+          You can manage your mobile notifications in the
+          <a href="/examples/forms">mobile settings</a> page.
+        </p>
+      </div>
+            <!-- add input for copy code -->
+      <input name="${input.named_id}" id="${input.named_id}" value={$form.${input.named_id}} type="hidden" />
+    </div>
+        `
       }
     })
 
-    clientCode += `
-    <Button type="submit" class="w-full">Submit</Button>
+    clientrawCode += `
+    <Button type="submit">Submit</Button>
   </form>
 </div>
     `
-    return clientCode;
+    return clientrawCode;
   })
 }
 

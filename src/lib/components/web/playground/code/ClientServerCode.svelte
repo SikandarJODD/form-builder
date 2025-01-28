@@ -8,7 +8,7 @@
   type CodeType = "client" | "server";
   let codeType: CodeType = $state("client");
   let serverCodeContent = $derived(form_generator.serverCode);
-  let clientCodeContent = form_generator.clientCode;
+  let clientCodeContent = $derived(form_generator.clientCode);
 
   let htmlServerCode = $state(""); // highlighted html code
   let htmlClientCode = $state(""); // highlighted html code
@@ -19,7 +19,7 @@
     });
   };
   let getClientCode = async () => {
-    htmlClientCode = await codeToHtml(form_generator.clientCode, {
+    htmlClientCode = await codeToHtml(clientCodeContent, {
       lang: "svelte",
       theme: "vesper",
     });
@@ -33,7 +33,7 @@
     }
   );
   watch(
-    () => form_generator.clientCode,
+    () => clientCodeContent,
     () => {
       getClientCode();
     }
@@ -54,10 +54,12 @@
 
 <div class="relative border rounded-lg p-4">
   <div class="absolute top-2 right-2">
-    <Button size="sm" variant="secondary" onclick={() => (codeType = "client")}
-      >Client</Button
+    <Button
+      size="sm"
+      variant={codeType === "client" ? "default" : "secondary"}
+      onclick={() => (codeType = "client")}>Client</Button
     >
-    <Button size="sm" variant="secondary" onclick={() => (codeType = "server")}
+    <Button size="sm" variant={codeType === "server" ? "default" : "secondary"} onclick={() => (codeType = "server")}
       >Server</Button
     >
     <Button variant="secondary" size="sm" onclick={handleCopy}>
@@ -65,13 +67,15 @@
     </Button>
   </div>
   <div class="overflow-scroll scrollbar">
-    <div>
-      {#if codeType === "client"}
+    {#if codeType === "client"}
+      <div>
         {@html htmlClientCode}
-      {:else}
+      </div>
+    {:else}
+      <div>
         {@html htmlServerCode}
-      {/if}
-    </div>
+      </div>
+    {/if}
   </div>
 </div>
 
