@@ -52,21 +52,23 @@
   }
 </script>
 
-<div class="relative border rounded-lg p-4">
+<div class="relative border rounded-lg p-1">
   <div class="absolute top-2 right-2">
     <Button
       size="sm"
       variant={codeType === "client" ? "default" : "secondary"}
       onclick={() => (codeType = "client")}>Client</Button
     >
-    <Button size="sm" variant={codeType === "server" ? "default" : "secondary"} onclick={() => (codeType = "server")}
-      >Server</Button
+    <Button
+      size="sm"
+      variant={codeType === "server" ? "default" : "secondary"}
+      onclick={() => (codeType = "server")}>Server</Button
     >
     <Button variant="secondary" size="sm" onclick={handleCopy}>
       {copied ? "Copied" : "Copy"}
     </Button>
   </div>
-  <div class="overflow-scroll scrollbar">
+  <div class="overflow-scroll scrollbar max-h-[440px]">
     {#if codeType === "client"}
       <div>
         {@html htmlClientCode}

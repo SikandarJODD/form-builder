@@ -15,7 +15,7 @@
 </script>
 
 <div
-  class="w-fit space-y-2 p-2"
+  class="w-fit space-y-2 p-2 col-span-2"
   use:dragHandleZone={{
     items: form_generator.selected_inputs,
     flipDurationMs,

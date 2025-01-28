@@ -29,7 +29,7 @@
     <p class="text-muted-foreground">No components selected</p>
   </div>
 {:else}
-  <div class="flex flex-col space-y-4 p-2">
+  <div class="flex flex-col space-y-4 p-2 max-w-md mx-auto mt-4">
     <div class="space-y-2">
       {#each form_generator.selected_inputs as comp (comp.id)}
         <div animate:flip={{ duration: 300 }}>

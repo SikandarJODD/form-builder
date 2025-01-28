@@ -22,6 +22,30 @@
   //   }
   // });
   let isOpen = $state(false);
+  let notselectTextTypes = [
+    "boolean",
+    "checkbox",
+    "select",
+    "radio",
+    "switch",
+    "textarea",
+    "date",
+    "time",
+    "datetime-local",
+    "number",
+    "password",
+  ];
+  let notMinMaxTypes = [
+    "email",
+    "url",
+    "tel",
+    "boolean",
+    "switch",
+    "checkbox",
+    "radio",
+    "select",
+
+  ];
 </script>
 
 <Dialog.Root bind:open={isOpen}>
@@ -74,7 +98,7 @@
           }}
         />
       </div>
-      {#if item.type !== "number" && item.type !== "password" && item.type !== "boolean"}
+      {#if !notselectTextTypes.includes(item.type)}
         <div>
           <Label for="type">Type</Label>
           <Select.Root
@@ -98,7 +122,7 @@
           </Select.Root>
         </div>
       {/if}
-      {#if item.type !== "email" && item.type !== "url" && item.type !== "tel" && item.type !== "boolean"}
+      {#if !notMinMaxTypes.includes(item.type)}
         <div class="grid grid-cols-2 gap-2">
           <div>
             <Label for="min">Min</Label>
@@ -106,11 +130,7 @@
           </div>
           <div>
             <Label for="max">Max</Label>
-            <Input
-              type="number"
-              id="max"
-              bind:value={item.max}
-            />
+            <Input type="number" id="max" bind:value={item.max} />
           </div>
         </div>
       {/if}

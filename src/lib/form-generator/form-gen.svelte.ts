@@ -1,5 +1,3 @@
-
-
 export type InputType = {
   id?: string;
   name: string;
@@ -18,7 +16,7 @@ let dummyInput: InputType[] = [
   {
     name: "Input",
     type: "text",
-    category: 'text',
+    category: "text",
     label: "Username",
     description: "This is your public display name",
     placeholder: "Enter your username",
@@ -28,7 +26,7 @@ let dummyInput: InputType[] = [
   {
     name: "Textarea",
     type: "textarea",
-    category: 'textarea',
+    category: "textarea",
     label: "Bio",
     description: "Tell us about yourself",
     placeholder: "Enter your bio",
@@ -36,60 +34,59 @@ let dummyInput: InputType[] = [
     max: 0,
   },
   {
-    name: 'Password',
-    type: 'password',
-    category: 'text',
-    label: 'Password',
-    placeholder: 'password',
-    description: 'Enter your password',
+    name: "Password",
+    type: "password",
+    category: "text",
+    label: "Password",
+    placeholder: "password",
+    description: "Enter your password",
     min: 0,
     max: 0,
   },
   {
-    name: 'Number',
-    type: 'number',
-    category: 'text',
-    label: 'Age',
-    description: 'This is your age',
-    placeholder: 'Enter your age',
+    name: "Number",
+    type: "number",
+    category: "text",
+    label: "Age",
+    description: "This is your age",
+    placeholder: "Enter your age",
     min: 0,
     max: 0,
   },
   {
-    name: 'Switch',
-    type: 'boolean',
-    category: 'switch',
-    label: 'Marketing Email',
-    description: 'Receive emails about new products, features, and more.',
-    placeholder: 'Placeholder',
+    name: "Switch",
+    type: "boolean",
+    category: "switch",
+    label: "Marketing Email",
+    description: "Receive emails about new products, features, and more.",
+    placeholder: "Placeholder",
     min: 0,
     max: 0,
   },
   {
-    name: 'Checkbox',
-    type: 'boolean',
-    category: 'checkbox',
-    label: 'Use different settings for my mobile devices',
-    description: 'You can manage your mobile notifications in the mobile settings page.',
-    placeholder: 'Placeholder',
+    name: "Checkbox",
+    type: "boolean",
+    category: "checkbox",
+    label: "Use different settings for my mobile devices",
+    description:
+      "You can manage your mobile notifications in the mobile settings page.",
+    placeholder: "Placeholder",
     min: 0,
     max: 0,
   },
   {
-    name: 'Select',
-    type: 'select',
-    category: 'select',
-    label: 'Email',
-    description: 'You can manage email addresses in your email settings.',
-    placeholder: 'Placeholder',
+    name: "Select",
+    type: "select",
+    category: "select",
+    label: "Email",
+    description: "You can manage email addresses in your email settings.",
+    placeholder: "Placeholder",
     min: 0,
     max: 0,
   },
-]
+];
 
-
-let min_max_types = ['number', 'password', 'text', 'textarea'];
-
+let min_max_types = ["number", "password", "text", "textarea"];
 
 class FormGenerator {
   inputs: InputType[] = dummyInput;
@@ -112,19 +109,21 @@ class FormGenerator {
       max: item.max || 0,
     };
     this.selected_inputs.push(new_input);
-  }
+  };
 
   remove_input = (id: string) => {
-    this.selected_inputs = this.selected_inputs.filter((input) => input.id !== id);
-  }
+    this.selected_inputs = this.selected_inputs.filter(
+      (input) => input.id !== id
+    );
+  };
 
   handleDndConsider = (e: CustomEvent) => {
     this.selected_inputs = e.detail.items;
-  }
+  };
 
   handleDndFinalize = (e: CustomEvent) => {
     this.selected_inputs = e.detail.items;
-  }
+  };
 
   generateZodSchemaString(inputs: InputType[]): string {
     let schemaString = `import { z } from 'zod';\nexport let schema = z.object({\n`;
@@ -132,13 +131,11 @@ class FormGenerator {
     inputs.forEach((input) => {
       let fieldSchema = `z.string()`;
 
-      if (input.type === 'number') {
+      if (input.type === "number") {
         fieldSchema = `z.number().int()`;
-      }
-      else if (input.type === 'boolean') {
+      } else if (input.type === "boolean") {
         fieldSchema = `z.boolean().default(false)`;
-      }
-      else if (input.type === 'email') {
+      } else if (input.type === "email") {
         fieldSchema = `z.string().email()`;
       }
 
@@ -147,7 +144,12 @@ class FormGenerator {
         if (input.min !== undefined && input.min > 0) {
           fieldSchema += `.min(${input.min})`;
         }
-        if (input.max !== undefined && input.min !== undefined && input.max > 0 && input.max > input.min) {
+        if (
+          input.max !== undefined &&
+          input.min !== undefined &&
+          input.max > 0 &&
+          input.max > input.min
+        ) {
           fieldSchema += `.max(${input.max})`;
         }
       }
@@ -155,7 +157,8 @@ class FormGenerator {
         fieldSchema += `.optional()`;
       }
 
-      schemaString += `  ${input.named_id?.toLowerCase() || 'name'}: ${fieldSchema},\n`;
+      schemaString += `  ${input.named_id?.toLowerCase() || "name"
+        }: ${fieldSchema},\n`;
     });
 
     schemaString += `})`;
@@ -190,7 +193,7 @@ export const actions: Actions = {
         }
         return message(form, 'Form Posted Successfully!');
     }
-};`
+};`;
 
   clientCode = $derived.by(() => {
     let clientrawCode = `<script lang="ts">
@@ -201,19 +204,20 @@ export const actions: Actions = {
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';`;
     this.selected_inputs.map((input) => {
-      if (input.category === 'switch') {
+      if (input.category === "switch") {
         clientrawCode += `
-    import Switch from "$lib/components/ui/switch/switch.svelte";`
-      }
-      else if (input.category === 'checkbox') {
+    import Switch from "$lib/components/ui/switch/switch.svelte";`;
+      } else if (input.category === "checkbox") {
         clientrawCode += `
-    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`
-      }
-      else if (input.category === 'textarea') {
+    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
+      } else if (input.category === "textarea") {
         clientrawCode += `
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";`
+    import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
+      } else if (input.category === "select") {
+        clientrawCode += `
+    import * as Select from "$lib/components/ui/select/index";`;
       }
-    })
+    });
     clientrawCode += `
     import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
@@ -231,10 +235,16 @@ export const actions: Actions = {
 	{#if $message}
 		<p class="text-emerald-400">{$message}</p>
 	{/if}
-  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`
-
+  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
-      if (input.type === 'text' || input.type === 'password' || input.type === 'number' || input.type === 'email' || input.type === 'tel' || input.type === 'url') {
+      if (
+        input.type === "text" ||
+        input.type === "password" ||
+        input.type === "number" ||
+        input.type === "email" ||
+        input.type === "tel" ||
+        input.type === "url"
+      ) {
         clientrawCode += `
     <div>
       <Label for="${input.named_id}">${input.label}</Label>
@@ -243,9 +253,8 @@ export const actions: Actions = {
         <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
       {/if}
     </div>
-    `
-      }
-      else if (input.category === 'switch') {
+    `;
+      } else if (input.category === "switch") {
         clientrawCode += `
     <div class="flex flex-row items-center justify-between rounded-lg border p-4">
         <div class="space-y-0.5">
@@ -257,17 +266,18 @@ export const actions: Actions = {
             </p>
         </div>
         <Switch bind:checked={$form.${input.named_id}} id="${input.named_id}" name="${input.named_id}"/>
-    </div>`
-      }
-      else if (input.category === 'checkbox') {
+        {#if $errors.${input.named_id}}
+          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+        {/if}
+    </div>`;
+      } else if (input.category === "checkbox") {
         clientrawCode += `
     <div class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
       <Checkbox id="${input.named_id}" name="${input.named_id}" bind:checked={$form.${input.named_id}} />
       <div class="space-y-1 leading-none">
-        <Label for="${input.named_id}" >Use different settings for my mobile devices</Label>
+        <Label for="${input.named_id}" >${input.label}</Label>
         <p class="text-sm text-muted-foreground">
-          You can manage your mobile notifications in the
-          <a href="/examples/forms">mobile settings</a> page.
+          ${input.description}
         </p>
       </div>
             <!-- add input for copy code -->
@@ -276,12 +286,11 @@ export const actions: Actions = {
         <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
       {/if}
     </div>
-        `
-      }
-      else if (input.category === 'textarea') {
+        `;
+      } else if (input.category === "textarea") {
         clientrawCode += `
     <div>
-      <Label for="${input.named_id}">Bio</Label>
+      <Label for="${input.named_id}">${input.label}</Label>
       <Textarea
         placeholder="Tell us a little bit about yourself"
         class="resize-none"
@@ -290,24 +299,50 @@ export const actions: Actions = {
         bind:value={$form.${input.named_id}}
       />
       <p class="text-xs text-muted-foreground">
-          You can <span>@mention</span> other users and organizations.
+        ${input.description}
       </p>
       {#if $errors.${input.named_id}}
         <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
       {/if}
     </div>
-        `
+        `;
       }
-    })
+      else if (input.category === 'select') {
+        clientrawCode += `
+    <div>
+      <Label for="${input.named_id}">${input.label}</Label>
+      <Select.Root type="single"  bind:value={$form.${input.named_id}}
+          name="${input.named_id}">
+          <Select.Trigger id="${input.named_id}">
+              {$form.${input.named_id}
+              ? $form.${input.named_id}
+              : "${input.placeholder}"}
+          </Select.Trigger>
+         <Select.Content>
+           <!-- Add your select items here -->
+            <Select.Item value="m@example.com" label="m@example.com" />
+            <Select.Item value="m@google.com" label="m@google.com" />
+            <Select.Item value="m@support.com" label="m@support.com" />
+          </Select.Content>
+      </Select.Root>
+      <p class="text-xs text-muted-foreground">
+        ${input.description}
+      </p>
+      {#if $errors.${input.named_id}}
+          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+      {/if}
+    </div>
+      `
+      }
+    });
 
     clientrawCode += `
     <Button type="submit">Submit</Button>
   </form>
 </div>
-    `
+    `;
     return clientrawCode;
-  })
+  });
 }
 
 export let form_generator = new FormGenerator();
-
