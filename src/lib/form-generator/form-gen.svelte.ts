@@ -75,6 +75,16 @@ let dummyInput: InputType[] = [
     min: 0,
     max: 0,
   },
+  {
+    name: 'Select',
+    type: 'select',
+    category: 'select',
+    label: 'Email',
+    description: 'You can manage email addresses in your email settings.',
+    placeholder: 'Placeholder',
+    min: 0,
+    max: 0,
+  },
 ]
 
 

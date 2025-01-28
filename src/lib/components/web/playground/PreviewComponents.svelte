@@ -6,8 +6,22 @@
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
+  import * as Select from "$lib/components/ui/select/index";
   import { flip } from "svelte/animate";
   // select and radio box need options
+
+  let select_examples = [
+    { value: "svelte", label: "Svelte" },
+    { value: "vue", label: "Vue" },
+    { value: "react", label: "React" },
+    { value: "angular", label: "Angular" },
+  ];
+
+  let value = $state("");
+
+  let triggerContent = $derived(
+    select_examples.find((f) => f.value === value)?.label ?? "Svelte"
+  );
 </script>
 
 {#if form_generator.selected_inputs.length === 0}
@@ -58,13 +72,24 @@
               You can <span>@mention</span> other users and organizations.
             </p>
           {/if}
-          <!-- {#if comp.type === "select"}
-      <select>
-        {#each comp.options as option}
-          <option value={option.value}>{option.label}</option>
-        {/each}
-      </select>
-    {/if} -->
+          {#if comp.type === "select"}
+            <div>
+              <Label>Framework</Label>
+              <Select.Root type="single" bind:value>
+                <Select.Trigger>
+                  {triggerContent}
+                </Select.Trigger>
+                <Select.Content>
+                  {#each select_examples as item}
+                    <Select.Item value={item.value} label={item.label} />
+                  {/each}
+                </Select.Content>
+              </Select.Root>
+              <p class="text-xs text-muted-foreground">
+                You can manage email addresses in your email settings.
+              </p>
+            </div>
+          {/if}
           {#if comp.category === "checkbox"}
             <div
               class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"

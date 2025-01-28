@@ -15,3 +15,13 @@
 
 Yeep Done! 🚀
 
+## Form Types
+
+| Form        | Status  |
+| ----------- | ------- |
+| Text Area   | Done    |
+| Select      | Working |
+| Date Picker | Pending |
+| Input OTP   | Pending |
+| Tags Input  | Pending |
+| Combo Box   | Pending |
