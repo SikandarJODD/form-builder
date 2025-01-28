@@ -1,38 +1,17 @@
-# sv
+# Sveltekit Form Builder
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+- This form builder will help you create forms with validations.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- Input validations using **Sveltekit Superforms**
+- Client & Server side validaitons
 
-```bash
-# create a new project in the current directory
-npx sv create
+## Usage
 
-# create a new project in my-app
-npx sv create my-app
-```
+1. Simply select inputs from the list, can reorder them by dragging.
+2. Copy `Zod Schema` and paste it in your Sveltekit project.
+3. Copy Client and Server side Code and paste it in your Sveltekit project.
 
-## Developing
+Yeep Done! 🚀
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.

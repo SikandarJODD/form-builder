@@ -22,13 +22,16 @@
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="1.4"
+            stroke-width="1.25"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="lucide lucide-bolt"
-            ><path
-              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
-            /><circle cx="12" cy="12" r="4" /></svg
+            ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+              d="M15 8h.01"
+            /><path
+              d="M19.875 6.27c.7 .398 1.13 1.143 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z"
+            /><path
+              d="M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5"
+            /><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5" /></svg
           >
         </a>
         <div class="hidden sm:ml-6 sm:flex justify-between w-full items-center">
@@ -172,6 +175,8 @@
       size="icon"
       class="[&_svg]:size-4 size-9 rounded-full"
       variant="outline"
+      target="_blank"
+      href="https://github.com/SikandarJODD/form-builder"
       ><svg
         viewBox="0 0 256 250"
         width="256"
@@ -190,6 +195,8 @@
       size="icon"
       class="[&_svg]:size-4 size-9 rounded-full"
       variant="outline"
+      href="https://x.com/Sikandar_Bhide"
+      target="_blank"
       ><svg
         xmlns="http://www.w3.org/2000/svg"
         width="1200"

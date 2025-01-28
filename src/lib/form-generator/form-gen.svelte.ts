@@ -26,6 +26,16 @@ let dummyInput: InputType[] = [
     max: 0,
   },
   {
+    name: "Textarea",
+    type: "textarea",
+    category: 'textarea',
+    label: "Bio",
+    description: "Tell us about yourself",
+    placeholder: "Enter your bio",
+    min: 0,
+    max: 0,
+  },
+  {
     name: 'Password',
     type: 'password',
     category: 'text',
@@ -68,7 +78,7 @@ let dummyInput: InputType[] = [
 ]
 
 
-let min_max_types = ['number', 'password', 'text'];
+let min_max_types = ['number', 'password', 'text', 'textarea'];
 
 
 class FormGenerator {
@@ -189,6 +199,10 @@ export const actions: Actions = {
         clientrawCode += `
     import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`
       }
+      else if (input.category === 'textarea') {
+        clientrawCode += `
+    import Textarea from "$lib/components/ui/textarea/textarea.svelte";`
+      }
     })
     clientrawCode += `
     import { zod } from 'sveltekit-superforms/adapters';
@@ -240,7 +254,7 @@ export const actions: Actions = {
     <div class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
       <Checkbox id="${input.named_id}" name="${input.named_id}" bind:checked={$form.${input.named_id}} />
       <div class="space-y-1 leading-none">
-        <Label>Use different settings for my mobile devices</Label>
+        <Label for="${input.named_id}" >Use different settings for my mobile devices</Label>
         <p class="text-sm text-muted-foreground">
           You can manage your mobile notifications in the
           <a href="/examples/forms">mobile settings</a> page.
@@ -248,6 +262,29 @@ export const actions: Actions = {
       </div>
             <!-- add input for copy code -->
       <input name="${input.named_id}" id="${input.named_id}" value={$form.${input.named_id}} type="hidden" />
+      {#if $errors.${input.named_id}}
+        <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+      {/if}
+    </div>
+        `
+      }
+      else if (input.category === 'textarea') {
+        clientrawCode += `
+    <div>
+      <Label for="${input.named_id}">Bio</Label>
+      <Textarea
+        placeholder="Tell us a little bit about yourself"
+        class="resize-none"
+        id="${input.named_id}"
+        name="${input.named_id}"
+        bind:value={$form.${input.named_id}}
+      />
+      <p class="text-xs text-muted-foreground">
+          You can <span>@mention</span> other users and organizations.
+      </p>
+      {#if $errors.${input.named_id}}
+        <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+      {/if}
     </div>
         `
       }

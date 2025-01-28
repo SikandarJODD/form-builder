@@ -11,7 +11,7 @@
     <Tabs.Trigger value="code">Code</Tabs.Trigger>
     <Tabs.Trigger value="zodschema">ZOD Schema</Tabs.Trigger>
   </Tabs.List>
-  <Tabs.Content value="preview" class="w-full">
+  <Tabs.Content value="preview" class="w-full h-full">
     <PreviewComponents />
   </Tabs.Content>
   <Tabs.Content value="code" class="w-full">
