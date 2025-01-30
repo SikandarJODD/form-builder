@@ -1,4 +1,5 @@
 <script>
+  import Badge from "$lib/components/ui/badge/badge.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
 </script>
@@ -8,14 +9,22 @@
 >
   <div class="space-y-2 flex flex-col items-start">
     {#each form_generator.inputs as item, index}
-      <Button
-        onclick={() => form_generator.add_input(item)}
-        class="rounded-full font-normal"
-        size="sm"
-        variant="outline"
-      >
-        {item.name}
-      </Button>
+      <div class="flex items-center w-full space-x-2">
+        <Button
+          onclick={() => form_generator.add_input(item)}
+          class="rounded-full font-normal"
+          size="sm"
+          variant="outline"
+        >
+          {item.name}
+        </Button>
+        {#if item.isNew}
+          <span
+            class="inline-flex items-center rounded-full bg-green-500/10 px-2 py-1 text-xs font-normal text-green-400 ring-1 ring-inset ring-green-500/20"
+            >New</span
+          >
+        {/if}
+      </div>
     {/each}
   </div>
 </div>

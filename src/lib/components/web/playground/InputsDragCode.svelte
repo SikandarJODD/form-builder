@@ -15,7 +15,7 @@
 </script>
 
 <div
-  class="w-fit space-y-2 p-2 col-span-2"
+  class="w-full space-y-2 p-2 col-span-2"
   use:dragHandleZone={{
     items: form_generator.selected_inputs,
     flipDurationMs,
@@ -27,7 +27,7 @@
     <div
       animate:flip={{ duration: flipDurationMs }}
       in:fly={{ y: 20 }}
-      class="flex items-center gap-1 handle"
+      class="flex items-center gap-1 handle w-full"
     >
       <button
         use:dragHandle
@@ -37,16 +37,17 @@
         <GripVertical strokeWidth={1.4} />
       </button>
       <div
-        class="border rounded-lg px-1 py-1 flex items-center justify-between min-w-56"
+        class="border rounded-xl px-2 py-2 flex items-center justify-between min-w-72"
       >
-        <span class="capitalize pl-1">{item.name}</span>
+        <span class="capitalize pl-1 text-sm">{item.name}</span>
         <div>
           <EditSelectedInputs {item} />
           <!-- Delete Button -->
           <Button
             onclick={() => delete_selected_input(item.id)}
-            variant="secondary"
+            variant="ghost"
             size="icon"
+            class=" rounded-full"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

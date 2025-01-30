@@ -22,50 +22,32 @@
   //   }
   // });
   let isOpen = $state(false);
-  let notselectTextTypes = [
-    "boolean",
-    "checkbox",
-    "select",
-    "radio",
-    "switch",
-    "textarea",
-    "date",
-    "time",
-    "datetime-local",
-    "number",
-    "password",
-  ];
-  let notMinMaxTypes = [
-    "email",
-    "url",
-    "tel",
-    "boolean",
-    "switch",
-    "checkbox",
-    "radio",
-    "select",
-
-  ];
+  let selectTextTypes = ["text", "password", "email", "tel", "url"];
+  let selectedMinMaxTypes = ["text", "password", "number", "tel", "url"];
 </script>
 
 <Dialog.Root bind:open={isOpen}>
-  <Dialog.Trigger
-    onclick={() => (isOpen = true)}
-    class={buttonVariants({ variant: "secondary", size: "icon" })}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.4"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="lucide lucide-pencil"
-      ><path
-        d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
-      /><path d="m15 5 4 4" /></svg
+  <Dialog.Trigger>
+    <Button
+      onclick={() => (isOpen = true)}
+      variant="ghost"
+      size="icon"
+      class="rounded-full"
     >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-pencil"
+        ><path
+          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+        /><path d="m15 5 4 4" /></svg
+      >
+    </Button>
   </Dialog.Trigger>
   <Dialog.Content>
     <Dialog.Header>
@@ -98,7 +80,7 @@
           }}
         />
       </div>
-      {#if !notselectTextTypes.includes(item.type)}
+      {#if selectTextTypes.includes(item.type)}
         <div>
           <Label for="type">Type</Label>
           <Select.Root
@@ -122,7 +104,7 @@
           </Select.Root>
         </div>
       {/if}
-      {#if !notMinMaxTypes.includes(item.type)}
+      {#if selectedMinMaxTypes.includes(item.type)}
         <div class="grid grid-cols-2 gap-2">
           <div>
             <Label for="min">Min</Label>

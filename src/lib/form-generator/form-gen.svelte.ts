@@ -11,6 +11,7 @@ export type InputType = {
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
+  isNew?: boolean;
 };
 let dummyInput: InputType[] = [
   {
@@ -83,6 +84,18 @@ let dummyInput: InputType[] = [
     placeholder: "Placeholder",
     min: 0,
     max: 0,
+    isNew: true,
+  },
+  {
+    name: "Input OTP",
+    type: "input-otp",
+    category: "input-otp",
+    label: "One-Time Password",
+    description: "Please enter the one-time password sent to your phone.",
+    placeholder: "Placeholder",
+    min: 0,
+    max: 0,
+    isNew: true,
   },
 ];
 
@@ -91,6 +104,12 @@ let min_max_types = ["number", "password", "text", "textarea"];
 class FormGenerator {
   inputs: InputType[] = dummyInput;
   selected_inputs: InputType[] = $state([]);
+
+  unique_imports = $derived.by(() => {
+    let all_imports = this.selected_inputs.map((input) => input.category);
+    let unique_imports = [...new Set(all_imports)];
+    return unique_imports;
+  });
 
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
@@ -137,6 +156,11 @@ class FormGenerator {
         fieldSchema = `z.boolean().default(false)`;
       } else if (input.type === "email") {
         fieldSchema = `z.string().email()`;
+      }
+      else if (input.type === 'input-otp') {
+        fieldSchema = `z.string().min(6, {
+      message: "Your one-time password must be at least 6 characters."
+  })`
       }
 
       // Add `min` and `max` constraints if available for number, password, and text fields
@@ -198,28 +222,36 @@ export const actions: Actions = {
   clientCode = $derived.by(() => {
     let clientrawCode = `<script lang="ts">
 	import { superForm } from 'sveltekit-superforms';
-  // add your own path
+    // add your own path
 	import type { PageData } from './$types';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import Input from '$lib/components/ui/input/input.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';`;
-    this.selected_inputs.map((input) => {
-      if (input.category === "switch") {
+
+    this.unique_imports.map((input) => {
+      if (input === 'text') {
         clientrawCode += `
-    import Switch from "$lib/components/ui/switch/switch.svelte";`;
-      } else if (input.category === "checkbox") {
+  import Input from '$lib/components/ui/input/input.svelte';`;
+      }
+      else if (input === "switch") {
         clientrawCode += `
-    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
-      } else if (input.category === "textarea") {
+  import Switch from "$lib/components/ui/switch/switch.svelte";`;
+      } else if (input === "checkbox") {
         clientrawCode += `
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
-      } else if (input.category === "select") {
+  import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
+      } else if (input === "textarea") {
         clientrawCode += `
-    import * as Select from "$lib/components/ui/select/index";`;
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
+      } else if (input === "select") {
+        clientrawCode += `
+  import * as Select from "$lib/components/ui/select/index";`;
+      }
+      else if (input === 'input-otp') {
+        clientrawCode += `
+  import * as InputOTP from "$lib/components/ui/input-otp/index";`
       }
     });
     clientrawCode += `
-    import { zod } from 'sveltekit-superforms/adapters';
+  import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 
 	let {
@@ -334,10 +366,42 @@ export const actions: Actions = {
     </div>
       `
       }
+      else if (input.category === 'input-otp') {
+        clientrawCode += `
+    <div>
+      <Label for="${input.named_id}">${input.label}</Label>
+      <InputOTP.Root
+        maxlength={6}
+        name="${input.named_id}"
+        id="${input.named_id}"
+        bind:value={$form.${input.named_id}}
+      >
+        {#snippet children({ cells })}
+          <InputOTP.Group>
+            {#each cells.slice(0, 3) as cell}
+              <InputOTP.Slot {cell} />
+            {/each}
+          </InputOTP.Group>
+          <InputOTP.Separator />
+          <InputOTP.Group>
+            {#each cells.slice(3, 6) as cell}
+              <InputOTP.Slot {cell} />
+            {/each}
+          </InputOTP.Group>
+        {/snippet}
+      </InputOTP.Root>
+      <p class="text-xs text-muted-foreground">
+          ${input.description}
+      </p>
+      {#if $errors.${input.named_id}}
+          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+      {/if}
+    </div>`
+      }
     });
 
     clientrawCode += `
-    <Button type="submit">Submit</Button>
+    <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>
     `;

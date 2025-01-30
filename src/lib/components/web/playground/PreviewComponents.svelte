@@ -7,6 +7,7 @@
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
   import * as Select from "$lib/components/ui/select/index";
+  import * as InputOTP from "$lib/components/ui/input-otp/index";
   import { flip } from "svelte/animate";
   // select and radio box need options
 
@@ -105,6 +106,34 @@
               </div>
               <!-- add input for copy code -->
               <!-- <input name= value={$formData.mobile} type="hidden" /> -->
+            </div>
+          {/if}
+          {#if comp.category === "input-otp"}
+            <div>
+              <Label for={comp.named_id}>{comp.label}</Label>
+              <InputOTP.Root
+                maxlength={6}
+                name={comp.named_id}
+                id={comp.named_id}
+
+              >
+                {#snippet children({ cells })}
+                  <InputOTP.Group>
+                    {#each cells.slice(0, 3) as cell}
+                      <InputOTP.Slot {cell} />
+                    {/each}
+                  </InputOTP.Group>
+                  <InputOTP.Separator />
+                  <InputOTP.Group>
+                    {#each cells.slice(3, 6) as cell}
+                      <InputOTP.Slot {cell} />
+                    {/each}
+                  </InputOTP.Group>
+                {/snippet}
+              </InputOTP.Root>
+              <p class="text-xs text-muted-foreground">
+                {comp.description}
+              </p>
             </div>
           {/if}
           <!-- {#if comp.type === "radio"}
