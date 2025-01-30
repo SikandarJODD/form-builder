@@ -19,6 +19,5 @@ Yeep Done! 🚀
 
 | Form        | Status  |
 | ----------- | ------- |
-| Date Picker | Pending |
 | Tags Input  | Pending |
 | Combo Box   | Pending |
