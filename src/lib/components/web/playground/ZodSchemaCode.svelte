@@ -19,7 +19,6 @@
     () => form_generator.zodSchema,
     () => {
       getCode();
-      console.log("code changed");
     }
   );
 

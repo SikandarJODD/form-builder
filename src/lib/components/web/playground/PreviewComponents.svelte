@@ -33,6 +33,7 @@
   // });
 
   import { cn } from "$lib/utils";
+  import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
   // select and radio box need options
 
   let select_examples = [
@@ -218,6 +219,15 @@
           {/if}
           {#if comp.type === "range"}
             <input type="range" id={comp.id} />
+          {/if}
+          {#if comp.type === "tags-input"}
+            <div>
+              <Label for={comp.named_id}>{comp.label}</Label>
+              <TagsInput placeholder={comp.description} />
+              <p class="text-xs text-muted-foreground">
+                {comp.description}
+              </p>
+            </div>
           {/if}
           <!-- {#if comp.type === "color"}
       <input type="color" id={comp.id} />

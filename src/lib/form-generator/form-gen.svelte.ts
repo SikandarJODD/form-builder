@@ -108,9 +108,20 @@ let dummyInput: InputType[] = [
     max: 0,
     isNew: true,
   },
+  {
+    name: "Tags Input",
+    type: "tags-input",
+    category: "tags-input",
+    label: "Enter your tech stack.",
+    description: "Add tags.",
+    placeholder: "Enter your tags",
+    min: 0,
+    max: 0,
+    isNew: true,
+  },
 ];
 
-let min_max_types = ["number", "password", "text", "textarea"];
+let min_max_types = ["number", "password", "text", "textarea", "tags-input"];
 
 class FormGenerator {
   inputs: InputType[] = dummyInput;
@@ -123,10 +134,18 @@ class FormGenerator {
   });
   date_picker_named_id = $derived.by(() => {
     // did : date named_id (id) of date-picker
-    let did = this.selected_inputs.filter((input) => input.type === 'date-picker')[0];
+    let did = this.selected_inputs.filter(
+      (input) => input.type === "date-picker"
+    )[0];
     return did;
-  })
+  });
 
+  tags_input_named_id = $derived.by(() => {
+    let tagid = this.selected_inputs.filter(
+      (input) => input.type === "tags-input"
+    )[0];
+    return tagid;
+  });
 
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
@@ -173,14 +192,14 @@ class FormGenerator {
         fieldSchema = `z.boolean().default(false)`;
       } else if (input.type === "email") {
         fieldSchema = `z.string().email()`;
-      }
-      else if (input.type === 'input-otp') {
+      } else if (input.type === "input-otp") {
         fieldSchema = `z.string().min(6, {
       message: "Your one-time password must be at least 6 characters."
-  })`
-      }
-      else if (input.type === 'date-picker') {
-        fieldSchema = `z.string().refine((v) => v,\n { message: "A date of birth is required." })`
+  })`;
+      } else if (input.type === "date-picker") {
+        fieldSchema = `z.string().refine((v) => v,\n { message: "A date of birth is required." })`;
+      } else if (input.type === "tags-input") {
+        fieldSchema = `z.string().array()`;
       }
 
       // Add `min` and `max` constraints if available for number, password, and text fields
@@ -248,11 +267,10 @@ export const actions: Actions = {
 	import Button from '$lib/components/ui/button/button.svelte';`;
 
     this.unique_imports.map((input) => {
-      if (input === 'text') {
+      if (input === "text") {
         clientrawCode += `
    import Input from '$lib/components/ui/input/input.svelte';`;
-      }
-      else if (input === "switch") {
+      } else if (input === "switch") {
         clientrawCode += `
     import Switch from "$lib/components/ui/switch/switch.svelte";`;
       } else if (input === "checkbox") {
@@ -264,12 +282,10 @@ export const actions: Actions = {
       } else if (input === "select") {
         clientrawCode += `
     import * as Select from "$lib/components/ui/select/index";`;
-      }
-      else if (input === 'input-otp') {
+      } else if (input === "input-otp") {
         clientrawCode += `
-    import * as InputOTP from "$lib/components/ui/input-otp/index";`
-      }
-      else if (input === 'date-picker') {
+    import * as InputOTP from "$lib/components/ui/input-otp/index";`;
+      } else if (input === "date-picker") {
         clientrawCode += `
     import { Calendar } from "$lib/components/ui/calendar/index";
     import * as Popover from "$lib/components/ui/popover/index";
@@ -288,7 +304,11 @@ export const actions: Actions = {
     });
 
     let dvalue = $state<DateValue>();
-    let placeholder = $state(today(getLocalTimeZone()));`
+    let placeholder = $state(today(getLocalTimeZone()));`;
+      }
+      else if (input === 'tags-input') {
+        clientrawCode += `
+    import { TagsInput } from "$lib/components/ui/tags-input";`
       }
     });
     if (this.date_picker_named_id) {
@@ -296,7 +316,7 @@ export const actions: Actions = {
     $effect(() => {
       dvalue = $form.${this.date_picker_named_id.named_id} ? parseDate($form.${this.date_picker_named_id.named_id}) : undefined;
     });
-      `
+      `;
     }
     clientrawCode += `
     import { zod } from 'sveltekit-superforms/adapters';
@@ -306,11 +326,29 @@ export const actions: Actions = {
 		data
 	}: {
 		data: PageData;
-	} = $props();
-	let { form, message, errors, enhance } = superForm(data.form, {
-		validators: zod(schema)
-	});
-</script>
+	} = $props();`;
+
+    if (this.unique_imports.includes("tags-input") && this.tags_input_named_id) {
+      clientrawCode += `
+  let { form, message, errors, enhance } = superForm(data.form, {
+    validators: zod(schema),
+    onUpdated(event) {
+      if (event.form.valid) {
+        tagsvalue = [];
+      }
+    },
+  });
+  let tagsvalue = $state([]);
+  $effect(() => {
+    $form.${this.tags_input_named_id.named_id} = tagsvalue;
+  });`;
+    } else {
+      clientrawCode += `
+      let { form, message, errors, enhance } = superForm(data.form, {
+		    validators: zod(schema)
+	    });`;
+    }
+    clientrawCode += `</script>
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
 	{#if $message}
 		<p class="text-emerald-400">{$message}</p>
@@ -386,8 +424,7 @@ export const actions: Actions = {
       {/if}
     </div>
         `;
-      }
-      else if (input.category === 'select') {
+      } else if (input.category === "select") {
         clientrawCode += `
     <div>
       <Label for="${input.named_id}">${input.label}</Label>
@@ -412,9 +449,8 @@ export const actions: Actions = {
           <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
       {/if}
     </div>
-      `
-      }
-      else if (input.category === 'input-otp') {
+      `;
+      } else if (input.category === "input-otp") {
         clientrawCode += `
     <div>
       <Label for="${input.named_id}">${input.label}</Label>
@@ -444,9 +480,8 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
           <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
       {/if}
-    </div>`
-      }
-      else if (input.category === 'date-picker') {
+    </div>`;
+      } else if (input.category === "date-picker") {
         clientrawCode += `
     <div>
       <Label for="${input.named_id}">${input.label}</Label>
@@ -496,10 +531,25 @@ export const actions: Actions = {
           <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
       {/if}
       <input hidden value={$form.${input.named_id}} name="${input.named_id}" />
+    </div>`;
+      }
+      else if (input.category === 'tags-input') {
+        clientrawCode += `
+    <div>
+      <Label for="${input.named_id}">${input.label}</Label>
+      <TagsInput bind:value={tagsvalue} placeholder="Add Tech Stack" />
+      {#each $form.${input.named_id} as item, i}
+        <input type="hidden" bind:value={$form.${input.named_id}[i]} name="${input.named_id}" id="${input.named_id}" />
+      {/each}
+      <p class="text-xs text-muted-foreground">
+        ${input.description}
+      </p>
+      {#if $errors.${input.named_id}}
+        <p class="text-sm text-red-500">{$errors.${input.named_id}?._errors}</p>
+      {/if}
     </div>`
       }
     });
-
     clientrawCode += `
     <Button type="submit" size="sm">Submit</Button>
   </form>

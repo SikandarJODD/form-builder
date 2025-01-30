@@ -1,6 +1,5 @@
 import { z } from 'zod';
 export let schema = z.object({
-  name_809aa: z.string(),
-  name_a8e75: z.string().refine((v) => v,
- { message: "A date of birth is required." }),
+  name_1130c: z.string(),
+  name_ec6cc: z.string().array().min(4),
 })

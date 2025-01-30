@@ -23,7 +23,14 @@
   // });
   let isOpen = $state(false);
   let selectTextTypes = ["text", "password", "email", "tel", "url"];
-  let selectedMinMaxTypes = ["text", "password", "number", "tel", "url"];
+  let selectedMinMaxTypes = [
+    "text",
+    "password",
+    "number",
+    "tel",
+    "url",
+    "tags-input",
+  ];
 </script>
 
 <Dialog.Root bind:open={isOpen}>
@@ -108,11 +115,11 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <Label for="min">Min</Label>
-            <Input type="number" id="min" bind:value={item.min} />
+            <Input type="number" min={0} id="min" bind:value={item.min} />
           </div>
           <div>
             <Label for="max">Max</Label>
-            <Input type="number" id="max" bind:value={item.max} />
+            <Input type="number" id="max" min={0} bind:value={item.max} />
           </div>
         </div>
       {/if}

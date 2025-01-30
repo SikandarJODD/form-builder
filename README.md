@@ -19,5 +19,4 @@ Yeep Done! 🚀
 
 | Form        | Status  |
 | ----------- | ------- |
-| Tags Input  | Pending |
 | Combo Box   | Pending |
