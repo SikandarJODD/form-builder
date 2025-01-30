@@ -19,9 +19,6 @@ Yeep Done! 🚀
 
 | Form        | Status  |
 | ----------- | ------- |
-| Text Area   | Done    |
-| Select      | Working |
 | Date Picker | Pending |
-| Input OTP   | Pending |
 | Tags Input  | Pending |
 | Combo Box   | Pending |

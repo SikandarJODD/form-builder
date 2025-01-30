@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
@@ -9,6 +9,30 @@
   import * as Select from "$lib/components/ui/select/index";
   import * as InputOTP from "$lib/components/ui/input-otp/index";
   import { flip } from "svelte/animate";
+  import { Calendar } from "$lib/components/ui/calendar/index";
+  import * as Popover from "$lib/components/ui/popover/index";
+  import CalendarIcon from "lucide-svelte/icons/calendar";
+  import {
+    CalendarDate,
+    DateFormatter,
+    type DateValue,
+    getLocalTimeZone,
+    parseDate,
+    today,
+  } from "@internationalized/date";
+
+  const df = new DateFormatter("en-US", {
+    dateStyle: "long",
+  });
+
+  let dvalue = $state<DateValue>();
+  let placeholder = $state(today(getLocalTimeZone()));
+
+  // $effect(() => {
+  //   dvalue = $formData.dob ? parseDate($formData.dob) : undefined;
+  // });
+
+  import { cn } from "$lib/utils";
   // select and radio box need options
 
   let select_examples = [
@@ -115,7 +139,6 @@
                 maxlength={6}
                 name={comp.named_id}
                 id={comp.named_id}
-
               >
                 {#snippet children({ cells })}
                   <InputOTP.Group>
@@ -134,6 +157,47 @@
               <p class="text-xs text-muted-foreground">
                 {comp.description}
               </p>
+            </div>
+          {/if}
+          {#if comp.category === "date-picker"}
+            <div>
+              <Label for={comp.named_id}>{comp.label}</Label>
+              <div>
+                <Popover.Root>
+                  <Popover.Trigger>
+                    {#snippet child({ props })}
+                      <Button
+                        variant="outline"
+                        class={cn(
+                          "w-[240px] justify-start text-left font-normal",
+                          !value && "text-muted-foreground"
+                        )}
+                        {...props}
+                      >
+                        <CalendarIcon />
+                        {dvalue
+                          ? df.format(dvalue.toDate(getLocalTimeZone()))
+                          : "Pick a date"}
+                      </Button>
+                    {/snippet}
+                  </Popover.Trigger>
+                  <Popover.Content class="w-auto p-0" side="top">
+                    <Calendar
+                      type="single"
+                      id={comp.named_id}
+                      value={dvalue}
+                      bind:placeholder
+                      minValue={new CalendarDate(1900, 1, 1)}
+                      maxValue={today(getLocalTimeZone())}
+                      calendarLabel="Date of birth"
+                    />
+                  </Popover.Content>
+                </Popover.Root>
+              </div>
+              <p class="text-xs text-muted-foreground">
+                {comp.description}
+              </p>
+              <!-- <input hidden value={$formData.dob} name={props.name} /> -->
             </div>
           {/if}
           <!-- {#if comp.type === "radio"}

@@ -97,6 +97,17 @@ let dummyInput: InputType[] = [
     max: 0,
     isNew: true,
   },
+  {
+    name: "Date Picker",
+    type: "date-picker",
+    category: "date-picker",
+    label: "Date of Birth",
+    description: "Your date of birth is used to calculate your age.",
+    placeholder: "Placeholder",
+    min: 0,
+    max: 0,
+    isNew: true,
+  },
 ];
 
 let min_max_types = ["number", "password", "text", "textarea"];
@@ -110,6 +121,12 @@ class FormGenerator {
     let unique_imports = [...new Set(all_imports)];
     return unique_imports;
   });
+  date_picker_named_id = $derived.by(() => {
+    // did : date named_id (id) of date-picker
+    let did = this.selected_inputs.filter((input) => input.type === 'date-picker')[0];
+    return did;
+  })
+
 
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
@@ -161,6 +178,9 @@ class FormGenerator {
         fieldSchema = `z.string().min(6, {
       message: "Your one-time password must be at least 6 characters."
   })`
+      }
+      else if (input.type === 'date-picker') {
+        fieldSchema = `z.string().refine((v) => v,\n { message: "A date of birth is required." })`
       }
 
       // Add `min` and `max` constraints if available for number, password, and text fields
@@ -230,28 +250,56 @@ export const actions: Actions = {
     this.unique_imports.map((input) => {
       if (input === 'text') {
         clientrawCode += `
-  import Input from '$lib/components/ui/input/input.svelte';`;
+   import Input from '$lib/components/ui/input/input.svelte';`;
       }
       else if (input === "switch") {
         clientrawCode += `
-  import Switch from "$lib/components/ui/switch/switch.svelte";`;
+    import Switch from "$lib/components/ui/switch/switch.svelte";`;
       } else if (input === "checkbox") {
         clientrawCode += `
-  import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
+    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
       } else if (input === "textarea") {
         clientrawCode += `
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
+    import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
       } else if (input === "select") {
         clientrawCode += `
-  import * as Select from "$lib/components/ui/select/index";`;
+    import * as Select from "$lib/components/ui/select/index";`;
       }
       else if (input === 'input-otp') {
         clientrawCode += `
-  import * as InputOTP from "$lib/components/ui/input-otp/index";`
+    import * as InputOTP from "$lib/components/ui/input-otp/index";`
+      }
+      else if (input === 'date-picker') {
+        clientrawCode += `
+    import { Calendar } from "$lib/components/ui/calendar/index";
+    import * as Popover from "$lib/components/ui/popover/index";
+    import CalendarIcon from "lucide-svelte/icons/calendar";
+    import {
+      CalendarDate,
+      DateFormatter,
+      type DateValue,
+      getLocalTimeZone,
+      parseDate,
+      today,
+    } from "@internationalized/date";
+
+    const df = new DateFormatter("en-US", {
+      dateStyle: "long",
+    });
+
+    let dvalue = $state<DateValue>();
+    let placeholder = $state(today(getLocalTimeZone()));`
       }
     });
+    if (this.date_picker_named_id) {
+      clientrawCode += `
+    $effect(() => {
+      dvalue = $form.${this.date_picker_named_id.named_id} ? parseDate($form.${this.date_picker_named_id.named_id}) : undefined;
+    });
+      `
+    }
     clientrawCode += `
-  import { zod } from 'sveltekit-superforms/adapters';
+    import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 
 	let {
@@ -396,6 +444,58 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
           <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
       {/if}
+    </div>`
+      }
+      else if (input.category === 'date-picker') {
+        clientrawCode += `
+    <div>
+      <Label for="${input.named_id}">${input.label}</Label>
+      <div>
+        <Popover.Root>
+          <Popover.Trigger>
+            {#snippet child({ props })}
+              <Button
+                variant="outline"
+                class={[
+                  "w-[240px] justify-start text-left font-normal",
+                  !dvalue && "text-muted-foreground"
+                ]}
+                {...props}
+              >
+                <CalendarIcon />
+                {dvalue
+                  ? df.format(dvalue.toDate(getLocalTimeZone()))
+                  : "Pick a date"}
+              </Button>
+            {/snippet}
+          </Popover.Trigger>
+          <Popover.Content class="w-auto p-0" side="top">
+            <Calendar
+              type="single"
+              value={dvalue}
+              bind:placeholder
+              id="${input.named_id}"
+              minValue={new CalendarDate(1900, 1, 1)}
+              maxValue={today(getLocalTimeZone())}
+              calendarLabel="Date of birth"
+              onValueChange={(v) => {
+                if (v) {
+                  $form.${input.named_id} = v.toString();
+                } else {
+                  $form.${input.named_id} = "";
+                }
+              }}
+            />
+          </Popover.Content>
+        </Popover.Root>
+      </div>
+      <p class="text-xs text-muted-foreground">
+          ${input.description}
+      </p>
+      {#if $errors.${input.named_id}}
+          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+      {/if}
+      <input hidden value={$form.${input.named_id}} name="${input.named_id}" />
     </div>`
       }
     });
