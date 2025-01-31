@@ -34,6 +34,7 @@
 
   import { cn } from "$lib/utils";
   import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
+  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
   // select and radio box need options
 
   let select_examples = [
@@ -199,6 +200,19 @@
                 {comp.description}
               </p>
               <!-- <input hidden value={$formData.dob} name={props.name} /> -->
+            </div>
+          {/if}
+          {#if comp.category === "phone"}
+            <div>
+              <Label>Phone Number</Label>
+              <PhoneInput
+                country="IN"
+                name="phone"
+                placeholder="Enter a phone number"
+              />
+              <p class="text-xs text-muted-foreground">
+                {comp.description}
+              </p>
             </div>
           {/if}
           <!-- {#if comp.type === "radio"}
