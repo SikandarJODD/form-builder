@@ -84,7 +84,6 @@ let dummyInput: InputType[] = [
     placeholder: "Placeholder",
     min: 0,
     max: 0,
-    isNew: true,
   },
   {
     name: "Input OTP",
@@ -95,7 +94,6 @@ let dummyInput: InputType[] = [
     placeholder: "Placeholder",
     min: 0,
     max: 0,
-    isNew: true,
   },
   {
     name: "Date Picker",
@@ -106,7 +104,6 @@ let dummyInput: InputType[] = [
     placeholder: "Placeholder",
     min: 0,
     max: 0,
-    isNew: true,
   },
   {
     name: "Tags Input",
@@ -115,6 +112,17 @@ let dummyInput: InputType[] = [
     label: "Enter your tech stack.",
     description: "Add tags.",
     placeholder: "Enter your tags",
+    min: 0,
+    max: 0,
+    isNew: true,
+  },
+  {
+    name: "Phone",
+    type: "phone",
+    category: "phone",
+    label: "Phone number",
+    description: "Enter your phone number",
+    placeholder: "Placeholder",
     min: 0,
     max: 0,
     isNew: true,
@@ -309,6 +317,10 @@ export const actions: Actions = {
       else if (input === 'tags-input') {
         clientrawCode += `
     import { TagsInput } from "$lib/components/ui/tags-input";`
+      }
+      else if (input ==='phone'){
+        clientrawCode+=`
+    import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`
       }
     });
     if (this.date_picker_named_id) {
@@ -548,6 +560,24 @@ export const actions: Actions = {
         <p class="text-sm text-red-500">{$errors.${input.named_id}?._errors}</p>
       {/if}
     </div>`
+      }
+      else if(input.category==='phone'){
+        clientrawCode+=`
+      <div>
+        <Label for="${input.named_id}">${input.label}</Label>
+        <PhoneInput
+          country="IN"
+          name="phone"
+          placeholder="Enter a phone number"
+          bind:value={$form.${input.named_id}}
+        />
+        <p class="text-xs text-muted-foreground">
+          ${input.description}
+        </p>
+        {#if $errors.${input.named_id}}
+          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+        {/if}
+      </div>`
       }
     });
     clientrawCode += `
