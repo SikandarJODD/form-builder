@@ -25,6 +25,17 @@ let dummyInput: InputType[] = [
     max: 0,
   },
   {
+    name: "Email",
+    type: "email",
+    category: "text",
+    label: "Email",
+    description: "Enter your email address",
+    placeholder: "Enter your email",
+    min: 0,
+    max: 0,
+    isNew: true,
+  },
+  {
     name: "Textarea",
     type: "textarea",
     category: "textarea",

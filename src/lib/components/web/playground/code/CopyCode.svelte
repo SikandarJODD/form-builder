@@ -21,7 +21,7 @@
   }
 </script>
 
-<div class="relative border w-full p-4 rounded-lg">
+<div class="relative border w-full  rounded-lg">
   <span>{@html htmlCode}</span>
   <div class="absolute top-2 right-2">
     <Button variant="outline" size="icon" onclick={handleCopy}>
