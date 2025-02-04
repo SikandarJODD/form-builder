@@ -1,7 +1,12 @@
 <script>
-  import { page } from "$app/state";
   import { slide } from "svelte/transition";
-  let navs = [{ name: "Home", url: "/" }];
+  let navs = [
+    { name: "Home", url: "/" },
+    {
+      name: "Templates",
+      url: "/templates",
+    },
+  ];
   import Button from "$lib/components/ui/button/button.svelte";
 
   // Mobile and user profile state
@@ -11,7 +16,7 @@
 </script>
 
 <nav class="bg-background border-b sticky top-0 z-50">
-  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-5xl px-4 sm:px-0">
     <div class="flex h-16 items-center justify-between">
       <div class="flex items-center w-full">
         <a href="/" aria-label="home" class="shrink-0">
@@ -35,10 +40,10 @@
           >
         </a>
         <div class="hidden sm:ml-6 sm:flex justify-between w-full items-center">
-          <div class="flex space-x-2.5">
+          <div class="flex space-x-4">
             {#each navs as nav}
               <a href={nav.url}>
-                <span class="text-muted-foreground">{nav.name}</span>
+                <span class="text-muted-foreground hover:text-primary transition-all duration-150">{nav.name}</span>
               </a>
             {/each}
           </div>
@@ -183,7 +188,7 @@
         viewBox="0 0 56 56"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        class='rounded-full'
+        class="rounded-full"
       >
         <path
           d="M28 0C6.22222 0 0 6.22222 0 28C0 49.7778 6.23778 56 28 56C49.7622 56 56 49.7778 56 28C56 6.22222 49.7622 0 28 0Z"

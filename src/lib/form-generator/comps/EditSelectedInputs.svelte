@@ -30,6 +30,7 @@
     "tel",
     "url",
     "tags-input",
+    "textarea",
   ];
 </script>
 

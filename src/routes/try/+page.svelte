@@ -5,56 +5,7 @@
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
    import Input from '$lib/components/ui/input/input.svelte';
-    import Check from "lucide-svelte/icons/check";
-    import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-    import * as Popover from "$lib/components/ui/popover/index";
-    import * as Command from "$lib/components/ui/command/index";
-    import { tick } from "svelte";
-    import { cn } from "$lib/utils";
-
-    // Combobox
-    let frameworks = [
-      {
-        value: "sveltekit",
-        label: "SvelteKit",
-      },
-      {
-        value: "next.js",
-        label: "Next.js",
-      },
-      {
-        value: "nuxt.js",
-        label: "Nuxt.js",
-      },
-      {
-        value: "remix",
-        label: "Remix",
-      },
-      {
-        value: "astro",
-        label: "Astro",
-      },
-    ];
-
-    let open = $state(false);
-    let combovalue = $state("");
-    let triggerRef = $state<HTMLButtonElement>(null!);
-
-    const selectedValue = $derived(
-      frameworks.find((f) => f.value === combovalue)?.label ??
-        "Select a framework..."
-    );
-
-    // We want to refocus the trigger button when the user selects
-    // an item from the list so users can continue navigating the
-    // rest of the form with the keyboard.
-    function closeAndFocusTrigger() {
-      open = false;
-      tick().then(() => {
-        triggerRef.focus();
-      });
-    }
-
+    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
     import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 
@@ -72,71 +23,29 @@
 	{/if}
   <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
     <div>
-      <Label for="name_31646">Username</Label>
-      <Input type="text" id="name_31646" name="name_31646" placeholder="Enter your username" bind:value={$form.name_31646} />
-      {#if $errors.name_31646}
-        <p class="text-sm text-red-500">{$errors.name_31646}</p>
+      <Label for="name_ce816" class={$errors.name_ce816 && "text-destructive"}>Username</Label>
+      <Input type="text" id="name_ce816" name="name_ce816" placeholder="Enter your username" bind:value={$form.name_ce816} />
+      {#if $errors.name_ce816}
+        <p class="text-sm text-destructive">{$errors.name_ce816}</p>
       {/if}
     </div>
 
-        <div>
-          <Label for="name_103f1">
-            Framework
-          </Label>
-          <div>
-            <Popover.Root bind:open>
-              <Popover.Trigger bind:ref={triggerRef}>
-                {#snippet child({ props })}
-                  <Button
-                    variant="outline"
-                    class="w-full justify-between"
-                    {...props}
-                    role="combobox"
-                    aria-expanded={open}
-                  >
-                    {selectedValue || "Select a framework..."}
-                    <ChevronsUpDown class="opacity-50" />
-                  </Button>
-                   <input hidden value={$form.name_103f1} name="name_103f1" />
-                {/snippet}
-              </Popover.Trigger>
-              <Popover.Content align='start' class="w-full p-0">
-                <Command.Root>
-                  <Command.Input
-                    placeholder="Select your favorite framework"
-                    class="h-9"
-                  />
-                  <Command.List>
-                    <Command.Empty>No framework found.</Command.Empty>
-                    <Command.Group>
-                      {#each frameworks as framework}
-                        <Command.Item
-                          value={framework.value}
-                          onSelect={() => {
-                            combovalue = framework.value;
-                            $form.name_103f1 = framework.value;
-                            closeAndFocusTrigger();
-                          }}
-                        >
-                          <Check
-                            class={cn(
-                              framework.value !== $form.name_103f1 &&
-                                "text-transparent"
-                            )}
-                          />
-                          {framework.label}
-                        </Command.Item>
-                      {/each}
-                    </Command.Group>
-                  </Command.List>
-                </Command.Root>
-              </Popover.Content>
-            </Popover.Root>
-          </div>
-          <p class="text-xs text-muted-foreground">
-           Select your favorite framework
-          </p>
-      </div>
+    <div>
+      <Label for="bio" class={$errors.bio && "text-destructive"}>Bio</Label>
+      <Textarea
+        placeholder="Tell us a little bit about yourself"
+        class="resize-none"
+        id="bio"
+        name="bio"
+        bind:value={$form.bio}
+      />
+      <p class="text-xs text-muted-foreground">
+        Tell us about yourself
+      </p>
+      {#if $errors.bio}
+        <p class="text-sm text-destructive">{$errors.bio}</p>
+      {/if}
+    </div>
 
     <Button type="submit" size="sm">Submit</Button>
   </form>
