@@ -127,6 +127,17 @@ let dummyInput: InputType[] = [
     max: 0,
     isNew: true,
   },
+  {
+    name: "ComboBox",
+    type: "combobox",
+    category: "combobox",
+    label: "Framework",
+    description: "Select your favorite framework",
+    placeholder: "Select your favorite framework",
+    min: 0,
+    max: 0,
+    isNew: true,
+  },
 ];
 
 let min_max_types = ["number", "password", "text", "textarea", "tags-input"];
@@ -250,7 +261,7 @@ import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 // add your own schema path here
-import { schema } from './schema.ts';
+import { schema } from './schema';
 
 export const load: PageServerLoad = async ({ request }) => {
     return { form: await superValidate(zod(schema)) }
@@ -259,6 +270,7 @@ export const load: PageServerLoad = async ({ request }) => {
 export const actions: Actions = {
     default: async ({ request }) => {
         let form = await superValidate(request, zod(schema));
+        console.log(form,'form');
         if (!form.valid) {
             return fail(400, { form });
         }
@@ -318,9 +330,62 @@ export const actions: Actions = {
         clientrawCode += `
     import { TagsInput } from "$lib/components/ui/tags-input";`
       }
-      else if (input ==='phone'){
-        clientrawCode+=`
+      else if (input === 'phone') {
+        clientrawCode += `
     import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`
+      }
+      else if (input === 'combobox') {
+        clientrawCode += `
+    import Check from "lucide-svelte/icons/check";
+    import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+    import * as Popover from "$lib/components/ui/popover/index";
+    import * as Command from "$lib/components/ui/command/index";
+    import { tick } from "svelte";
+    import { cn } from "$lib/utils";
+
+    // Combobox
+    let frameworks = [
+      {
+        value: "sveltekit",
+        label: "SvelteKit",
+      },
+      {
+        value: "next.js",
+        label: "Next.js",
+      },
+      {
+        value: "nuxt.js",
+        label: "Nuxt.js",
+      },
+      {
+        value: "remix",
+        label: "Remix",
+      },
+      {
+        value: "astro",
+        label: "Astro",
+      },
+    ];
+
+    let open = $state(false);
+    let combovalue = $state("");
+    let triggerRef = $state<HTMLButtonElement>(null!);
+
+    const selectedValue = $derived(
+      frameworks.find((f) => f.value === combovalue)?.label ??
+        "Select a framework..."
+    );
+
+    // We want to refocus the trigger button when the user selects
+    // an item from the list so users can continue navigating the
+    // rest of the form with the keyboard.
+    function closeAndFocusTrigger() {
+      open = false;
+      tick().then(() => {
+        triggerRef.focus();
+      });
+    }
+      `
       }
     });
     if (this.date_picker_named_id) {
@@ -561,8 +626,8 @@ export const actions: Actions = {
       {/if}
     </div>`
       }
-      else if(input.category==='phone'){
-        clientrawCode+=`
+      else if (input.category === 'phone') {
+        clientrawCode += `
       <div>
         <Label for="${input.named_id}">${input.label}</Label>
         <PhoneInput
@@ -578,6 +643,68 @@ export const actions: Actions = {
           <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
         {/if}
       </div>`
+      }
+      else if (input.category === 'combobox') {
+        clientrawCode += `
+        <div>
+          <Label for="${input.named_id}">
+            ${input.label}
+          </Label>
+          <div>
+            <Popover.Root bind:open>
+              <Popover.Trigger bind:ref={triggerRef}>
+                {#snippet child({ props })}
+                  <Button
+                    variant="outline"
+                    class="w-full justify-between"
+                    {...props}
+                    role="combobox"
+                    aria-expanded={open}
+                  >
+                    {selectedValue || "Select a framework..."}
+                    <ChevronsUpDown class="opacity-50" />
+                  </Button>
+                   <input hidden value={$form.${input.named_id}} name="${input.named_id}" />
+                {/snippet}
+              </Popover.Trigger>
+              <Popover.Content align='start' class="w-full p-0">
+                <Command.Root>
+                  <Command.Input
+                    placeholder="${input.placeholder}"
+                    class="h-9"
+                  />
+                  <Command.List>
+                    <Command.Empty>No framework found.</Command.Empty>
+                    <Command.Group>
+                      {#each frameworks as framework}
+                        <Command.Item
+                          value={framework.value}
+                          onSelect={() => {
+                            combovalue = framework.value;
+                            $form.${input.named_id} = framework.value;
+                            closeAndFocusTrigger();
+                          }}
+                        >
+                          <Check
+                            class={cn(
+                              framework.value !== $form.${input.named_id} &&
+                                "text-transparent"
+                            )}
+                          />
+                          {framework.label}
+                        </Command.Item>
+                      {/each}
+                    </Command.Group>
+                  </Command.List>
+                </Command.Root>
+              </Popover.Content>
+            </Popover.Root>
+          </div>
+          <p class="text-xs text-muted-foreground">
+           ${input.description}
+          </p>
+      </div>
+        `
       }
     });
     clientrawCode += `

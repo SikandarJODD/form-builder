@@ -1,4 +1,5 @@
 import { z } from 'zod';
 export let schema = z.object({
-  phone: z.string(),
+  name_31646: z.string(),
+  name_103f1: z.string(),
 })

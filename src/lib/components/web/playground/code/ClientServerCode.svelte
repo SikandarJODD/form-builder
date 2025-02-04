@@ -52,7 +52,7 @@
   }
 </script>
 
-<div class="relative border rounded-lg p-1">
+<div class="relative border rounded-lg">
   <div class="absolute top-2 right-2">
     <Button
       size="sm"
@@ -68,7 +68,7 @@
       {copied ? "Copied" : "Copy"}
     </Button>
   </div>
-  <div class="overflow-scroll scrollbar max-h-[440px]">
+  <div class="overflow-scroll scrollbar max-h-[440px] p-4">
     {#if codeType === "client"}
       <div>
         {@html htmlClientCode}
