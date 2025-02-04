@@ -8,7 +8,7 @@
   let htmlCode = $state(""); // highlighted html code
   onMount(async () => {
     htmlCode = await codeToHtml(code, {
-      lang: "javascript",
+      lang: 'ts',
       theme: "vesper",
     });
   });
@@ -21,7 +21,7 @@
   }
 </script>
 
-<div class="relative border w-full  rounded-lg">
+<div class="relative border w-full px-4 py-2 rounded-lg">
   <span>{@html htmlCode}</span>
   <div class="absolute top-2 right-2">
     <Button variant="outline" size="icon" onclick={handleCopy}>
@@ -69,6 +69,6 @@
 
 <style>
   :global(.shiki) {
-    background-color: transparent;
+    background-color: transparent !important;
   }
 </style>

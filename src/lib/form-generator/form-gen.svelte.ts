@@ -453,10 +453,10 @@ export const actions: Actions = {
       ) {
         clientrawCode += `
     <div>
-      <Label for="${input.named_id}">${input.label}</Label>
+      <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
       <Input type="${input.type}" id="${input.named_id}" name="${input.named_id}" placeholder="${input.placeholder}" bind:value={$form.${input.named_id}} />
       {#if $errors.${input.named_id}}
-        <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+        <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>
     `;
@@ -464,7 +464,7 @@ export const actions: Actions = {
         clientrawCode += `
     <div class="flex flex-row items-center justify-between rounded-lg border p-4">
         <div class="space-y-0.5">
-            <Label for="${input.named_id}">
+            <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>
               ${input.label}
             </Label>
             <p class="text-sm text-muted-foreground">
@@ -473,7 +473,7 @@ export const actions: Actions = {
         </div>
         <Switch bind:checked={$form.${input.named_id}} id="${input.named_id}" name="${input.named_id}"/>
         {#if $errors.${input.named_id}}
-          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+          <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
         {/if}
     </div>`;
       } else if (input.category === "checkbox") {
@@ -481,7 +481,7 @@ export const actions: Actions = {
     <div class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
       <Checkbox id="${input.named_id}" name="${input.named_id}" bind:checked={$form.${input.named_id}} />
       <div class="space-y-1 leading-none">
-        <Label for="${input.named_id}" >${input.label}</Label>
+        <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
         <p class="text-sm text-muted-foreground">
           ${input.description}
         </p>
@@ -489,14 +489,14 @@ export const actions: Actions = {
             <!-- add input for copy code -->
       <input name="${input.named_id}" id="${input.named_id}" value={$form.${input.named_id}} type="hidden" />
       {#if $errors.${input.named_id}}
-        <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+        <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>
         `;
       } else if (input.category === "textarea") {
         clientrawCode += `
     <div>
-      <Label for="${input.named_id}">${input.label}</Label>
+      <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
       <Textarea
         placeholder="Tell us a little bit about yourself"
         class="resize-none"
@@ -508,14 +508,14 @@ export const actions: Actions = {
         ${input.description}
       </p>
       {#if $errors.${input.named_id}}
-        <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+        <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>
         `;
       } else if (input.category === "select") {
         clientrawCode += `
     <div>
-      <Label for="${input.named_id}">${input.label}</Label>
+      <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
       <Select.Root type="single"  bind:value={$form.${input.named_id}}
           name="${input.named_id}">
           <Select.Trigger id="${input.named_id}">
@@ -534,14 +534,14 @@ export const actions: Actions = {
         ${input.description}
       </p>
       {#if $errors.${input.named_id}}
-          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+          <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>
       `;
       } else if (input.category === "input-otp") {
         clientrawCode += `
     <div>
-      <Label for="${input.named_id}">${input.label}</Label>
+      <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
       <InputOTP.Root
         maxlength={6}
         name="${input.named_id}"
@@ -566,13 +566,13 @@ export const actions: Actions = {
           ${input.description}
       </p>
       {#if $errors.${input.named_id}}
-          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+          <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>`;
       } else if (input.category === "date-picker") {
         clientrawCode += `
     <div>
-      <Label for="${input.named_id}">${input.label}</Label>
+      <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
       <div>
         <Popover.Root>
           <Popover.Trigger>
@@ -616,7 +616,7 @@ export const actions: Actions = {
           ${input.description}
       </p>
       {#if $errors.${input.named_id}}
-          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+          <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
       <input hidden value={$form.${input.named_id}} name="${input.named_id}" />
     </div>`;
@@ -624,7 +624,7 @@ export const actions: Actions = {
       else if (input.category === 'tags-input') {
         clientrawCode += `
     <div>
-      <Label for="${input.named_id}">${input.label}</Label>
+      <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
       <TagsInput bind:value={tagsvalue} placeholder="Add Tech Stack" />
       {#each $form.${input.named_id} as item, i}
         <input type="hidden" bind:value={$form.${input.named_id}[i]} name="${input.named_id}" id="${input.named_id}" />
@@ -633,14 +633,14 @@ export const actions: Actions = {
         ${input.description}
       </p>
       {#if $errors.${input.named_id}}
-        <p class="text-sm text-red-500">{$errors.${input.named_id}?._errors}</p>
+        <p class="text-sm text-destructive">{$errors.${input.named_id}?._errors}</p>
       {/if}
     </div>`
       }
       else if (input.category === 'phone') {
         clientrawCode += `
       <div>
-        <Label for="${input.named_id}">${input.label}</Label>
+        <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
         <PhoneInput
           country="IN"
           name="phone"
@@ -651,14 +651,14 @@ export const actions: Actions = {
           ${input.description}
         </p>
         {#if $errors.${input.named_id}}
-          <p class="text-sm text-red-500">{$errors.${input.named_id}}</p>
+          <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
         {/if}
       </div>`
       }
       else if (input.category === 'combobox') {
         clientrawCode += `
         <div>
-          <Label for="${input.named_id}">
+          <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>
             ${input.label}
           </Label>
           <div>

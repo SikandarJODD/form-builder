@@ -1,5 +1,5 @@
 import { z } from 'zod';
 export let schema = z.object({
-  name_31646: z.string(),
-  name_103f1: z.string(),
+  name_ce816: z.string(),
+  bio: z.string().min(10),
 })
