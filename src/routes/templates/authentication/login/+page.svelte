@@ -152,7 +152,7 @@ export const actions: Actions = {
   </div>
 {:else if tab_value === "client"}
   <div class="flex">
-    <CopyCode code={pageSvelteCode} />
+    <CopyCode lang="svelte" code={pageSvelteCode} />
   </div>
 {:else if tab_value === "server"}
   <div class="flex">

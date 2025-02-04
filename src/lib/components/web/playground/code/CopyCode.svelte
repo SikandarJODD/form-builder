@@ -1,14 +1,19 @@
-<script>
+<script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
   import { codeToHtml } from "shiki";
   import { onMount } from "svelte";
-  let { code  } = $props();
+
+  interface Props {
+    code: string;
+    lang?: string;
+  }
+  let { code, lang = "ts" }: Props = $props();
 
   let codeContent = code; // input code
   let htmlCode = $state(""); // highlighted html code
   onMount(async () => {
     htmlCode = await codeToHtml(code, {
-      lang: 'ts',
+      lang: lang,
       theme: "vesper",
     });
   });
@@ -21,9 +26,11 @@
   }
 </script>
 
-<div class="relative border w-full px-4 py-2 rounded-lg">
+<div
+  class="relative border w-full px-4 py-2 rounded-lg overflow-scroll scrollbar"
+>
   <span>{@html htmlCode}</span>
-  <div class="absolute top-2 right-2">
+  <div class=" absolute top-2 right-2">
     <Button variant="outline" size="icon" onclick={handleCopy}>
       <div
         class={[
