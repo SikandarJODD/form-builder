@@ -11,29 +11,33 @@
     isVisible = !isVisible;
   }
   interface Props {
-    id: string;
-    value: string;
+    id?: string;
+    value?: string;
     label?: string;
     name?: string;
-    error: string[] | undefined;
+    error?: string[] | undefined;
+    desc?: string;
+    placeholder?: string;
   }
   let {
-    id,
-    value = $bindable(),
+    id = "password",
+    value = $bindable(""),
     label = "Password",
-    name = "name",
-    error,
+    name = "password",
+    error = undefined,
+    placeholder = "Password",
+    desc = "",
   }: Props = $props();
 </script>
 
-<div class="space-y-2">
+<div>
   <Label for={id} class={error && "text-destructive"}>{label}</Label>
   <div class="relative">
     <Input
       {id}
       class="pe-9"
       {name}
-      placeholder="Password"
+      {placeholder}
       bind:value
       type={isVisible ? "text" : "password"}
     />
@@ -52,4 +56,9 @@
       {/if}
     </button>
   </div>
+  {#if desc}
+    <p class="text-muted-foreground text-xs">
+      {desc}
+    </p>
+  {/if}
 </div>

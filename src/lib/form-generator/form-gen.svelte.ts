@@ -48,7 +48,7 @@ let dummyInput: InputType[] = [
   {
     name: "Password",
     type: "password",
-    category: "text",
+    category: "password",
     label: "Password",
     placeholder: "password",
     description: "Enter your password",
@@ -300,8 +300,13 @@ export const actions: Actions = {
     this.unique_imports.map((input) => {
       if (input === "text") {
         clientrawCode += `
-   import Input from '$lib/components/ui/input/input.svelte';`;
-      } else if (input === "switch") {
+    import Input from '$lib/components/ui/input/input.svelte';`;
+      }
+      else if (input === 'password') {
+        clientrawCode += `
+    import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`
+      }
+      else if (input === "switch") {
         clientrawCode += `
     import Switch from "$lib/components/ui/switch/switch.svelte";`;
       } else if (input === "checkbox") {
@@ -445,7 +450,6 @@ export const actions: Actions = {
     this.selected_inputs.map((input) => {
       if (
         input.type === "text" ||
-        input.type === "password" ||
         input.type === "number" ||
         input.type === "email" ||
         input.type === "tel" ||
@@ -460,7 +464,26 @@ export const actions: Actions = {
       {/if}
     </div>
     `;
-      } else if (input.category === "switch") {
+
+      }
+      else if (input.type === 'password') {
+        clientrawCode += `
+    <div>
+      <PasswordInput
+        error={$errors.${input.named_id}}
+        id="${input.named_id}"
+        bind:value={$form.${input.named_id}}
+        name="${input.named_id}"
+        placeholder="${input.placeholder}"
+        desc="${input.description}"
+      />
+      {#if $errors.${input.named_id}}
+        <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
+      {/if}
+    </div>
+        `
+      }
+      else if (input.category === "switch") {
         clientrawCode += `
     <div class="flex flex-row items-center justify-between rounded-lg border p-4">
         <div class="space-y-0.5">

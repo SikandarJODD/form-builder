@@ -1,22 +1,42 @@
-# Sveltekit Form Builder
+# Svelte Form Builder
 
-- This form builder will help you create forms with validations.
+A dynamic form-building tool that allows users to create, customize, and validate forms seamlessly within web applications. Built with Sveltekit, [ZOD](https://zod.dev), [Superform-Sveltekit](https://superforms.rocks), Form Builder provides an intuitive interface for developers and users alike.
 
 ## Features
 
-- Input validations using **Sveltekit Superforms**
-- Client & Server side validaitons
+- Dynamic Form Creation: Easily create forms with various input types including text, checkbox, radio buttons, and more.
+- Form validations using [**Sveltekit Superforms**](https://superforms.rocks)
+- Client & Server side validaitons.
+- Real-Time Validation: Validate user inputs using the Zod library, ensuring data integrity and user-friendly feedback.
+- Customizable Components: Leverage ShadCN-Svelte components for a consistent and modern UI experience.
+
+### Live Demo
+
+Check out the live demo of the Form Builder [here](https://svelte-form-builder.vercel.app).
 
 ## Usage
 
 1. Simply select inputs from the list, can reorder them by dragging.
 2. Copy `Zod Schema` and paste it in your Sveltekit project.
-3. Copy Client and Server side Code and paste it in your Sveltekit project.
+3. Copy `Client` and `Server` side Code and paste it in your Sveltekit project.
 
 Yeep Done! 🚀
 
-## Form Types
+## New Features
 
-| Form        | Status  |
-| ----------- | ------- |
-| Combo Box   | Pending |
+| Form           | Desc                                                                              |
+| -------------- | --------------------------------------------------------------------------------- |
+| Templates      | Includes login, register, forgot-password, reset-password, contact form templates |
+| Password Input | Password input with show/hide password feature                                    |
+| Combobox       | Combobox input with search feature                                                |
+| Datepicker     | Datepicker input with date                                                        |
+| Tags Input     | Datepicker input with date                                                        |
+
+### [Future Development](./features.md)
+
+Here are some of the features that are in the pipeline. you can also suggest features by creating an [issue](https://github.com/SikandarJODD/form-builder/issues).
+
+| Feature          | Status   |
+| ---------------- | -------- |
+| Password Input   | Progress |
+| Multi Step Forms | Pending  |
