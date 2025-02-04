@@ -10,29 +10,29 @@
           name: "Login",
           url: "/templates/authentication/login",
         },
-        // {
-        //   name: "Register",
-        //   url: "/templates/authentication/register",
-        // },
-        // {
-        //   name: "Forgot Password",
-        //   url: "/templates/authentication/forgot-password",
-        // },
-        // {
-        //   name: "Reset Password",
-        //   url: "/templates/authentication/reset-password",
-        // },
+        {
+          name: "Register",
+          url: "/templates/authentication/register",
+        },
+        {
+          name: "Forgot Password",
+          url: "/templates/authentication/forgot-password",
+        },
+        {
+          name: "Reset Password",
+          url: "/templates/authentication/reset-password",
+        },
       ],
     },
-    // {
-    //   name: "Contact",
-    //   sub: [
-    //     {
-    //       name: "Contact",
-    //       url: "/templates/contact/contact",
-    //     },
-    //   ],
-    // },
+    {
+      name: "Contact",
+      sub: [
+        {
+          name: "Contact",
+          url: "/templates/contact/contact",
+        },
+      ],
+    },
   ];
   let isActive = (url: string) => {
     return page.url.pathname === url;
@@ -48,7 +48,7 @@
 </div>
 <div class="max-w-5xl mx-auto">
   <div class="grid grid-cols-9 gap-4">
-    <div class="col-span-2 bg-accent/50 rounded-lg p-4 h-fit">
+    <div class="sticky top-20 col-span-2 bg-accent/50 rounded-lg p-4 h-fit">
       {#each templates as item}
         <div>
           <h2 class="text-lg font-semibold">{item.name}</h2>

@@ -1,4 +1,4 @@
-import type { Actions } from '@sveltejs/kit';
+export let pageServerCode =`import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 import { fail, message, superValidate } from 'sveltekit-superforms';
@@ -14,10 +14,11 @@ export const load: PageServerLoad = async ({ request }) => {
 export const actions: Actions = {
     default: async ({ request }) => {
         let form = await superValidate(request, zod(schema));
-        console.log(form,'form');
+        console.log(form, 'form');
         if (!form.valid) {
             return fail(400, { form });
         }
         return message(form, 'Form Posted Successfully!');
     }
 };
+`
