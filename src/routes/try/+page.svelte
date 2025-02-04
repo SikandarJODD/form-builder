@@ -1,41 +1,143 @@
 <script lang="ts">
-  import { superForm } from "sveltekit-superforms";
-  // add your own path
-  import type { PageData } from "./$types";
-  import Label from "$lib/components/ui/label/label.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
-  import { zod } from "sveltekit-superforms/adapters";
-  import { schema } from "./schema";
+	import { superForm } from 'sveltekit-superforms';
+    // add your own path
+	import type { PageData } from './$types';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
+   import Input from '$lib/components/ui/input/input.svelte';
+    import Check from "lucide-svelte/icons/check";
+    import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+    import * as Popover from "$lib/components/ui/popover/index";
+    import * as Command from "$lib/components/ui/command/index";
+    import { tick } from "svelte";
+    import { cn } from "$lib/utils";
 
-  let {
-    data,
-  }: {
-    data: PageData;
-  } = $props();
-  let { form, message, errors, enhance } = superForm(data.form, {
-    validators: zod(schema),
-  });
-</script>
+    // Combobox
+    let frameworks = [
+      {
+        value: "sveltekit",
+        label: "SvelteKit",
+      },
+      {
+        value: "next.js",
+        label: "Next.js",
+      },
+      {
+        value: "nuxt.js",
+        label: "Nuxt.js",
+      },
+      {
+        value: "remix",
+        label: "Remix",
+      },
+      {
+        value: "astro",
+        label: "Astro",
+      },
+    ];
 
+    let open = $state(false);
+    let combovalue = $state("");
+    let triggerRef = $state<HTMLButtonElement>(null!);
+
+    const selectedValue = $derived(
+      frameworks.find((f) => f.value === combovalue)?.label ??
+        "Select a framework..."
+    );
+
+    // We want to refocus the trigger button when the user selects
+    // an item from the list so users can continue navigating the
+    // rest of the form with the keyboard.
+    function closeAndFocusTrigger() {
+      open = false;
+      tick().then(() => {
+        triggerRef.focus();
+      });
+    }
+
+    import { zod } from 'sveltekit-superforms/adapters';
+	import { schema } from './schema';
+
+	let {
+		data
+	}: {
+		data: PageData;
+	} = $props();
+      let { form, message, errors, enhance } = superForm(data.form, {
+		    validators: zod(schema)
+	    });</script>
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
-  {#if $message}
-    <p class="text-emerald-400">{$message}</p>
-  {/if}
+	{#if $message}
+		<p class="text-emerald-400">{$message}</p>
+	{/if}
   <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
     <div>
-      <Label for="phone">Phone number</Label>
-      <PhoneInput
-        country="IN"
-        name="phone"
-        placeholder="Enter a phone number"
-        bind:value={$form.phone}
-      />
-      <p class="text-xs text-muted-foreground">Enter your phone number</p>
-      {#if $errors.phone}
-        <p class="text-sm text-red-500">{$errors.phone}</p>
+      <Label for="name_31646">Username</Label>
+      <Input type="text" id="name_31646" name="name_31646" placeholder="Enter your username" bind:value={$form.name_31646} />
+      {#if $errors.name_31646}
+        <p class="text-sm text-red-500">{$errors.name_31646}</p>
       {/if}
     </div>
+
+        <div>
+          <Label for="name_103f1">
+            Framework
+          </Label>
+          <div>
+            <Popover.Root bind:open>
+              <Popover.Trigger bind:ref={triggerRef}>
+                {#snippet child({ props })}
+                  <Button
+                    variant="outline"
+                    class="w-full justify-between"
+                    {...props}
+                    role="combobox"
+                    aria-expanded={open}
+                  >
+                    {selectedValue || "Select a framework..."}
+                    <ChevronsUpDown class="opacity-50" />
+                  </Button>
+                   <input hidden value={$form.name_103f1} name="name_103f1" />
+                {/snippet}
+              </Popover.Trigger>
+              <Popover.Content align='start' class="w-full p-0">
+                <Command.Root>
+                  <Command.Input
+                    placeholder="Select your favorite framework"
+                    class="h-9"
+                  />
+                  <Command.List>
+                    <Command.Empty>No framework found.</Command.Empty>
+                    <Command.Group>
+                      {#each frameworks as framework}
+                        <Command.Item
+                          value={framework.value}
+                          onSelect={() => {
+                            combovalue = framework.value;
+                            $form.name_103f1 = framework.value;
+                            closeAndFocusTrigger();
+                          }}
+                        >
+                          <Check
+                            class={cn(
+                              framework.value !== $form.name_103f1 &&
+                                "text-transparent"
+                            )}
+                          />
+                          {framework.label}
+                        </Command.Item>
+                      {/each}
+                    </Command.Group>
+                  </Command.List>
+                </Command.Root>
+              </Popover.Content>
+            </Popover.Root>
+          </div>
+          <p class="text-xs text-muted-foreground">
+           Select your favorite framework
+          </p>
+      </div>
+
     <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>

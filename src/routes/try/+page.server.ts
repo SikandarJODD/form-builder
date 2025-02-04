@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ request }) => {
 export const actions: Actions = {
     default: async ({ request }) => {
         let form = await superValidate(request, zod(schema));
-        console.log(form);
+        console.log(form,'form');
         if (!form.valid) {
             return fail(400, { form });
         }

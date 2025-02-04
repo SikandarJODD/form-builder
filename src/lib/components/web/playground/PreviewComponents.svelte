@@ -5,13 +5,23 @@
   import Label from "$lib/components/ui/label/label.svelte";
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
-  import { form_generator } from "$lib/form-generator/form-gen.svelte";
-  import * as Select from "$lib/components/ui/select/index";
-  import * as InputOTP from "$lib/components/ui/input-otp/index";
-  import { flip } from "svelte/animate";
   import { Calendar } from "$lib/components/ui/calendar/index";
+  import * as Select from "$lib/components/ui/select/index";
   import * as Popover from "$lib/components/ui/popover/index";
+  import * as Command from "$lib/components/ui/command/index";
+  import * as InputOTP from "$lib/components/ui/input-otp/index";
+
+  // Main Form Generator Code
+  import { form_generator } from "$lib/form-generator/form-gen.svelte";
+
+  import { flip } from "svelte/animate";
+  import { tick } from "svelte";
+
+  // Lucide Icons
   import CalendarIcon from "lucide-svelte/icons/calendar";
+  import Check from "lucide-svelte/icons/check";
+  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+
   import {
     CalendarDate,
     DateFormatter,
@@ -20,6 +30,10 @@
     parseDate,
     today,
   } from "@internationalized/date";
+  import { cn } from "$lib/utils";
+  // Shadcn Extra Components : https://www.shadcn-svelte-extras.com
+  import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
+  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
 
   const df = new DateFormatter("en-US", {
     dateStyle: "long",
@@ -32,11 +46,7 @@
   //   dvalue = $formData.dob ? parseDate($formData.dob) : undefined;
   // });
 
-  import { cn } from "$lib/utils";
-  import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
-  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
   // select and radio box need options
-
   let select_examples = [
     { value: "svelte", label: "Svelte" },
     { value: "vue", label: "Vue" },
@@ -49,6 +59,49 @@
   let triggerContent = $derived(
     select_examples.find((f) => f.value === value)?.label ?? "Svelte"
   );
+
+  // Combobox
+  let frameworks = [
+    {
+      value: "sveltekit",
+      label: "SvelteKit",
+    },
+    {
+      value: "next.js",
+      label: "Next.js",
+    },
+    {
+      value: "nuxt.js",
+      label: "Nuxt.js",
+    },
+    {
+      value: "remix",
+      label: "Remix",
+    },
+    {
+      value: "astro",
+      label: "Astro",
+    },
+  ];
+
+  let open = $state(false);
+  let combovalue = $state("");
+  let triggerRef = $state<HTMLButtonElement>(null!);
+
+  const selectedValue = $derived(
+    frameworks.find((f) => f.value === combovalue)?.label ??
+      "Select a framework..."
+  );
+
+  // We want to refocus the trigger button when the user selects
+  // an item from the list so users can continue navigating the
+  // rest of the form with the keyboard.
+  function closeAndFocusTrigger() {
+    open = false;
+    tick().then(() => {
+      triggerRef.focus();
+    });
+  }
 </script>
 
 {#if form_generator.selected_inputs.length === 0}
@@ -243,18 +296,62 @@
               </p>
             </div>
           {/if}
-          <!-- {#if comp.type === "color"}
-      <input type="color" id={comp.id} />
-    {/if}
-    {#if comp.type === "date"}
-      <input type="date" id={comp.id} />
-    {/if}
-    {#if comp.type === "datetime-local"}
-      <input type="datetime-local" id={comp.id} />
-    {/if}
-    {#if comp.type === "month"}
-      <input type="month" id={comp.id} />
-    {/if} -->
+          {#if comp.type === "combobox"}
+            <div>
+              <Label for={comp.named_id}>{comp.label}</Label>
+              <div>
+                <Popover.Root bind:open>
+                  <Popover.Trigger bind:ref={triggerRef}>
+                    {#snippet child({ props })}
+                      <Button
+                        variant="outline"
+                        class="w-full justify-between"
+                        {...props}
+                        role="combobox"
+                        aria-expanded={open}
+                      >
+                        {selectedValue || "Select a framework..."}
+                        <ChevronsUpDown class="opacity-50" />
+                      </Button>
+                    {/snippet}
+                  </Popover.Trigger>
+                  <Popover.Content align='start' class="w-full p-0">
+                    <Command.Root >
+                      <Command.Input
+                        placeholder="Search framework..."
+                        class="h-9"
+                      />
+                      <Command.List class='w-full'>
+                        <Command.Empty>No framework found.</Command.Empty>
+                        <Command.Group>
+                          {#each frameworks as framework}
+                            <Command.Item
+                              value={framework.value}
+                              onSelect={() => {
+                                combovalue = framework.value;
+                                closeAndFocusTrigger();
+                              }}
+                            >
+                              <Check
+                                class={cn(
+                                  combovalue !== framework.value &&
+                                    "text-transparent"
+                                )}
+                              />
+                              {framework.label}
+                            </Command.Item>
+                          {/each}
+                        </Command.Group>
+                      </Command.List>
+                    </Command.Root>
+                  </Popover.Content>
+                </Popover.Root>
+              </div>
+              <p class="text-xs text-muted-foreground">
+                {comp.description}
+              </p>
+            </div>
+          {/if}
         </div>
       {/each}
     </div>
