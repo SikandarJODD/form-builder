@@ -1,60 +1,74 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms';
-    // add your own path
-	import type { PageData } from './$types';
-	import Label from '$lib/components/ui/label/label.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
-   import Input from '$lib/components/ui/input/input.svelte';
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
-    import { zod } from 'sveltekit-superforms/adapters';
-	import { schema } from './schema';
+  import type { PageData } from "./$types";
+  import ContactForm from "$lib/components/templates/forms/ContactForm.svelte";
+  import ContactFormCode from "$lib/components/templates/forms/ContactForm.svelte?raw";
 
-	let {
-		data
-	}: {
-		data: PageData;
-	} = $props();
-      let { form, message, errors, enhance } = superForm(data.form, {
-		    validators: zod(schema)
-	    });</script>
-<div class="flex min-h-[60vh] flex-col items-center justify-center">
-	{#if $message}
-		<p class="text-emerald-400">{$message}</p>
-	{/if}
-  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
+  import CopyCode from "$lib/components/web/playground/code/CopyCode.svelte";
+  import * as Tabs from "$lib/components/ui/tabs/index";
+  import { pageServerCode } from "../../serverCopyCode";
+  let spl_comps = [
+    {
+      name: "Password Input",
+      url: "",
+    },
+  ];
+  let tab_value = $state("preview");
+  let {
+    data,
+  }: {
+    data: PageData;
+  } = $props();
+
+  let schemaCode = `import { z } from 'zod';
+export let schema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  bio: z.string().min(10),
+})`;
+  let pageSvelteCode = ContactFormCode;
+</script>
+
+<div class="mb-4 w-full">
+  <h2 class="text-2xl font-semibold">Contact Form</h2>
+  <p class="text-muted-foreground">
+    This form includes special component,add the component in your directory.
+  </p>
+  <div class="flex items-center w-full justify-between mt-1">
     <div>
-      <Label for="name" class={$errors.name && "text-destructive"}>Name</Label>
-      <Input type="text" id="name" name="name" placeholder="John Doe" bind:value={$form.name} />
-      {#if $errors.name}
-        <p class="text-sm text-destructive">{$errors.name}</p>
-      {/if}
+      <ul>
+        {#each spl_comps as item, index}
+          <li>
+            <a href={item.url} class="text-sm">{item.name}</a>
+          </li>
+        {/each}
+      </ul>
     </div>
-
     <div>
-      <Label for="email" class={$errors.email && "text-destructive"}>Email</Label>
-      <Input type="email" id="email" name="email" placeholder="Enter your email" bind:value={$form.email} />
-      {#if $errors.email}
-        <p class="text-sm text-destructive">{$errors.email}</p>
-      {/if}
+      <Tabs.Root bind:value={tab_value}>
+        <Tabs.List>
+          <Tabs.Trigger value="preview">Preview</Tabs.Trigger>
+          <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
+          <Tabs.Trigger value="client">Client</Tabs.Trigger>
+          <Tabs.Trigger value="server">Server</Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>
     </div>
-
-    <div>
-      <Label for="bio" class={$errors.bio && "text-destructive"}>Message</Label>
-      <Textarea
-        placeholder="Tell us a little bit about yourself"
-        class="resize-none"
-        id="bio"
-        name="bio"
-        bind:value={$form.bio}
-      />
-      <p class="text-xs text-muted-foreground">
-
-      </p>
-      {#if $errors.bio}
-        <p class="text-sm text-destructive">{$errors.bio}</p>
-      {/if}
-    </div>
-
-    <Button type="submit" size="sm">Submit</Button>
-  </form>
+  </div>
 </div>
+{#if tab_value === "preview"}
+  <div class="flex justify-center">
+    <ContactForm {data} />
+  </div>
+{:else if tab_value === "schema"}
+  <div class="flex max-h-[420px]">
+    <CopyCode code={schemaCode} />
+  </div>
+{:else if tab_value === "client"}
+  <div class="flex max-h-[420px]">
+    <CopyCode lang="svelte" code={pageSvelteCode} />
+  </div>
+{:else if tab_value === "server"}
+  <div class="flex max-h-[420px]">
+    <CopyCode code={pageServerCode} />
+  </div>
+{/if}

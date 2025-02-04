@@ -6,9 +6,9 @@
 
   import { superForm } from "sveltekit-superforms";
   import { zod } from "sveltekit-superforms/adapters";
-  import { schema } from "../../../../routes/templates/authentication/login/schema";
-  import type { PageData } from "../../../../routes/templates/authentication/login/$types";
-  import PasswordInput from "../comps/PasswordInput.svelte";
+  import { schema } from "../../../../routes/templates/contact/contact/schema";
+  import type { PageData } from "../../../../routes/templates/contact/contact/$types";
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   let {
     data,
   }: {
@@ -19,16 +19,30 @@
   });
 </script>
 
-<Card.Root class="h-fit w-full md:w-96">
+<Card.Root class="h-fit w-full md:w-[460px]">
   <Card.Header class="space-y-1">
-    <Card.Title class="text-2xl">Login</Card.Title>
+    <Card.Title class="text-2xl">Contact Us</Card.Title>
     <Card.Description
-      >Enter your email and password to login to your account.</Card.Description
+      >Please fill out the form below and we will get back to you shortly.</Card.Description
     >
   </Card.Header>
   <form method="post" use:enhance>
     <Card.Content class="grid space-y-3 pt-2">
-      <div class="space-y-1">
+      <div class='space-y-1'>
+        <Label for="name" class={$errors.name && "text-destructive"}>Name</Label
+        >
+        <Input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="John Doe"
+          bind:value={$form.name}
+        />
+        {#if $errors.name}
+          <p class="text-sm text-destructive">{$errors.name}</p>
+        {/if}
+      </div>
+      <div class='space-y-1'>
         <Label for="email" class={$errors.email && "text-destructive"}
           >Email</Label
         >
@@ -36,31 +50,30 @@
           type="email"
           id="email"
           name="email"
-          placeholder="john@example.com"
+          placeholder="Enter your email"
           bind:value={$form.email}
         />
         {#if $errors.email}
           <p class="text-sm text-destructive">{$errors.email}</p>
         {/if}
       </div>
-      <div>
-        <PasswordInput
-          error={$errors.password}
-          id="password"
-          bind:value={$form.password}
-          name="password"
+      <div class='space-y-1'>
+        <Label for="bio" class={$errors.bio && "text-destructive"}
+          >Message</Label
+        >
+        <Textarea
+          placeholder="Tell us a little bit about yourself"
+          class="resize-none"
+          id="bio"
+          name="bio"
+          bind:value={$form.bio}
         />
-        {#if $errors.password}
-          <p class="text-sm text-destructive">{$errors.password}</p>
+        <p class="text-xs text-muted-foreground"></p>
+        {#if $errors.bio}
+          <p class="text-sm text-destructive">{$errors.bio}</p>
         {/if}
       </div>
-      <Button type="submit">Login</Button>
-      <Button variant="outline">Login with Google</Button>
-      <p class="text-center text-muted-foreground">
-        Don't have an account? <a href="#" class="underline text-primary"
-          >Sign up</a
-        >
-      </p>
+      <Button type="submit" size="sm">Send Message</Button>
     </Card.Content>
   </form>
 </Card.Root>

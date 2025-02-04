@@ -1,10 +1,10 @@
 <script lang="ts">
   import Login from "$lib/components/templates/forms/Login.svelte";
   import type { PageData } from "./$types";
-  import * as Tabs from "$lib/components/ui/tabs/index";
-  import CopyCode from "$lib/components/web/playground/code/CopyCode.svelte";
-
   let { data }: { data: PageData } = $props();
+
+  import CopyCode from "$lib/components/web/playground/code/CopyCode.svelte";
+  import * as Tabs from "$lib/components/ui/tabs/index";
   let spl_comps = [
     {
       name: "Password Input",
@@ -147,15 +147,15 @@ export const actions: Actions = {
     <Login {data} />
   </div>
 {:else if tab_value === "schema"}
-  <div class="flex">
+  <div class="flex max-h-[420px]">
     <CopyCode code={schemaCode} />
   </div>
 {:else if tab_value === "client"}
-  <div class="flex">
+  <div class="flex max-h-[420px]">
     <CopyCode lang="svelte" code={pageSvelteCode} />
   </div>
 {:else if tab_value === "server"}
-  <div class="flex">
+  <div class="flex max-h-[420px]">
     <CopyCode code={pageServerCode} />
   </div>
 {/if}
