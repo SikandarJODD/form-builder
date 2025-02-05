@@ -24,19 +24,19 @@ Yeep Done! 🚀
 
 ## New Features
 
-| Form           | Desc                                                                              |
-| -------------- | --------------------------------------------------------------------------------- |
-| Templates      | Includes login, register, forgot-password, reset-password, contact form templates |
-| Password Input | Password input with show/hide password feature                                    |
-| Combobox       | Combobox input with search feature                                                |
-| Datepicker     | Datepicker input with date                                                        |
-| Tags Input     | Datepicker input with date                                                        |
+| Form           | Desc                                                                                      |
+| -------------- | ----------------------------------------------------------------------------------------- |
+| Templates      | Includes login, register, forgot-password, reset-password, contact form templates         |
+| Password Input | Password input with show/hide password feature                                            |
+| Combobox       | Combobox input with search feature                                                        |
+| Datepicker     | Datepicker input with date                                                                |
+| Tags Input     | Tags inut from [shadcn-extra](https://www.shadcn-svelte-extras.com/components/tags-input) |
+| Phone Input    | [shadcn-extra](https://www.shadcn-svelte-extras.com/components/phone-input)                |
+
+### Components
+1. Password Input : [Visit](https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte)
+
 
 ### [Future Development](./features.md)
 
 Here are some of the features that are in the pipeline. you can also suggest features by creating an [issue](https://github.com/SikandarJODD/form-builder/issues).
-
-| Feature          | Status   |
-| ---------------- | -------- |
-| Password Input   | Progress |
-| Multi Step Forms | Pending  |

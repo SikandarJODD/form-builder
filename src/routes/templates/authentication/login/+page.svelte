@@ -8,7 +8,7 @@
   let spl_comps = [
     {
       name: "Password Input",
-      url: "",
+      url: "https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte",
     },
   ];
   let tab_value = $state("preview");
