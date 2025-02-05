@@ -152,6 +152,7 @@ let dummyInput: InputType[] = [
 ];
 
 let min_max_types = ["number", "password", "text", "textarea", "tags-input"];
+let non_empty_types = ["date-picker", 'email'];
 
 class FormGenerator {
   inputs: InputType[] = dummyInput;
@@ -248,6 +249,9 @@ class FormGenerator {
       }
       if (!input.required) {
         fieldSchema += `.optional()`;
+      }
+      else if (!non_empty_types.includes(input.type) && input.min === 0) {
+        fieldSchema += `.nonempty()`;
       }
 
       schemaString += `  ${input.named_id?.toLowerCase() || "name"
