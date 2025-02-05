@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { buttonVariants } from "$lib/components/ui/button";
   import Button from "$lib/components/ui/button/button.svelte";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import * as Dialog from "$lib/components/ui/dialog/index";
   import Input from "$lib/components/ui/input/input.svelte";
   import Label from "$lib/components/ui/label/label.svelte";
   import * as Select from "$lib/components/ui/select/index";
-  import { form_generator, type InputType } from "../form-gen.svelte";
+  import { type InputType } from "../form-gen.svelte";
   let {
     item,
   }: {
@@ -22,7 +21,7 @@
   //   }
   // });
   let isOpen = $state(false);
-  let selectTextTypes = ["text", "password", "email", "tel", "url"];
+  let selectTextTypes = ["text", "tel", "url"];
   let selectedMinMaxTypes = [
     "text",
     "password",
@@ -104,7 +103,6 @@
               <Select.Group>
                 <Select.GroupHeading>Input Type</Select.GroupHeading>
                 <Select.Item value="text" label="Text" />
-                <Select.Item value="email" label="Email" />
                 <Select.Item value="tel" label="Tel" />
                 <Select.Item value="url" label="URL" />
               </Select.Group>

@@ -34,6 +34,7 @@
   // Shadcn Extra Components : https://www.shadcn-svelte-extras.com
   import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
+  import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";
 
   const df = new DateFormatter("en-US", {
     dateStyle: "long",
@@ -127,6 +128,16 @@
               </p>
             </div>
           {/if}
+          {#if comp.category === "password"}
+            <div>
+              <PasswordInput
+                label={comp.label}
+                name={comp.named_id}
+                desc={comp.description}
+              />
+            </div>
+          {/if}
+
           {#if comp.category === "switch"}
             <div
               class="flex flex-row items-center justify-between rounded-lg border p-4"
@@ -315,13 +326,13 @@
                       </Button>
                     {/snippet}
                   </Popover.Trigger>
-                  <Popover.Content align='start' class="w-full p-0">
-                    <Command.Root >
+                  <Popover.Content align="start" class="w-full p-0">
+                    <Command.Root>
                       <Command.Input
                         placeholder="Search framework..."
                         class="h-9"
                       />
-                      <Command.List class='w-full'>
+                      <Command.List class="w-full">
                         <Command.Empty>No framework found.</Command.Empty>
                         <Command.Group>
                           {#each frameworks as framework}
