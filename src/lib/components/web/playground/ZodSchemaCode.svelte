@@ -49,6 +49,7 @@
   }
 
   import * as Select from "$lib/components/ui/select/index";
+  import Label from "$lib/components/ui/label/label.svelte";
 
   let all_schema = [
     { value: "zod", label: "ZOD" },
@@ -71,14 +72,15 @@
 <div class="relative border w-full p-4 rounded-lg">
   <span>{@html htmlCode}</span>
   <div class="absolute top-2 right-2 flex items-center space-x-2">
-    <div>
+    <div class="relative flex items-center space-x-2">
+      <Label for="schema">Schema</Label>
       <Select.Root
+        name="schema"
         type="single"
-        name="favoriteFruit"
         bind:value
         onValueChange={updateAdapter}
       >
-        <Select.Trigger class="w-[100px]">
+        <Select.Trigger class="w-[120px]">
           {triggerContent}
         </Select.Trigger>
         <Select.Content>
