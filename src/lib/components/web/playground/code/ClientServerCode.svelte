@@ -68,7 +68,7 @@
       {copied ? "Copied" : "Copy"}
     </Button>
   </div>
-  <div class="overflow-scroll scrollbar max-h-[440px] p-4">
+  <div class="overflow-scroll scrollbar max-h-[420px] p-4">
     {#if codeType === "client"}
       <div>
         {@html htmlClientCode}
