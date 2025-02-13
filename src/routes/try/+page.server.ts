@@ -5,6 +5,5 @@ import type { PageServerLoad } from './$types';
 export const actions: Actions = {
     default: async ({ request }) => {
         let form = await request.formData();
-        console.log(form, 'form');
     }
 };
