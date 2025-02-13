@@ -5,12 +5,12 @@
   import ZodSchemaCode from "./ZodSchemaCode.svelte";
 </script>
 
-<div class='col-span-3 '>
+<div class="col-span-3">
   <Tabs.Root value="preview" class="h-full flex items-center flex-col">
     <Tabs.List class="w-fit mx-auto">
       <Tabs.Trigger value="preview">Preview</Tabs.Trigger>
       <Tabs.Trigger value="code">Code</Tabs.Trigger>
-      <Tabs.Trigger value="zodschema">Schema</Tabs.Trigger>
+      <Tabs.Trigger value="zodschema">ZOD | Valibot Schema</Tabs.Trigger>
     </Tabs.List>
     <Tabs.Content value="preview" class="w-full h-full">
       <PreviewComponents />

@@ -344,29 +344,33 @@ class FormGenerator {
     return sh;
   });
 
-  serverCode = `import type { Actions } from '@sveltejs/kit';
+  // replace below logic of zod and valibot
+  // This is short term logic only for 2 Schema Adapters
+  serverCode = $derived.by(() => {
+    return `import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 import { fail, message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { ${this.adapter === 'zod' ? 'zod' : 'valibot'} } from 'sveltekit-superforms/adapters';
 
 // add your own schema path here
 import { schema } from './schema';
 
 export const load: PageServerLoad = async ({ request }) => {
-    return { form: await superValidate(zod(schema)) }
+    return { form: await superValidate(${this.adapter === 'zod' ? 'zod' : 'valibot'}(schema)) }
 };
 
 export const actions: Actions = {
     default: async ({ request }) => {
-        let form = await superValidate(request, zod(schema));
+        let form = await superValidate(request, ${this.adapter === 'zod' ? 'zod' : 'valibot'}(schema));
         console.log(form,'form');
         if (!form.valid) {
             return fail(400, { form });
         }
         return message(form, 'Form Posted Successfully!');
     }
-};`;
+};`
+  });
 
   clientCode = $derived.by(() => {
     let clientrawCode = `<script lang="ts">
@@ -578,6 +582,7 @@ export const actions: Actions = {
       else if (input.type === 'password') {
         clientrawCode += `
     <div>
+    <!-- Add Password Input Component from : https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte -->
       <PasswordInput
         error={$errors.${input.named_id}}
         id="${input.named_id}"
@@ -589,9 +594,6 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
         <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
-      <p class="text-xs text-muted-foreground">
-        ${input.description}
-      </p>
     </div>
         `
       }
@@ -760,6 +762,7 @@ export const actions: Actions = {
         clientrawCode += `
     <div>
       <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
+       <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
       <TagsInput bind:value={tagsvalue} placeholder="Add Tech Stack" />
       {#each $form.${input.named_id} as item, i}
         <input type="hidden" bind:value={$form.${input.named_id}[i]} name="${input.named_id}" id="${input.named_id}" />
@@ -775,6 +778,7 @@ export const actions: Actions = {
       else if (input.category === 'phone') {
         clientrawCode += `
       <div>
+      <!-- Add Phone Input Component from Shadcn Extra : https://www.shadcn-svelte-extras.com/components/phone-input -->
         <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
         <PhoneInput
           country="IN"
