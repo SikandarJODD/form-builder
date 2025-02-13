@@ -90,8 +90,8 @@ let dummyInput: InputType[] = [
     name: "Select",
     type: "select",
     category: "select",
-    label: "Email",
-    description: "You can manage email addresses in your email settings.",
+    label: "Framework",
+    description: "Select your favorite framework",
     placeholder: "Placeholder",
     min: 0,
     max: 0,
@@ -132,8 +132,8 @@ let dummyInput: InputType[] = [
     type: "phone",
     category: "phone",
     label: "Phone number",
+    placeholder: "Enter your phone number",
     description: "Enter your phone number",
-    placeholder: "Placeholder",
     min: 0,
     max: 0,
     isNew: true,
@@ -180,7 +180,7 @@ class FormGenerator {
 
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
-    let random_id = `name_${crypto.randomUUID().slice(0, 5)}`;
+    let random_id = `${item.type.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`;
     let new_input: InputType = {
       id: id,
       named_id: random_id,

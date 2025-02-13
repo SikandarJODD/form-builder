@@ -53,6 +53,7 @@
     { value: "vue", label: "Vue" },
     { value: "react", label: "React" },
     { value: "angular", label: "Angular" },
+    {value: "astro", label: "Astro"},
   ];
 
   let value = $state("");
@@ -154,18 +155,19 @@
             </div>
           {/if}
           {#if comp.type === "textarea"}
-            <Label>Bio</Label>
-            <Textarea
-              placeholder="Tell us a little bit about yourself"
-              class="resize-none"
-            />
+            <Label>
+              {comp.label}
+            </Label>
+            <Textarea placeholder={comp.placeholder} class="resize-none" />
             <p class="text-xs text-muted-foreground">
-              You can <span>@mention</span> other users and organizations.
+              {comp.description}
             </p>
           {/if}
           {#if comp.type === "select"}
             <div>
-              <Label>Framework</Label>
+              <Label>
+                {comp.label}
+              </Label>
               <Select.Root type="single" bind:value>
                 <Select.Trigger>
                   {triggerContent}
@@ -177,7 +179,7 @@
                 </Select.Content>
               </Select.Root>
               <p class="text-xs text-muted-foreground">
-                You can manage email addresses in your email settings.
+                {comp.description}
               </p>
             </div>
           {/if}
@@ -187,11 +189,11 @@
             >
               <Checkbox />
               <div class="space-y-1 leading-none">
-                <Label>Use different settings for my mobile devices</Label>
+                <Label>
+                  {comp.label}
+                </Label>
                 <p class="text-sm text-muted-foreground">
-                  You can manage your mobile notifications in the <a
-                    href="/examples/forms">mobile settings</a
-                  > page.
+                  {comp.description}
                 </p>
               </div>
               <!-- add input for copy code -->
@@ -268,11 +270,13 @@
           {/if}
           {#if comp.category === "phone"}
             <div>
-              <Label>Phone Number</Label>
+              <Label>
+                {comp.label}
+              </Label>
               <PhoneInput
                 country="IN"
                 name="phone"
-                placeholder="Enter a phone number"
+                placeholder={comp.placeholder}
               />
               <p class="text-xs text-muted-foreground">
                 {comp.description}
@@ -301,7 +305,7 @@
           {#if comp.type === "tags-input"}
             <div>
               <Label for={comp.named_id}>{comp.label}</Label>
-              <TagsInput placeholder={comp.description} />
+              <TagsInput placeholder={comp.placeholder} />
               <p class="text-xs text-muted-foreground">
                 {comp.description}
               </p>
