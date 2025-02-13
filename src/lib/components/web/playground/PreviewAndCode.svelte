@@ -10,7 +10,7 @@
     <Tabs.List class="w-fit mx-auto">
       <Tabs.Trigger value="preview">Preview</Tabs.Trigger>
       <Tabs.Trigger value="code">Code</Tabs.Trigger>
-      <Tabs.Trigger value="zodschema">ZOD Schema</Tabs.Trigger>
+      <Tabs.Trigger value="zodschema">Schema</Tabs.Trigger>
     </Tabs.List>
     <Tabs.Content value="preview" class="w-full h-full">
       <PreviewComponents />
