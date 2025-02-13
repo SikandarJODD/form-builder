@@ -6,12 +6,20 @@
   import { watch } from "runed";
 
   let codeContent = $derived(form_generator.zodSchema); // input code
+  let valibotContent = $derived(form_generator.valibotSchema); // input code
   let htmlCode = $state(""); // highlighted html code
   let getCode = async () => {
-    htmlCode = await codeToHtml(form_generator.zodSchema, {
-      lang: "typescript",
-      theme: "vesper",
-    });
+    if (value === "zod") {
+      htmlCode = await codeToHtml(form_generator.zodSchema, {
+        lang: "typescript",
+        theme: "vesper",
+      });
+    } else if (value === "valibot") {
+      htmlCode = await codeToHtml(form_generator.valibotSchema, {
+        lang: "typescript",
+        theme: "vesper",
+      });
+    }
   };
 
   onMount(async () => await getCode());
@@ -21,19 +29,67 @@
       getCode();
     }
   );
+  watch(
+    () => value,
+    () => {
+      getCode();
+    }
+  );
 
   let copied = $state(false);
 
   function handleCopy() {
     copied = true;
-    navigator.clipboard.writeText(codeContent);
+    if (value === "zod") {
+      navigator.clipboard.writeText(codeContent);
+    } else {
+      navigator.clipboard.writeText(valibotContent);
+    }
     setTimeout(() => (copied = false), 1500);
   }
+
+  import * as Select from "$lib/components/ui/select/index";
+
+  let all_schema = [
+    { value: "zod", label: "ZOD" },
+    {
+      value: "valibot",
+      label: "Valibot",
+    },
+  ];
+
+  let value = $state("zod");
+
+  let triggerContent = $derived(
+    all_schema.find((f) => f.value === value)?.label ?? "Schema"
+  );
+  let updateAdapter = () => {
+    form_generator.adapter = value;
+  };
 </script>
 
 <div class="relative border w-full p-4 rounded-lg">
   <span>{@html htmlCode}</span>
-  <div class="absolute top-2 right-2">
+  <div class="absolute top-2 right-2 flex items-center space-x-2">
+    <div>
+      <Select.Root
+        type="single"
+        name="favoriteFruit"
+        bind:value
+        onValueChange={updateAdapter}
+      >
+        <Select.Trigger class="w-[100px]">
+          {triggerContent}
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Group>
+            {#each all_schema as schema}
+              <Select.Item value={schema.value} label={schema.label} />
+            {/each}
+          </Select.Group>
+        </Select.Content>
+      </Select.Root>
+    </div>
     <Button variant="outline" size="icon" onclick={handleCopy}>
       <div
         class={[

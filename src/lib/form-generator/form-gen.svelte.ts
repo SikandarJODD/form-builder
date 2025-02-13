@@ -157,6 +157,7 @@ let non_empty_types = ["date-picker", 'email'];
 class FormGenerator {
   inputs: InputType[] = dummyInput;
   selected_inputs: InputType[] = $state([]);
+  adapter: string = $state("zod");
 
   unique_imports = $derived.by(() => {
     let all_imports = this.selected_inputs.map((input) => input.category);
@@ -263,6 +264,80 @@ class FormGenerator {
     return schemaString;
   }
 
+  generateValibotSchemaString(inputs: InputType[]): string {
+    let schemaString = `import * as v from 'valibot';\n`;
+    schemaString += `export const schema = v.object({\n`;
+
+    inputs.forEach((input) => {
+      let fieldSchema = `v.pipe(\n`;
+
+      if (input.type === 'text' || input.type === 'textarea' || input.type === 'password' || input.type === 'select') {
+        if (!input.required) {
+          fieldSchema += `  v.optional(`;
+        }
+        fieldSchema += `    v.string()`;
+        if (!input.required) {
+          fieldSchema += `)`;
+        }
+        if (input.type === 'password' && input.required && input.min === 0) {
+          fieldSchema += `,\n    v.nonEmpty('Please enter your password.')`
+        }
+        else if (input.required && input.min === 0) {
+          fieldSchema += `,\n    v.nonEmpty('Please enter your ${input.label?.toLowerCase() || "name"}.')`;
+        }
+
+      }
+      else if (input.type === 'email') {
+        fieldSchema += `    v.string(), v.email('Please enter a valid email address.')`;
+      }
+      else if (input.type === 'number') {
+        fieldSchema += `    v.number()`;
+
+      }
+      else if (input.type === 'boolean') {
+        fieldSchema += `    v.boolean('false')`;
+      }
+      else if (input.type === 'input-otp') {
+        fieldSchema += `    v.string(),\n    v.minLength(6, 'The string must be 6 or more characters long.')`;
+      }
+      else if (input.type === 'date-picker') {
+        fieldSchema += `    v.date('A date of birth is required.')`;
+      }
+      else if (input.type === 'tags-input') {
+        fieldSchema += `    v.array(v.string(), 'Please enter your tags.')`;
+      }
+
+
+      // Add `min` and `max` constraints if available for number, password, and text fields
+      if (min_max_types.includes(input.type) && input.required) {
+        if (input.min !== undefined && input.min > 0) {
+          fieldSchema += `,\n    v.minLength(${input.min}, 'The string must be ${input.min} or more characters long.')`;
+        }
+        if (
+          input.max !== undefined &&
+          input.min !== undefined &&
+          input.max > 0 &&
+          input.max > input.min &&
+          input.required
+        ) {
+          fieldSchema += `,\n    v.maxLength(${input.max}, 'The string must not exceed ${input.max} characters.')`;
+        }
+      }
+      fieldSchema += `\n  )`;
+
+      schemaString += `  ${input.named_id?.toLowerCase() || "name"
+        }: ${fieldSchema},\n`;
+    });
+
+    schemaString += `})`;
+
+    return schemaString;
+  }
+
+  valibotSchema = $derived.by(() => {
+    let sh = this.generateValibotSchemaString(this.selected_inputs);
+    return sh;
+  });
   // Generate schema string
   zodSchema = $derived.by(() => {
     let sh = this.generateZodSchemaString(this.selected_inputs);
@@ -415,7 +490,8 @@ export const actions: Actions = {
     });
       `;
     }
-    clientrawCode += `
+    if (this.adapter === 'zod') {
+      clientrawCode += `
     import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 
@@ -424,11 +500,29 @@ export const actions: Actions = {
 	}: {
 		data: PageData;
 	} = $props();`;
-
-    if (this.unique_imports.includes("tags-input") && this.tags_input_named_id) {
+    }
+    else if (this.adapter === 'valibot') {
       clientrawCode += `
-  let { form, message, errors, enhance } = superForm(data.form, {
-    validators: zod(schema),
+    import { valibot } from 'sveltekit-superforms/adapters';
+	import { schema } from './schema';
+
+	let {
+		data
+	}: {
+		data: PageData;
+	} = $props();`;
+    }
+    if (this.unique_imports.includes("tags-input") && this.tags_input_named_id) {
+      clientrawCode += `let { form, message, errors, enhance } = superForm(data.form, {`;
+      if (this.adapter === 'zod') {
+        clientrawCode += `
+    validators: zod(schema),`;
+      }
+      else if (this.adapter === 'valibot') {
+        clientrawCode += `
+    validators: valibot(schema),`;
+      }
+      clientrawCode += `
     onUpdated(event) {
       if (event.form.valid) {
         tagsvalue = [];
@@ -440,10 +534,18 @@ export const actions: Actions = {
     $form.${this.tags_input_named_id.named_id} = tagsvalue;
   });`;
     } else {
-      clientrawCode += `
-      let { form, message, errors, enhance } = superForm(data.form, {
-		    validators: zod(schema)
-	    });`;
+      if (this.adapter === 'zod') {
+        clientrawCode += `
+    let { form, message, errors, enhance } = superForm(data.form, {
+		validators: zod(schema)
+	});\n`;
+      }
+      else if (this.adapter === 'valibot') {
+        clientrawCode += `
+    let { form, message, errors, enhance } = superForm(data.form, {
+      validators: valibot(schema)
+    });\n`;
+      }
     }
     clientrawCode += `</script>
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
@@ -466,6 +568,9 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
         <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
+      <p class="text-xs text-muted-foreground">
+        ${input.description}
+      </p>
     </div>
     `;
 
@@ -484,6 +589,9 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
         <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
+      <p class="text-xs text-muted-foreground">
+        ${input.description}
+      </p>
     </div>
         `
       }
@@ -494,7 +602,7 @@ export const actions: Actions = {
             <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>
               ${input.label}
             </Label>
-            <p class="text-sm text-muted-foreground">
+            <p class="text-xs text-muted-foreground">
               ${input.description}
             </p>
         </div>
@@ -509,14 +617,14 @@ export const actions: Actions = {
       <Checkbox id="${input.named_id}" name="${input.named_id}" bind:checked={$form.${input.named_id}} />
       <div class="space-y-1 leading-none">
         <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
-        <p class="text-sm text-muted-foreground">
+        <p class="text-xs text-muted-foreground">
           ${input.description}
         </p>
       </div>
             <!-- add input for copy code -->
       <input name="${input.named_id}" id="${input.named_id}" value={$form.${input.named_id}} type="hidden" />
       {#if $errors.${input.named_id}}
-        <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
+        <p class="text-xs text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>
         `;
@@ -535,7 +643,7 @@ export const actions: Actions = {
         ${input.description}
       </p>
       {#if $errors.${input.named_id}}
-        <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
+        <p class="text-xs text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>
         `;

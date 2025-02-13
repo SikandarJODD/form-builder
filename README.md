@@ -1,6 +1,6 @@
 # Svelte Form Builder
 
-A dynamic form-building tool that allows users to create, customize, and validate forms seamlessly within web applications. Built with Sveltekit, [ZOD](https://zod.dev), [Superform-Sveltekit](https://superforms.rocks), Form Builder provides an intuitive interface for developers and users alike.
+A dynamic form-building tool that allows users to create, customize, and validate forms seamlessly within web applications. Built with Sveltekit, [ZOD](https://zod.dev), [Valibot](https://valibot.dev) [Superform-Sveltekit](https://superforms.rocks), Form Builder provides an intuitive interface for developers and users alike.
 
 ## Features
 
@@ -9,6 +9,14 @@ A dynamic form-building tool that allows users to create, customize, and validat
 - Client & Server side validaitons.
 - Real-Time Validation: Validate user inputs using the Zod library, ensuring data integrity and user-friendly feedback.
 - Customizable Components: Leverage ShadCN-Svelte components for a consistent and modern UI experience.
+
+## New Features
+
+| Form               | Desc                                                                              |
+| ------------------ | --------------------------------------------------------------------------------- |
+| Valibot Validation | Real-time validation using [Valibor](https://valibot.dev) library.                |
+| Templates          | Includes login, register, forgot-password, reset-password, contact form templates |
+| Password Input     | Password input with show/hide password feature                                    |
 
 ### Live Demo
 
@@ -22,20 +30,9 @@ Check out the live demo of the Form Builder [here](https://svelte-form-builder.v
 
 Yeep Done! 🚀
 
-## New Features
-
-| Form           | Desc                                                                                      |
-| -------------- | ----------------------------------------------------------------------------------------- |
-| Templates      | Includes login, register, forgot-password, reset-password, contact form templates         |
-| Password Input | Password input with show/hide password feature                                            |
-| Combobox       | Combobox input with search feature                                                        |
-| Datepicker     | Datepicker input with date                                                                |
-| Tags Input     | Tags inut from [shadcn-extra](https://www.shadcn-svelte-extras.com/components/tags-input) |
-| Phone Input    | [shadcn-extra](https://www.shadcn-svelte-extras.com/components/phone-input)                |
-
 ### Components
-1. Password Input : [Visit](https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte)
 
+1. Password Input : [Visit](https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte)
 
 ### [Future Development](./features.md)
 
