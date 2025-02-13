@@ -17,7 +17,7 @@
 
 <nav class="bg-background border-b sticky top-0 z-50">
   <div class="mx-auto max-w-5xl px-4 sm:px-0">
-    <div class="flex h-16 items-center justify-between">
+    <div class="flex h-14 items-center justify-between">
       <div class="flex items-center w-full">
         <a href="/" aria-label="home" class="shrink-0">
           <svg

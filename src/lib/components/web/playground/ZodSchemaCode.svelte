@@ -8,6 +8,8 @@
   let codeContent = $derived(form_generator.zodSchema); // input code
   let valibotContent = $derived(form_generator.valibotSchema); // input code
   let htmlCode = $state(""); // highlighted html code
+
+  let value = $derived(form_generator.adapter);
   let getCode = async () => {
     if (value === "zod") {
       htmlCode = await codeToHtml(form_generator.zodSchema, {
@@ -30,7 +32,7 @@
     }
   );
   watch(
-    () => value,
+    () => form_generator.adapter,
     () => {
       getCode();
     }
@@ -48,50 +50,12 @@
     setTimeout(() => (copied = false), 1500);
   }
 
-  import * as Select from "$lib/components/ui/select/index";
   import Label from "$lib/components/ui/label/label.svelte";
-
-  let all_schema = [
-    { value: "zod", label: "ZOD" },
-    {
-      value: "valibot",
-      label: "Valibot",
-    },
-  ];
-
-  let value = $state("zod");
-
-  let triggerContent = $derived(
-    all_schema.find((f) => f.value === value)?.label ?? "Schema"
-  );
-  let updateAdapter = () => {
-    form_generator.adapter = value;
-  };
 </script>
 
 <div class="relative border w-full p-4 rounded-lg">
   <span>{@html htmlCode}</span>
   <div class="absolute top-2 right-2 flex items-center space-x-2">
-    <div class="relative flex items-center space-x-2">
-      <Label for="schema">Schema</Label>
-      <Select.Root
-        name="schema"
-        type="single"
-        bind:value
-        onValueChange={updateAdapter}
-      >
-        <Select.Trigger class="w-[120px]">
-          {triggerContent}
-        </Select.Trigger>
-        <Select.Content>
-          <Select.Group>
-            {#each all_schema as schema}
-              <Select.Item value={schema.value} label={schema.label} />
-            {/each}
-          </Select.Group>
-        </Select.Content>
-      </Select.Root>
-    </div>
     <Button variant="outline" size="icon" onclick={handleCopy}>
       <div
         class={[

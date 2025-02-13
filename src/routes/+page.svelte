@@ -5,7 +5,7 @@
 
 <div class="flex min-h-full flex-col">
   <div class="mx-auto w-full grow lg:flex xl:px-2">
-    <div class="flex-1 lg:flex">
+    <div class="flex-1 md:flex">
       <SidebarSide />
       <PreviewSide />
     </div>
