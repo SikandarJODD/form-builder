@@ -1,72 +1,101 @@
-<script lang="ts">
-	import { superForm } from 'sveltekit-superforms';
-    // add your own path
-	import type { PageData } from './$types';
-	import Label from '$lib/components/ui/label/label.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
-    import Input from '$lib/components/ui/input/input.svelte';
-    import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
-    import { valibot } from 'sveltekit-superforms/adapters';
-	import { schema } from './schema';
 
-	let {
-		data
-	}: {
-		data: PageData;
-	} = $props();
-    let { form, message, errors, enhance } = superForm(data.form, {
-      validators: valibot(schema)
-    });
-</script>
+<script lang="ts">
+  import { superForm } from "sveltekit-superforms";
+  import { zodClient } from "sveltekit-superforms/adapters";
+  import type { PageData } from "./$types";
+  import { schema } from "./schema";
+  // FormSnap
+  import { Field, Control, Label, Description, FieldErrors } from "formsnap";
+  // Components
+  import Button from "$lib/components/ui/button/button.svelte";
+  import { Input } from "$lib/components/ui/input";
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+
+  let {
+    data,
+  }: {
+    data: PageData;
+  } = $props();
+  let form = superForm(data.form, {
+    validators: zodClient(schema),
+  });
+  let { form: formData, enhance, message } = form;
+  </script>
+
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
-	{#if $message}
-		<p class="text-emerald-400">{$message}</p>
-	{/if}
+  {#if $message}
+    <span class="text-emerald-400">
+      {$message}
+    </span>
+  {/if}
   <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
     <div>
-      <Label for="email" class={$errors.email && "text-destructive"}>Email</Label>
-      <Input type="email" id="email" name="email" placeholder="Enter your email" bind:value={$form.email} />
-      {#if $errors.email}
-        <p class="text-sm text-destructive">{$errors.email}</p>
-      {/if}
-      <p class="text-xs text-muted-foreground">
-        Enter your email address
-      </p>
+      <Field {form} name="username">
+        <Control>
+          {#snippet children({ props })}
+            <Label>Username</Label>
+            <Input
+              {...props}
+              type="text"
+              placeholder="Enter your username"
+              bind:value={$formData.username}
+            />
+          {/snippet}
+        </Control>
+        <FieldErrors class='text-sm text-destructive' />
+      </Field>
     </div>
-
     <div>
-    <!-- Add Password Input Component from : https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte -->
-      <PasswordInput
-        error={$errors.password}
-        id="password"
-        bind:value={$form.password}
-        name="password"
-        placeholder="password"
-        desc="Enter your password"
-      />
-      {#if $errors.password}
-        <p class="text-sm text-destructive">{$errors.password}</p>
-      {/if}
+      <Field {form} name="bio">
+        <Control>
+          {#snippet children({ props })}
+            <Label>Bio</Label>
+            <Textarea
+              {...props}
+              name="bio"
+              id="bio"
+              placeholder="Enter your bio"
+              bind:value={$formData.bio}
+            />
+          {/snippet}
+        </Control>
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
     </div>
-
     <div>
-      <Label for="bio" class={$errors.bio && "text-destructive"}>Bio</Label>
-      <Textarea
-        placeholder="Tell us a little bit about yourself"
-        class="resize-none"
-        id="bio"
-        name="bio"
-        bind:value={$form.bio}
-      />
-      <p class="text-xs text-muted-foreground">
-        Tell us about yourself
-      </p>
-      {#if $errors.bio}
-        <p class="text-xs text-destructive">{$errors.bio}</p>
-      {/if}
+      <Field {form} name="name">
+        <Control>
+          {#snippet children({ props })}
+            <Label>Username</Label>
+            <Input
+              {...props}
+              type="text"
+              placeholder="Enter your username"
+              bind:value={$formData.name}
+            />
+          {/snippet}
+        </Control>
+        <FieldErrors class='text-sm text-destructive' />
+      </Field>
     </div>
-
-    <Button type="submit" size="sm">Submit</Button>
+    <div>
+      <Field {form} name="age">
+        <Control>
+          {#snippet children({ props })}
+            <Label>Age</Label>
+            <Input
+              {...props}
+              type="number"
+              placeholder="Enter your age"
+              bind:value={$formData.age}
+            />
+          {/snippet}
+        </Control>
+        <FieldErrors class='text-sm text-destructive' />
+      </Field>
+    </div>
+    <div>
+      <Button size="sm" type="submit">Submit</Button>
+    </div>
   </form>
 </div>

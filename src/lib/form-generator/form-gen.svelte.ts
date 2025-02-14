@@ -152,7 +152,7 @@ let dummyInput: InputType[] = [
 ];
 
 let min_max_types = ["number", "password", "text", "textarea", "tags-input"];
-let non_empty_types = ["date-picker", 'email'];
+let non_empty_types = ["date-picker", "email"];
 
 class FormGenerator {
   inputs: InputType[] = dummyInput;
@@ -181,7 +181,9 @@ class FormGenerator {
 
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
-    let random_id = `${item.type.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`;
+    let random_id = `${item.type.split("-").join("")}_${crypto
+      .randomUUID()
+      .slice(0, 2)}`;
     let new_input: InputType = {
       id: id,
       named_id: random_id,
@@ -250,8 +252,7 @@ class FormGenerator {
       }
       if (!input.required) {
         fieldSchema += `.optional()`;
-      }
-      else if (!non_empty_types.includes(input.type) && input.min === 0) {
+      } else if (!non_empty_types.includes(input.type) && input.min === 0) {
         fieldSchema += `.nonempty()`;
       }
 
@@ -271,7 +272,12 @@ class FormGenerator {
     inputs.forEach((input) => {
       let fieldSchema = `v.pipe(\n`;
 
-      if (input.type === 'text' || input.type === 'textarea' || input.type === 'password' || input.type === 'select') {
+      if (
+        input.type === "text" ||
+        input.type === "textarea" ||
+        input.type === "password" ||
+        input.type === "select"
+      ) {
         if (!input.required) {
           fieldSchema += `  v.optional(`;
         }
@@ -279,34 +285,25 @@ class FormGenerator {
         if (!input.required) {
           fieldSchema += `)`;
         }
-        if (input.type === 'password' && input.required && input.min === 0) {
-          fieldSchema += `,\n    v.nonEmpty('Please enter your password.')`
+        if (input.type === "password" && input.required && input.min === 0) {
+          fieldSchema += `,\n    v.nonEmpty('Please enter your password.')`;
+        } else if (input.required && input.min === 0) {
+          fieldSchema += `,\n    v.nonEmpty('Please enter your ${input.label?.toLowerCase() || "name"
+            }.')`;
         }
-        else if (input.required && input.min === 0) {
-          fieldSchema += `,\n    v.nonEmpty('Please enter your ${input.label?.toLowerCase() || "name"}.')`;
-        }
-
-      }
-      else if (input.type === 'email') {
+      } else if (input.type === "email") {
         fieldSchema += `    v.string(), v.email('Please enter a valid email address.')`;
-      }
-      else if (input.type === 'number') {
+      } else if (input.type === "number") {
         fieldSchema += `    v.number()`;
-
-      }
-      else if (input.type === 'boolean') {
+      } else if (input.type === "boolean") {
         fieldSchema += `    v.boolean('false')`;
-      }
-      else if (input.type === 'input-otp') {
+      } else if (input.type === "input-otp") {
         fieldSchema += `    v.string(),\n    v.minLength(6, 'The string must be 6 or more characters long.')`;
-      }
-      else if (input.type === 'date-picker') {
+      } else if (input.type === "date-picker") {
         fieldSchema += `    v.date('A date of birth is required.')`;
-      }
-      else if (input.type === 'tags-input') {
+      } else if (input.type === "tags-input") {
         fieldSchema += `    v.array(v.string(), 'Please enter your tags.')`;
       }
-
 
       // Add `min` and `max` constraints if available for number, password, and text fields
       if (min_max_types.includes(input.type) && input.required) {
@@ -351,25 +348,28 @@ class FormGenerator {
 import type { PageServerLoad } from './$types';
 
 import { fail, message, superValidate } from 'sveltekit-superforms';
-import { ${this.adapter === 'zod' ? 'zod' : 'valibot'} } from 'sveltekit-superforms/adapters';
+import { ${this.adapter === "zod" ? "zod" : "valibot"
+      } } from 'sveltekit-superforms/adapters';
 
 // add your own schema path here
 import { schema } from './schema';
 
 export const load: PageServerLoad = async ({ request }) => {
-    return { form: await superValidate(${this.adapter === 'zod' ? 'zod' : 'valibot'}(schema)) }
+    return { form: await superValidate(${this.adapter === "zod" ? "zod" : "valibot"
+      }(schema)) }
 };
 
 export const actions: Actions = {
     default: async ({ request }) => {
-        let form = await superValidate(request, ${this.adapter === 'zod' ? 'zod' : 'valibot'}(schema));
+        let form = await superValidate(request, ${this.adapter === "zod" ? "zod" : "valibot"
+      }(schema));
         console.log(form,'form');
         if (!form.valid) {
             return fail(400, { form });
         }
         return message(form, 'Form Posted Successfully!');
     }
-};`
+};`;
   });
 
   clientCode = $derived.by(() => {
@@ -384,12 +384,10 @@ export const actions: Actions = {
       if (input === "text") {
         clientrawCode += `
     import Input from '$lib/components/ui/input/input.svelte';`;
-      }
-      else if (input === 'password') {
+      } else if (input === "password") {
         clientrawCode += `
-    import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`
-      }
-      else if (input === "switch") {
+    import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
+      } else if (input === "switch") {
         clientrawCode += `
     import Switch from "$lib/components/ui/switch/switch.svelte";`;
       } else if (input === "checkbox") {
@@ -424,16 +422,13 @@ export const actions: Actions = {
 
     let dvalue = $state<DateValue>();
     let placeholder = $state(today(getLocalTimeZone()));`;
-      }
-      else if (input === 'tags-input') {
+      } else if (input === "tags-input") {
         clientrawCode += `
-    import { TagsInput } from "$lib/components/ui/tags-input";`
-      }
-      else if (input === 'phone') {
+    import { TagsInput } from "$lib/components/ui/tags-input";`;
+      } else if (input === "phone") {
         clientrawCode += `
-    import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`
-      }
-      else if (input === 'combobox') {
+    import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
+      } else if (input === "combobox") {
         clientrawCode += `
     import Check from "lucide-svelte/icons/check";
     import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
@@ -484,7 +479,7 @@ export const actions: Actions = {
         triggerRef.focus();
       });
     }
-      `
+      `;
       }
     });
     if (this.date_picker_named_id) {
@@ -494,7 +489,7 @@ export const actions: Actions = {
     });
       `;
     }
-    if (this.adapter === 'zod') {
+    if (this.adapter === "zod") {
       clientrawCode += `
     import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
@@ -504,8 +499,7 @@ export const actions: Actions = {
 	}: {
 		data: PageData;
 	} = $props();`;
-    }
-    else if (this.adapter === 'valibot') {
+    } else if (this.adapter === "valibot") {
       clientrawCode += `
     import { valibot } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
@@ -516,13 +510,15 @@ export const actions: Actions = {
 		data: PageData;
 	} = $props();`;
     }
-    if (this.unique_imports.includes("tags-input") && this.tags_input_named_id) {
+    if (
+      this.unique_imports.includes("tags-input") &&
+      this.tags_input_named_id
+    ) {
       clientrawCode += `let { form, message, errors, enhance } = superForm(data.form, {`;
-      if (this.adapter === 'zod') {
+      if (this.adapter === "zod") {
         clientrawCode += `
     validators: zod(schema),`;
-      }
-      else if (this.adapter === 'valibot') {
+      } else if (this.adapter === "valibot") {
         clientrawCode += `
     validators: valibot(schema),`;
       }
@@ -538,13 +534,12 @@ export const actions: Actions = {
     $form.${this.tags_input_named_id.named_id} = tagsvalue;
   });`;
     } else {
-      if (this.adapter === 'zod') {
+      if (this.adapter === "zod") {
         clientrawCode += `
     let { form, message, errors, enhance } = superForm(data.form, {
 		validators: zod(schema)
 	});\n`;
-      }
-      else if (this.adapter === 'valibot') {
+      } else if (this.adapter === "valibot") {
         clientrawCode += `
     let { form, message, errors, enhance } = superForm(data.form, {
       validators: valibot(schema)
@@ -577,9 +572,7 @@ export const actions: Actions = {
       </p>
     </div>
     `;
-
-      }
-      else if (input.type === 'password') {
+      } else if (input.type === "password") {
         clientrawCode += `
     <div>
     <!-- Add Password Input Component from : https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte -->
@@ -595,9 +588,8 @@ export const actions: Actions = {
         <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>
-        `
-      }
-      else if (input.category === "switch") {
+        `;
+      } else if (input.category === "switch") {
         clientrawCode += `
     <div class="flex flex-row items-center justify-between rounded-lg border p-4">
         <div class="space-y-0.5">
@@ -757,8 +749,7 @@ export const actions: Actions = {
       {/if}
       <input hidden value={$form.${input.named_id}} name="${input.named_id}" />
     </div>`;
-      }
-      else if (input.category === 'tags-input') {
+      } else if (input.category === "tags-input") {
         clientrawCode += `
     <div>
       <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
@@ -773,9 +764,8 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
         <p class="text-sm text-destructive">{$errors.${input.named_id}?._errors}</p>
       {/if}
-    </div>`
-      }
-      else if (input.category === 'phone') {
+    </div>`;
+      } else if (input.category === "phone") {
         clientrawCode += `
       <div>
       <!-- Add Phone Input Component from Shadcn Extra : https://www.shadcn-svelte-extras.com/components/phone-input -->
@@ -792,9 +782,8 @@ export const actions: Actions = {
         {#if $errors.${input.named_id}}
           <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
         {/if}
-      </div>`
-      }
-      else if (input.category === 'combobox') {
+      </div>`;
+      } else if (input.category === "combobox") {
         clientrawCode += `
         <div>
           <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>
@@ -854,7 +843,7 @@ export const actions: Actions = {
            ${input.description}
           </p>
       </div>
-        `
+        `;
       }
     });
     clientrawCode += `
@@ -863,6 +852,103 @@ export const actions: Actions = {
 </div>
     `;
     return clientrawCode;
+  });
+
+  formsnapCode = $derived.by(() => {
+    let formsnapCode = `
+  <script lang="ts">
+  import { superForm } from "sveltekit-superforms";
+  import { zodClient } from "sveltekit-superforms/adapters";
+  import type { PageData } from "./$types";
+  import { schema } from "./schema";
+  // FormSnap
+  import { Field, Control, Label, Description, FieldErrors } from "formsnap";
+  // Components
+  import Button from "$lib/components/ui/button/button.svelte";`;
+    this.unique_imports.map((input) => {
+      if (input === 'text') {
+        formsnapCode += `
+  import { Input } from "$lib/components/ui/input";`;
+      }
+      else if (input === 'textarea') {
+        formsnapCode += `
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";`
+      }
+    })
+
+    formsnapCode += `\n
+  let {
+    data,
+  }: {
+    data: PageData;
+  } = $props();
+  let form = superForm(data.form, {
+    validators: zodClient(schema),
+  });
+  let { form: formData, enhance, message } = form;
+  </script> \n\n`;
+    formsnapCode += `<div class="flex min-h-[60vh] flex-col items-center justify-center">
+  {#if $message}
+    <span class="text-emerald-400">
+      {$message}
+    </span>
+  {/if}
+  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+    this.selected_inputs.map((input) => {
+      if (
+        input.type === "text" ||
+        input.type === "number" ||
+        input.type === "email" ||
+        input.type === "tel" ||
+        input.type === "url" ||
+        input.type === "password"
+      ) {
+        formsnapCode += `
+    <div>
+      <Field {form} name="${input.named_id}">
+        <Control>
+          {#snippet children({ props })}
+            <Label>${input.label}</Label>
+            <Input
+              {...props}
+              type="${input.type}"
+              placeholder="${input.placeholder}"
+              bind:value={$formData.${input.named_id}}
+            />
+          {/snippet}
+        </Control>
+        <FieldErrors class='text-sm text-destructive' />
+      </Field>
+    </div>`;
+      }
+      else if (input.type === "textarea") {
+        formsnapCode += `
+    <div>
+      <Field {form} name="${input.named_id}">
+        <Control>
+          {#snippet children({ props })}
+            <Label>${input.label}</Label>
+            <Textarea
+              {...props}
+              name="${input.named_id}"
+              id="${input.named_id}"
+              placeholder="${input.placeholder}"
+              bind:value={$formData.${input.named_id}}
+            />
+          {/snippet}
+        </Control>
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>`;
+      }
+    });
+    formsnapCode += `
+    <div>
+      <Button size="sm" type="submit">Submit</Button>
+    </div>
+  </form>
+</div>`;
+    return formsnapCode;
   });
 }
 
