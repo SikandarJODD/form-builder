@@ -9,7 +9,8 @@
   // Components
   import Button from "$lib/components/ui/button/button.svelte";
   import { Input } from "$lib/components/ui/input";
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import * as Select from "$lib/components/ui/select/index";
 
   let {
     data,
@@ -30,70 +31,78 @@
   {/if}
   <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
     <div>
-      <Field {form} name="username">
+      <Field {form} name="text_cc">
         <Control>
           {#snippet children({ props })}
-            <Label>Username</Label>
+            <Label class='font-medium'>Username</Label>
             <Input
               {...props}
               type="text"
               placeholder="Enter your username"
-              bind:value={$formData.username}
+              bind:value={$formData.text_cc}
             />
+            <Description class="text-muted-foreground text-xs">
+              This is your public display name
+            </Description>
           {/snippet}
         </Control>
         <FieldErrors class='text-sm text-destructive' />
       </Field>
     </div>
-    <div>
-      <Field {form} name="bio">
-        <Control>
-          {#snippet children({ props })}
-            <Label>Bio</Label>
-            <Textarea
-              {...props}
-              name="bio"
-              id="bio"
-              placeholder="Enter your bio"
-              bind:value={$formData.bio}
-            />
-          {/snippet}
-        </Control>
-        <FieldErrors class="text-sm text-destructive" />
-      </Field>
-    </div>
-    <div>
-      <Field {form} name="name">
-        <Control>
-          {#snippet children({ props })}
-            <Label>Username</Label>
-            <Input
-              {...props}
-              type="text"
-              placeholder="Enter your username"
-              bind:value={$formData.name}
-            />
-          {/snippet}
-        </Control>
-        <FieldErrors class='text-sm text-destructive' />
-      </Field>
-    </div>
-    <div>
-      <Field {form} name="age">
-        <Control>
-          {#snippet children({ props })}
-            <Label>Age</Label>
-            <Input
-              {...props}
-              type="number"
-              placeholder="Enter your age"
-              bind:value={$formData.age}
-            />
-          {/snippet}
-        </Control>
-        <FieldErrors class='text-sm text-destructive' />
-      </Field>
-    </div>
+      <fieldset>
+        <!-- <legend class="mb-4 text-lg font-medium"> Email Notifications </legend> -->
+      <div class="space-y-4 flex flex-row items-center justify-between rounded-lg border p-4">
+        <Field
+          {form}
+          name="boolean_de"
+          >
+          <Control>
+            {#snippet children({ props })}
+              <div class="space-y-0.5">
+                <Label class='font-medium'> Marketing Email </Label>
+                <Description class='text-muted-foreground text-sm'>
+                  Receive emails about new products, features, and more.
+                </Description>
+              </div>
+              <Switch {...props} bind:checked={$formData.boolean_de} />
+            {/snippet}
+          </Control>
+        </Field>
+      </div>
+    </fieldset>
+      <div>
+        <Field {form} name="select_5c">
+          <Control>
+            {#snippet children({ props })}
+              <Label class='font-medium'>
+                Framework
+              </Label>
+              <Select.Root
+                type="single"
+                bind:value={$formData.select_5c}
+                name={props.name}
+              >
+                <Select.Trigger {...props}>
+                  {$formData.select_5c
+                    ? $formData.select_5c
+                    : "Select a framework"}
+                </Select.Trigger>
+                <Select.Content>
+                  <!-- Change Items based on your need -->
+                  <Select.Item value="svelte" label="Svelte" />
+                  <Select.Item value="vue" label="Vue" />
+                  <Select.Item value="react" label="React" />
+                  <Select.Item value="angular" disabled label="Angular" />
+                </Select.Content>
+              </Select.Root>
+            {/snippet}
+          </Control>
+          <Description class="text-muted-foreground text-sm">
+            Select your favorite framework
+          </Description>
+          <FieldErrors class='text-sm text-destructive' />
+        </Field>
+      </div>
     <div>
       <Button size="sm" type="submit">Submit</Button>
     </div>

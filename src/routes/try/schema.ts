@@ -1,7 +1,6 @@
 import { z } from 'zod';
 export let schema = z.object({
-  username: z.string().nonempty(),
-  bio: z.string().nonempty(),
-  name: z.string().nonempty(),
-  age: z.number().int().min(5),
+  text_cc: z.string().nonempty(),
+  boolean_de: z.boolean().default(false),
+  select_5c: z.string().nonempty(),
 })

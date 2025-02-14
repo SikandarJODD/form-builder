@@ -252,7 +252,7 @@ class FormGenerator {
       }
       if (!input.required) {
         fieldSchema += `.optional()`;
-      } else if (!non_empty_types.includes(input.type) && input.min === 0) {
+      } else if (!non_empty_types.includes(input.type) && input.min === 0 && input.type !== "boolean") {
         fieldSchema += `.nonempty()`;
       }
 
@@ -874,6 +874,18 @@ export const actions: Actions = {
         formsnapCode += `
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";`
       }
+      else if (input === 'switch') {
+        formsnapCode += `
+  import Switch from "$lib/components/ui/switch/switch.svelte";`
+      }
+      else if (input === 'checkbox') {
+        formsnapCode += `
+  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";`
+      }
+      else if (input === "select") {
+        formsnapCode += `
+  import * as Select from "$lib/components/ui/select/index";`;
+      }
     })
 
     formsnapCode += `\n
@@ -908,13 +920,16 @@ export const actions: Actions = {
       <Field {form} name="${input.named_id}">
         <Control>
           {#snippet children({ props })}
-            <Label>${input.label}</Label>
+            <Label class='font-medium'>${input.label}</Label>
             <Input
               {...props}
               type="${input.type}"
               placeholder="${input.placeholder}"
               bind:value={$formData.${input.named_id}}
             />
+            <Description class="text-muted-foreground text-xs">
+              ${input.description}
+            </Description>
           {/snippet}
         </Control>
         <FieldErrors class='text-sm text-destructive' />
@@ -927,7 +942,7 @@ export const actions: Actions = {
       <Field {form} name="${input.named_id}">
         <Control>
           {#snippet children({ props })}
-            <Label>${input.label}</Label>
+            <Label class='font-medium'>${input.label}</Label>
             <Textarea
               {...props}
               name="${input.named_id}"
@@ -935,11 +950,97 @@ export const actions: Actions = {
               placeholder="${input.placeholder}"
               bind:value={$formData.${input.named_id}}
             />
+            <Description class="text-muted-foreground text-xs">
+              ${input.description}
+            </Description>
           {/snippet}
         </Control>
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
+      }
+      else if (input.type === 'boolean' && input.category === 'switch') {
+        formsnapCode += `
+      <fieldset>
+        <!-- <legend class="mb-4 text-lg font-medium"> Email Notifications </legend> -->
+      <div class="space-y-4 flex flex-row items-center justify-between rounded-lg border p-4">
+        <Field
+          {form}
+          name="${input.named_id}"
+          >
+          <Control>
+            {#snippet children({ props })}
+              <div class="space-y-0.5">
+                <Label class='font-medium'> ${input.label} </Label>
+                <Description class='text-muted-foreground text-sm'>
+                  ${input.description}
+                </Description>
+              </div>
+              <Switch {...props} bind:checked={$formData.${input.named_id}} />
+            {/snippet}
+          </Control>
+        </Field>
+      </div>
+    </fieldset>`
+      }
+      else if (input.type === 'boolean' && input.category === 'checkbox') {
+        formsnapCode += `
+      <div
+        class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+      >
+      <Field {form} name="${input.named_id}">
+        <Control>
+          {#snippet children({ props })}
+            <Checkbox {...props} bind:checked={$formData.${input.named_id}} />
+            <div class="space-y-1 leading-none">
+              <Label class="font-medium">
+                ${input.label}
+              </Label>
+              <Description class="text-muted-foreground text-sm">
+                ${input.description}
+              </Description>
+            </div>
+            <input name={props.name} value={$formData.${input.named_id}} hidden />
+          {/snippet}
+        </Control>
+      </Field>
+    </div>`
+      }
+      else if (input.type === 'select') {
+        formsnapCode += `
+      <div>
+        <Field {form} name="${input.named_id}">
+          <Control>
+            {#snippet children({ props })}
+              <Label class='font-medium'>
+                ${input.label}
+              </Label>
+              <Select.Root
+                type="single"
+                bind:value={$formData.${input.named_id}}
+                name={props.name}
+              >
+                <Select.Trigger {...props}>
+                  {$formData.${input.named_id}
+                    ? $formData.${input.named_id}
+                    : "Select a framework"}
+                </Select.Trigger>
+                <Select.Content>
+                  <!-- Change Items based on your need -->
+                  <Select.Item value="svelte" label="Svelte" />
+                  <Select.Item value="vue" label="Vue" />
+                  <Select.Item value="react" label="React" />
+                  <Select.Item value="angular" disabled label="Angular" />
+                </Select.Content>
+              </Select.Root>
+            {/snippet}
+          </Control>
+          <Description class="text-muted-foreground text-sm">
+            ${input.description}
+          </Description>
+          <FieldErrors class='text-sm text-destructive' />
+        </Field>
+      </div>`
       }
     });
     formsnapCode += `
