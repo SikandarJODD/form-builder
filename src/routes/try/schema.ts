@@ -1,6 +1,6 @@
 import { z } from 'zod';
 export let schema = z.object({
-  text_cc: z.string().nonempty(),
-  boolean_de: z.boolean().default(false),
-  select_5c: z.string().nonempty(),
+    boolean_bd: z.boolean().default(false),
+    boolean_a9: z.boolean().default(false),
+    tagsinput_71: z.string().array().min(1, { message: 'Please enter at least one tag' }),
 })

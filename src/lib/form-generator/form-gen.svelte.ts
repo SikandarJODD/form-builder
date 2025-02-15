@@ -250,10 +250,18 @@ class FormGenerator {
           fieldSchema += `.max(${input.max})`;
         }
       }
-      if (!input.required) {
+      if (!input.required && input.type !== 'tags-input' && input.type !== 'boolean') {
         fieldSchema += `.optional()`;
-      } else if (!non_empty_types.includes(input.type) && input.min === 0 && input.type !== "boolean") {
-        fieldSchema += `.nonempty()`;
+      } else if (
+        !non_empty_types.includes(input.type) &&
+        input.min === 0 &&
+        input.type !== "boolean" && input.type !== "input-otp"
+      ) {
+        if (input.type === 'tags-input') {
+          fieldSchema += `.min(1, { message: 'Please enter at least one tag' })`;
+        } else {
+          fieldSchema += `.nonempty()`;
+        }
       }
 
       schemaString += `  ${input.named_id?.toLowerCase() || "name"
@@ -866,27 +874,52 @@ export const actions: Actions = {
   // Components
   import Button from "$lib/components/ui/button/button.svelte";`;
     this.unique_imports.map((input) => {
-      if (input === 'text') {
+      if (input === "text") {
         formsnapCode += `
   import { Input } from "$lib/components/ui/input";`;
-      }
-      else if (input === 'textarea') {
+      } else if (input === "textarea") {
         formsnapCode += `
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";`
-      }
-      else if (input === 'switch') {
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
+      } else if (input === "switch") {
         formsnapCode += `
-  import Switch from "$lib/components/ui/switch/switch.svelte";`
-      }
-      else if (input === 'checkbox') {
+  import Switch from "$lib/components/ui/switch/switch.svelte";`;
+      } else if (input === "checkbox") {
         formsnapCode += `
-  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";`
-      }
-      else if (input === "select") {
+  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";`;
+      } else if (input === "select") {
         formsnapCode += `
   import * as Select from "$lib/components/ui/select/index";`;
       }
-    })
+      else if (input === 'input-otp') {
+        formsnapCode += `
+  import * as InputOTP from "$lib/components/ui/input-otp/index";`
+      }
+      else if (input === 'date-picker') {
+        formsnapCode += `
+  import CalendarIcon from "lucide-svelte/icons/calendar";
+  import {
+    CalendarDate,
+    DateFormatter,
+    type DateValue,
+    getLocalTimeZone,
+    parseDate,
+    today,
+  } from "@internationalized/date";
+  import { Calendar } from "$lib/components/ui/calendar/index";
+  import * as Popover from "$lib/components/ui/popover/index";
+
+  const df = new DateFormatter("en-US", {
+    dateStyle: "long",
+  });
+
+  let value = $state<DateValue | undefined>();
+  let placeholder = $state(today(getLocalTimeZone()));`
+      }
+      else if (input === 'tags-input') {
+        formsnapCode += `
+  import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";`;
+      }
+    });
 
     formsnapCode += `\n
   let {
@@ -895,10 +928,34 @@ export const actions: Actions = {
     data: PageData;
   } = $props();
   let form = superForm(data.form, {
-    validators: zodClient(schema),
+    validators: zodClient(schema),`
+    if (this.tags_input_named_id) {
+      formsnapCode += `
+    onUpdated(event) {
+      if (event.form.valid) {
+        tagsvalue = [];
+      }
+    },`;
+    }
+    formsnapCode += `
   });
-  let { form: formData, enhance, message } = form;
-  </script> \n\n`;
+  let { form: formData, enhance, message } = form;`;
+    if (this.tags_input_named_id) {
+      formsnapCode += `
+  let tagsvalue = $state([]);
+  $effect(() => {
+    $formData.${this.tags_input_named_id.named_id} = tagsvalue;
+  });`
+    }
+    if (this.date_picker_named_id) {
+      formsnapCode += `
+  $effect(() => {
+    value = $formData.${this.date_picker_named_id.named_id} ? parseDate($formData.${this.date_picker_named_id.named_id}) : undefined;
+  });
+      `
+    }
+    formsnapCode += `
+  </script> \n\n`; // close script tag
     formsnapCode += `<div class="flex min-h-[60vh] flex-col items-center justify-center">
   {#if $message}
     <span class="text-emerald-400">
@@ -935,8 +992,7 @@ export const actions: Actions = {
         <FieldErrors class='text-sm text-destructive' />
       </Field>
     </div>`;
-      }
-      else if (input.type === "textarea") {
+      } else if (input.type === "textarea") {
         formsnapCode += `
     <div>
       <Field {form} name="${input.named_id}">
@@ -958,8 +1014,7 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      }
-      else if (input.type === 'boolean' && input.category === 'switch') {
+      } else if (input.type === "boolean" && input.category === "switch") {
         formsnapCode += `
       <fieldset>
         <!-- <legend class="mb-4 text-lg font-medium"> Email Notifications </legend> -->
@@ -981,9 +1036,8 @@ export const actions: Actions = {
           </Control>
         </Field>
       </div>
-    </fieldset>`
-      }
-      else if (input.type === 'boolean' && input.category === 'checkbox') {
+    </fieldset>`;
+      } else if (input.type === "boolean" && input.category === "checkbox") {
         formsnapCode += `
       <div
         class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
@@ -1004,9 +1058,9 @@ export const actions: Actions = {
           {/snippet}
         </Control>
       </Field>
-    </div>`
+    </div>`;
       }
-      else if (input.type === 'select') {
+      else if (input.type === "select") {
         formsnapCode += `
       <div>
         <Field {form} name="${input.named_id}">
@@ -1040,7 +1094,116 @@ export const actions: Actions = {
           </Description>
           <FieldErrors class='text-sm text-destructive' />
         </Field>
+      </div>`;
+      }
+      else if (input.type === 'input-otp') {
+        formsnapCode += `
+      <div>
+        <Field {form} name="${input.named_id}">
+          <Control>
+            {#snippet children({ props })}
+              <Label class="font-medium text-sm">${input.label}</Label>
+              <InputOTP.Root maxlength={6} {...props} bind:value={$formData.${input.named_id}}>
+                {#snippet children({ cells })}
+                  <InputOTP.Group>
+                    {#each cells.slice(0, 3) as cell}
+                      <InputOTP.Slot {cell} />
+                    {/each}
+                  </InputOTP.Group>
+                  <InputOTP.Separator />
+                  <InputOTP.Group>
+                    {#each cells.slice(3, 6) as cell}
+                      <InputOTP.Slot {cell} />
+                    {/each}
+                  </InputOTP.Group>
+                {/snippet}
+              </InputOTP.Root>
+            {/snippet}
+          </Control>
+          <Description class="text-muted-foreground text-xs">
+            ${input.description}
+          </Description>
+          <FieldErrors class="text-sm text-destructive" />
+        </Field>
       </div>`
+      }
+      else if (input.type === 'date-picker') {
+        formsnapCode += `
+      <div class="flex flex-col">
+        <Field {form} name="${input.named_id}">
+          <Control>
+            {#snippet children({ props })}
+              <Label>${input.label}</Label>
+              <Popover.Root>
+                <Popover.Trigger {...props}>
+                  {#snippet child({ props })}
+                    <Button
+                      variant="outline"
+                      class={[
+                        "w-[280px] justify-start pl-4 text-left font-normal",
+                        !value && "text-muted-foreground",
+                      ]}
+                      {...props}
+                    >
+                      {value
+                        ? df.format(value.toDate(getLocalTimeZone()))
+                        : "Pick a date"}
+                      <CalendarIcon class="ml-auto size-4 opacity-50" />
+                    </Button>
+                  {/snippet}
+                </Popover.Trigger>
+                <Popover.Content class="w-auto p-0" side="top">
+                  <Calendar
+                    type="single"
+                    {value}
+                    bind:placeholder
+                    minValue={new CalendarDate(1900, 1, 1)}
+                    maxValue={today(getLocalTimeZone())}
+                    calendarLabel="Date of birth"
+                    onValueChange={(v) => {
+                      if (v) {
+                        $formData.${input.named_id} = v.toString();
+                      } else {
+                        $formData.${input.named_id} = "";
+                      }
+                    }}
+                  />
+                </Popover.Content>
+              </Popover.Root>
+              <Description class="text-muted-foreground text-xs"
+                >Your date of birth is used to calculator your age</Description
+              >
+              <FieldErrors class="text-sm text-destructive" />
+              <input hidden value={$formData.${input.named_id}} name={props.name} />
+            {/snippet}
+          </Control>
+        </Field>
+      </div>`
+      }
+      else if (input.type === 'tags-input') {
+        formsnapCode += `
+       <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
+    <div>
+      <Field {form} name="${input.named_id}">
+        <Control>
+          {#snippet children({ props })}
+            <Label>${input.label}</Label>
+            <TagsInput bind:value={tagsvalue} placeholder="${input.placeholder}" />
+            {#each $formData.${input.named_id} as item, i}
+              <input
+                {...props}
+                type="hidden"
+                bind:value={$formData.${input.named_id}[i]}
+                name="${input.named_id}"
+              />
+            {/each}
+          {/snippet}
+        </Control>
+        <Description class="text-sm text-muted-foreground">${input.description}</Description
+        >
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>`;
       }
     });
     formsnapCode += `

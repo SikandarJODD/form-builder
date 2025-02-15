@@ -8,9 +8,9 @@
   import { Field, Control, Label, Description, FieldErrors } from "formsnap";
   // Components
   import Button from "$lib/components/ui/button/button.svelte";
-  import { Input } from "$lib/components/ui/input";
+  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import Switch from "$lib/components/ui/switch/switch.svelte";
-  import * as Select from "$lib/components/ui/select/index";
+  import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
 
   let {
     data,
@@ -19,8 +19,17 @@
   } = $props();
   let form = superForm(data.form, {
     validators: zodClient(schema),
+    onUpdated(event) {
+      if (event.form.valid) {
+        tagsvalue = [];
+      }
+    },
   });
   let { form: formData, enhance, message } = form;
+  let tagsvalue = $state([]);
+  $effect(() => {
+    $formData.tagsinput_71 = tagsvalue;
+  });
   </script>
 
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
@@ -30,23 +39,24 @@
     </span>
   {/if}
   <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
-    <div>
-      <Field {form} name="text_cc">
+      <div
+        class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+      >
+      <Field {form} name="boolean_bd">
         <Control>
           {#snippet children({ props })}
-            <Label class='font-medium'>Username</Label>
-            <Input
-              {...props}
-              type="text"
-              placeholder="Enter your username"
-              bind:value={$formData.text_cc}
-            />
-            <Description class="text-muted-foreground text-xs">
-              This is your public display name
-            </Description>
+            <Checkbox {...props} bind:checked={$formData.boolean_bd} />
+            <div class="space-y-1 leading-none">
+              <Label class="font-medium">
+                Use different settings for my mobile devices
+              </Label>
+              <Description class="text-muted-foreground text-sm">
+                You can manage your mobile notifications in the mobile settings page.
+              </Description>
+            </div>
+            <input name={props.name} value={$formData.boolean_bd} hidden />
           {/snippet}
         </Control>
-        <FieldErrors class='text-sm text-destructive' />
       </Field>
     </div>
       <fieldset>
@@ -54,7 +64,7 @@
       <div class="space-y-4 flex flex-row items-center justify-between rounded-lg border p-4">
         <Field
           {form}
-          name="boolean_de"
+          name="boolean_a9"
           >
           <Control>
             {#snippet children({ props })}
@@ -64,45 +74,34 @@
                   Receive emails about new products, features, and more.
                 </Description>
               </div>
-              <Switch {...props} bind:checked={$formData.boolean_de} />
+              <Switch {...props} bind:checked={$formData.boolean_a9} />
             {/snippet}
           </Control>
         </Field>
       </div>
     </fieldset>
-      <div>
-        <Field {form} name="select_5c">
-          <Control>
-            {#snippet children({ props })}
-              <Label class='font-medium'>
-                Framework
-              </Label>
-              <Select.Root
-                type="single"
-                bind:value={$formData.select_5c}
-                name={props.name}
-              >
-                <Select.Trigger {...props}>
-                  {$formData.select_5c
-                    ? $formData.select_5c
-                    : "Select a framework"}
-                </Select.Trigger>
-                <Select.Content>
-                  <!-- Change Items based on your need -->
-                  <Select.Item value="svelte" label="Svelte" />
-                  <Select.Item value="vue" label="Vue" />
-                  <Select.Item value="react" label="React" />
-                  <Select.Item value="angular" disabled label="Angular" />
-                </Select.Content>
-              </Select.Root>
-            {/snippet}
-          </Control>
-          <Description class="text-muted-foreground text-sm">
-            Select your favorite framework
-          </Description>
-          <FieldErrors class='text-sm text-destructive' />
-        </Field>
-      </div>
+       <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
+    <div>
+      <Field {form} name="tagsinput_71">
+        <Control>
+          {#snippet children({ props })}
+            <Label>Enter your tech stack.</Label>
+            <TagsInput bind:value={tagsvalue} placeholder="Enter your tags" />
+            {#each $formData.tagsinput_71 as item, i}
+              <input
+                {...props}
+                type="hidden"
+                bind:value={$formData.tagsinput_71[i]}
+                name="tagsinput_71"
+              />
+            {/each}
+          {/snippet}
+        </Control>
+        <Description class="text-sm text-muted-foreground">Add tags.</Description
+        >
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>
     <div>
       <Button size="sm" type="submit">Submit</Button>
     </div>
