@@ -10,8 +10,6 @@
     TabsTrigger,
   } from "$lib/components/ui/tabs";
   import Box from "lucide-svelte/icons/box";
-  import House from "lucide-svelte/icons/house";
-  import PanelsTopLeft from "lucide-svelte/icons/panels-top-left";
   import Dock from "lucide-svelte/icons/dock";
   import CodeXML from "lucide-svelte/icons/code-xml";
   import Zap from "lucide-svelte/icons/zap";
@@ -21,7 +19,7 @@
 <div class="col-span-3">
   <Tabs value="preview" class="h-full flex items-center flex-col">
     <TabsList
-      class="mb-3 h-auto -space-x-px bg-background p-0 shadow-sm shadow-black/5 rtl:space-x-reverse"
+      class="h-auto -space-x-px bg-background  p-0 shadow-sm shadow-black/5 rtl:space-x-reverse"
     >
       <TabsTrigger
         value="preview"
@@ -46,7 +44,11 @@
           aria-hidden="true"
         />
         Formsnap
-        <Badge class="ms-1.5 rounded-full">New</Badge>
+        <!-- <Badge class="ms-1.5 rounded-full text-xs">New</Badge> -->
+        <span
+          class="inline-flex items-center rounded-full bg-green-50 dark:bg-white/80 dark:text-black/80 px-2.5 py-0.5 ms-2.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
+          >New</span
+        >
       </TabsTrigger>
       <TabsTrigger
         value="code"
@@ -73,7 +75,7 @@
         Schema
       </TabsTrigger>
     </TabsList>
-    <TabsContent value="preview" class="w-full h-full">
+    <TabsContent value="preview" class="w-full h-full -mt-1">
       <PreviewComponents />
     </TabsContent>
     <TabsContent value="formsnap" class="w-full h-full">

@@ -107,7 +107,7 @@
 </script>
 
 {#if form_generator.selected_inputs.length === 0}
-  <div class="flex flex-col items-center justify-center size-full">
+  <div class="flex flex-col items-center justify-center size-full mt-4">
     <p class="text-muted-foreground">No components selected</p>
   </div>
 {:else}
@@ -116,6 +116,20 @@
       {#each form_generator.selected_inputs as comp (comp.id)}
         <div animate:flip={{ duration: 300 }}>
           {#if comp.category === "text"}
+            <div>
+              <Label for={comp.named_id && "name"}>{comp.label}</Label>
+              <Input
+                type={comp.type}
+                id={comp.named_id && "name"}
+                name={comp.named_id && "name"}
+                placeholder={comp.placeholder}
+              />
+              <p class="text-xs text-muted-foreground">
+                {comp.description}
+              </p>
+            </div>
+          {/if}
+          {#if comp.category === "email"}
             <div>
               <Label for={comp.named_id && "name"}>{comp.label}</Label>
               <Input
@@ -138,7 +152,6 @@
               />
             </div>
           {/if}
-
           {#if comp.category === "switch"}
             <div
               class="flex flex-row items-center justify-between rounded-lg border p-4"
