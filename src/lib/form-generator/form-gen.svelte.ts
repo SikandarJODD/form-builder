@@ -919,6 +919,10 @@ export const actions: Actions = {
         formsnapCode += `
   import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";`;
       }
+      else if (input === 'phone') {
+        formsnapCode += `
+  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
+      }
     });
 
     formsnapCode += `\n
@@ -1201,6 +1205,30 @@ export const actions: Actions = {
         </Control>
         <Description class="text-sm text-muted-foreground">${input.description}</Description
         >
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>`;
+      }
+      else if (input.type === 'phone') {
+        formsnapCode += `
+    <div>
+      <Field {form} name="${input.named_id}">
+        <Control>
+          {#snippet children({ props })}
+            <!-- Add Phone Input Component from Shadcn Extra : https://www.shadcn-svelte-extras.com/components/phone-input -->
+            <Label>${input.label}</Label>
+            <PhoneInput
+              {...props}
+              country="IN"
+              name="${input.named_id}"
+              placeholder="${input.placeholder}"
+              bind:value={$formData.${input.named_id}}
+            />
+          {/snippet}
+        </Control>
+        <Description class="text-xs text-muted-foreground">
+          ${input.description}
+        </Description>
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
