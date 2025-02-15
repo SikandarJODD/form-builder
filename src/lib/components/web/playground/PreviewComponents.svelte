@@ -115,7 +115,7 @@
     <div class="space-y-2">
       {#each form_generator.selected_inputs as comp (comp.id)}
         <div animate:flip={{ duration: 300 }}>
-          {#if comp.category === "text"}
+          {#if comp.category === "text" || comp.category === "number"}
             <div>
               <Label for={comp.named_id && "name"}>{comp.label}</Label>
               <Input
