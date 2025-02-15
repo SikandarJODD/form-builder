@@ -27,7 +27,7 @@ let dummyInput: InputType[] = [
   {
     name: "Email",
     type: "email",
-    category: "text",
+    category: "email",
     label: "Email",
     description: "Enter your email address",
     placeholder: "Enter your email",
@@ -58,7 +58,7 @@ let dummyInput: InputType[] = [
   {
     name: "Number",
     type: "number",
-    category: "text",
+    category: "number",
     label: "Age",
     description: "This is your age",
     placeholder: "Enter your age",
@@ -187,9 +187,9 @@ class FormGenerator {
 
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
-    let random_id = `${item.type.split("-").join("")}_${crypto
+    let random_id = this.unique_imports.includes(item.type) ? `${item.type.split("-").join("")}_${crypto
       .randomUUID()
-      .slice(0, 2)}`;
+      .slice(0, 2)}` : item.type.split("-").join("");
     let new_input: InputType = {
       id: id,
       named_id: random_id,
@@ -397,25 +397,25 @@ export const actions: Actions = {
     this.unique_imports.map((input) => {
       if (input === "text") {
         clientrawCode += `
-  import Input from '$lib/components/ui/input/input.svelte';`;
+    import Input from '$lib/components/ui/input/input.svelte';`;
       } else if (input === "password") {
         clientrawCode += `
-  import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
+    import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
       } else if (input === "switch") {
         clientrawCode += `
-  import Switch from "$lib/components/ui/switch/switch.svelte";`;
+    import Switch from "$lib/components/ui/switch/switch.svelte";`;
       } else if (input === "checkbox") {
         clientrawCode += `
-  import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
+    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
       } else if (input === "textarea") {
         clientrawCode += `
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
+    import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
       } else if (input === "select") {
         clientrawCode += `
-  import * as Select from "$lib/components/ui/select/index";`;
+    import * as Select from "$lib/components/ui/select/index";`;
       } else if (input === "input-otp") {
         clientrawCode += `
-  import * as InputOTP from "$lib/components/ui/input-otp/index";`;
+    import * as InputOTP from "$lib/components/ui/input-otp/index";`;
       } else if (input === "date-picker") {
         clientrawCode += `
     import { Calendar } from "$lib/components/ui/calendar/index";
@@ -438,57 +438,57 @@ export const actions: Actions = {
     let placeholder = $state(today(getLocalTimeZone()));`;
       } else if (input === "tags-input") {
         clientrawCode += `
-  import { TagsInput } from "$lib/components/ui/tags-input";`;
+    import { TagsInput } from "$lib/components/ui/tags-input";`;
       } else if (input === "phone") {
         clientrawCode += `
-  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
+    import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
       } else if (input === "combobox") {
         clientrawCode += `
-  import Check from "lucide-svelte/icons/check";
-  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-  import * as Popover from "$lib/components/ui/popover/index";
-  import * as Command from "$lib/components/ui/command/index";
-  import { tick } from "svelte";
-  import { cn } from "$lib/utils";
-  // Combobox
-  let frameworks = [
-    {
-      value: "sveltekit",
-      label: "SvelteKit",
-    },
-    {
-      value: "next.js",
-      label: "Next.js",
-    },
-    {
-      value: "nuxt.js",
-      label: "Nuxt.js",
-    },
-    {
-      value: "remix",
-      label: "Remix",
-    },
-    {
-      value: "astro",
-      label: "Astro",
-    },
-  ];
-  let open = $state(false);
-  let combovalue = $state("");
-  let triggerRef = $state<HTMLButtonElement>(null!);
-  const selectedValue = $derived(
-    frameworks.find((f) => f.value === combovalue)?.label ??
-      "Select a framework..."
-  );
-  // We want to refocus the trigger button when the user selects
-  // an item from the list so users can continue navigating the
-  // rest of the form with the keyboard.
-  function closeAndFocusTrigger() {
-    open = false;
-    tick().then(() => {
-      triggerRef.focus();
-    });
-  }
+    import Check from "lucide-svelte/icons/check";
+    import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+    import * as Popover from "$lib/components/ui/popover/index";
+    import * as Command from "$lib/components/ui/command/index";
+    import { tick } from "svelte";
+    import { cn } from "$lib/utils";
+    // Combobox
+    let frameworks = [
+      {
+        value: "sveltekit",
+        label: "SvelteKit",
+      },
+      {
+        value: "next.js",
+        label: "Next.js",
+      },
+      {
+        value: "nuxt.js",
+        label: "Nuxt.js",
+      },
+      {
+        value: "remix",
+        label: "Remix",
+      },
+      {
+        value: "astro",
+        label: "Astro",
+      },
+    ];
+    let open = $state(false);
+    let combovalue = $state("");
+    let triggerRef = $state<HTMLButtonElement>(null!);
+    const selectedValue = $derived(
+      frameworks.find((f) => f.value === combovalue)?.label ??
+        "Select a framework..."
+    );
+    // We want to refocus the trigger button when the user selects
+    // an item from the list so users can continue navigating the
+    // rest of the form with the keyboard.
+    function closeAndFocusTrigger() {
+      open = false;
+      tick().then(() => {
+        triggerRef.focus();
+      });
+    }
     `;
       }
     });
@@ -881,7 +881,7 @@ export const actions: Actions = {
   formsnapCode = $derived.by(() => {
     let formsnapCode = `<script lang="ts">
   import { superForm } from "sveltekit-superforms";
-  import { zodClient } from "sveltekit-superforms/adapters";
+  import {  ${this.adapter} } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
   import { schema } from "./schema";
   // FormSnap
@@ -889,7 +889,7 @@ export const actions: Actions = {
   // Components
   import Button from "$lib/components/ui/button/button.svelte";`;
     this.unique_imports.map((input) => {
-      if (input === "text") {
+      if (input === "text" || input === "number" || input === "email") {
         formsnapCode += `
   import { Input } from "$lib/components/ui/input";`;
       } else if (input === "textarea") {
@@ -998,7 +998,7 @@ export const actions: Actions = {
     data: PageData;
   } = $props();
   let form = superForm(data.form, {
-    validators: zodClient(schema),`
+    validators: ${this.adapter}(schema),`
     if (this.tags_input_named_id && this.combobox_named_id) {
       formsnapCode += `
     onUpdated(event) {
