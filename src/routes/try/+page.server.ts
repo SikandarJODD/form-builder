@@ -1,23 +1,24 @@
-import type { Actions } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from "./$types";
 
-import { fail, message, superValidate } from 'sveltekit-superforms';
-import { valibot } from 'sveltekit-superforms/adapters';
+import { fail, message, superValidate } from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
 
-// add your own schema path here
-import { schema } from './schema';
+// Schema
+import { schema } from "./schema";
+import type { Actions } from "@sveltejs/kit";
 
-export const load: PageServerLoad = async ({ request }) => {
-    return { form: await superValidate(valibot(schema)) }
+export const load: PageServerLoad = async () => {
+    return { form: await superValidate(zod(schema)) }
 };
 
 export const actions: Actions = {
     default: async ({ request }) => {
-        let form = await superValidate(request, valibot(schema));
-        console.log(form,'form');
-        if (!form.valid) {
-            return fail(400, { form });
+        let formData = await superValidate(request, zod(schema));
+        console.log('form', formData);
+        if (!formData.valid) {
+            fail(400, { formData });
         }
-        return message(form, 'Form Posted Successfully!');
+
+        return message(formData, 'User details saved successfully');
     }
 };
