@@ -171,6 +171,12 @@ class FormGenerator {
     )[0];
     return did;
   });
+  combobox_named_id = $derived.by(() => {
+    let comboid = this.selected_inputs.filter(
+      (input) => input.type === "combobox"
+    )[0];
+    return comboid;
+  });
 
   tags_input_named_id = $derived.by(() => {
     let tagid = this.selected_inputs.filter(
@@ -258,7 +264,7 @@ class FormGenerator {
         input.type !== "boolean" && input.type !== "input-otp"
       ) {
         if (input.type === 'tags-input') {
-          fieldSchema += `.min(1, { message: 'Please enter at least one tag' })`;
+          fieldSchema += `\n   .min(1, { message: 'Please enter at least one tag' })`;
         } else {
           fieldSchema += `.nonempty()`;
         }
@@ -506,7 +512,7 @@ export const actions: Actions = {
 		data
 	}: {
 		data: PageData;
-	} = $props();`;
+	} = $props();\n`;
     } else if (this.adapter === "valibot") {
       clientrawCode += `
     import { valibot } from 'sveltekit-superforms/adapters';
@@ -516,44 +522,59 @@ export const actions: Actions = {
 		data
 	}: {
 		data: PageData;
-	} = $props();`;
+	} = $props(); \n`;
     }
-    if (
-      this.unique_imports.includes("tags-input") &&
-      this.tags_input_named_id
-    ) {
-      clientrawCode += `let { form, message, errors, enhance } = superForm(data.form, {`;
-      if (this.adapter === "zod") {
-        clientrawCode += `
-    validators: zod(schema),`;
-      } else if (this.adapter === "valibot") {
-        clientrawCode += `
-    validators: valibot(schema),`;
-      }
+
+    if (this.adapter === "zod") {
       clientrawCode += `
-    onUpdated(event) {
-      if (event.form.valid) {
-        tagsvalue = [];
-      }
-    },
-  });
-  let tagsvalue = $state([]);
-  $effect(() => {
-    $form.${this.tags_input_named_id.named_id} = tagsvalue;
-  });`;
-    } else {
-      if (this.adapter === "zod") {
-        clientrawCode += `
     let { form, message, errors, enhance } = superForm(data.form, {
-		validators: zod(schema)
-	});\n`;
-      } else if (this.adapter === "valibot") {
-        clientrawCode += `
+		validators: zod(schema)`;
+    } else if (this.adapter === "valibot") {
+      clientrawCode += `
     let { form, message, errors, enhance } = superForm(data.form, {
       validators: valibot(schema)
-    });\n`;
-      }
+    `;
     }
+
+    if (
+      this.tags_input_named_id && this.combobox_named_id
+    ) {
+      clientrawCode += `,
+        onUpdated(event) {
+          if (event.form.valid) {
+            tagsvalue = [];
+            combovalue = "";
+          }
+        }`;
+    }
+    else if (this.tags_input_named_id) {
+      clientrawCode += `,
+        onUpdated(event) {
+          if (event.form.valid) {
+            tagsvalue = [];
+          }
+        }`;
+    }
+    else if (this.combobox_named_id) {
+      clientrawCode += `,
+        onUpdated(event) {
+          if (event.form.valid) {
+            tagsvalue = [];
+          }
+        }`;
+    }
+    clientrawCode += `
+    });\n`;
+
+    if (this.tags_input_named_id) {
+      clientrawCode += `
+      let tagsvalue = $state([]);
+  $effect(() => {
+    $form.${this.tags_input_named_id.named_id} = tagsvalue;
+  });`
+    }
+
+
     clientrawCode += `</script>
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
 	{#if $message}
@@ -923,6 +944,57 @@ export const actions: Actions = {
         formsnapCode += `
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
       }
+      else if (input === 'combobox') {
+        formsnapCode += `
+  // Combobox
+  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import Check from "lucide-svelte/icons/check";
+  import * as Popover from "$lib/components/ui/popover/index";
+  import * as Command from "$lib/components/ui/command/index";
+  import { tick } from "svelte";
+  import { cn } from "$lib/utils";
+  let frameworks = [
+    {
+      value: "sveltekit",
+      label: "SvelteKit",
+    },
+    {
+      value: "next.js",
+      label: "Next.js",
+    },
+    {
+      value: "nuxt.js",
+      label: "Nuxt.js",
+    },
+    {
+      value: "remix",
+      label: "Remix",
+    },
+    {
+      value: "astro",
+      label: "Astro",
+    },
+  ];
+
+  let open = $state(false);
+  let combovalue = $state("");
+  let triggerRef = $state<HTMLButtonElement>(null!);
+
+  const selectedValue = $derived(
+    frameworks.find((f) => f.value === combovalue)?.label ??
+      "Select a framework..."
+  );
+
+  // We want to refocus the trigger button when the user selects
+  // an item from the list so users can continue navigating the
+  // rest of the form with the keyboard.
+  function closeAndFocusTrigger() {
+    open = false;
+    tick().then(() => {
+      triggerRef.focus();
+    });
+  }`
+      }
     });
 
     formsnapCode += `\n
@@ -933,13 +1005,30 @@ export const actions: Actions = {
   } = $props();
   let form = superForm(data.form, {
     validators: zodClient(schema),`
-    if (this.tags_input_named_id) {
+    if (this.tags_input_named_id && this.combobox_named_id) {
       formsnapCode += `
     onUpdated(event) {
       if (event.form.valid) {
         tagsvalue = [];
+        combovalue = "";
       }
     },`;
+    }
+    else if (this.tags_input_named_id) {
+      formsnapCode += `
+      onUpdated(event) {
+        if (event.form.valid) {
+          tagsvalue = [];
+        }
+      },`;
+    }
+    else if (this.combobox_named_id) {
+      formsnapCode += `
+      onUpdated(event) {
+        if (event.form.valid) {
+          combovalue = "";
+        }
+      },`;
     }
     formsnapCode += `
   });
@@ -1232,6 +1321,76 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
+      }
+      else if (input.type === 'combobox') {
+        formsnapCode += `
+      <div>
+      <Field {form} name="${input.named_id}">
+        <Control>
+          {#snippet children({ props })}
+            <Label>Email</Label>
+            <div>
+              <Popover.Root bind:open>
+                <Popover.Trigger bind:ref={triggerRef}>
+                  {#snippet child({ props })}
+                    <Button
+                      variant="outline"
+                      class="w-full justify-between"
+                      {...props}
+                      role="combobox"
+                      aria-expanded={open}
+                    >
+                      {selectedValue || "Select a framework..."}
+                      <ChevronsUpDown class="opacity-50" />
+                    </Button>
+                    <input
+                      hidden
+                      value={$formData.${input.named_id}}
+                      name="${input.named_id}"
+                    />
+                  {/snippet}
+                </Popover.Trigger>
+                <Popover.Content align="start" class="w-full p-0">
+                  <Command.Root>
+                    <Command.Input
+                      placeholder="Select your favorite framework"
+                      class="h-9"
+                    />
+                    <Command.List>
+                      <Command.Empty>No framework found.</Command.Empty>
+                      <Command.Group>
+                        {#each frameworks as framework}
+                          <Command.Item
+                            value={framework.value}
+                            onSelect={() => {
+                              combovalue = framework.value;
+                              $formData.${input.named_id} = framework.value;
+                              closeAndFocusTrigger();
+                            }}
+                          >
+                            <Check
+                              class={cn(
+                                framework.value !== $formData.${input.named_id} &&
+                                  "text-transparent"
+                              )}
+                            />
+                            {framework.label}
+                          </Command.Item>
+                        {/each}
+                      </Command.Group>
+                    </Command.List>
+                  </Command.Root>
+                </Popover.Content>
+              </Popover.Root>
+            </div>
+          {/snippet}
+        </Control>
+        <Description class="text-sm text-muted-foreground">
+          ${input.description}
+        </Description>
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>`
       }
     });
     formsnapCode += `
