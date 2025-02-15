@@ -397,25 +397,25 @@ export const actions: Actions = {
     this.unique_imports.map((input) => {
       if (input === "text") {
         clientrawCode += `
-    import Input from '$lib/components/ui/input/input.svelte';`;
+  import Input from '$lib/components/ui/input/input.svelte';`;
       } else if (input === "password") {
         clientrawCode += `
-    import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
+  import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
       } else if (input === "switch") {
         clientrawCode += `
-    import Switch from "$lib/components/ui/switch/switch.svelte";`;
+  import Switch from "$lib/components/ui/switch/switch.svelte";`;
       } else if (input === "checkbox") {
         clientrawCode += `
-    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
+  import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
       } else if (input === "textarea") {
         clientrawCode += `
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
       } else if (input === "select") {
         clientrawCode += `
-    import * as Select from "$lib/components/ui/select/index";`;
+  import * as Select from "$lib/components/ui/select/index";`;
       } else if (input === "input-otp") {
         clientrawCode += `
-    import * as InputOTP from "$lib/components/ui/input-otp/index";`;
+  import * as InputOTP from "$lib/components/ui/input-otp/index";`;
       } else if (input === "date-picker") {
         clientrawCode += `
     import { Calendar } from "$lib/components/ui/calendar/index";
@@ -438,74 +438,69 @@ export const actions: Actions = {
     let placeholder = $state(today(getLocalTimeZone()));`;
       } else if (input === "tags-input") {
         clientrawCode += `
-    import { TagsInput } from "$lib/components/ui/tags-input";`;
+  import { TagsInput } from "$lib/components/ui/tags-input";`;
       } else if (input === "phone") {
         clientrawCode += `
-    import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
+  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
       } else if (input === "combobox") {
         clientrawCode += `
-    import Check from "lucide-svelte/icons/check";
-    import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-    import * as Popover from "$lib/components/ui/popover/index";
-    import * as Command from "$lib/components/ui/command/index";
-    import { tick } from "svelte";
-    import { cn } from "$lib/utils";
-
-    // Combobox
-    let frameworks = [
-      {
-        value: "sveltekit",
-        label: "SvelteKit",
-      },
-      {
-        value: "next.js",
-        label: "Next.js",
-      },
-      {
-        value: "nuxt.js",
-        label: "Nuxt.js",
-      },
-      {
-        value: "remix",
-        label: "Remix",
-      },
-      {
-        value: "astro",
-        label: "Astro",
-      },
-    ];
-
-    let open = $state(false);
-    let combovalue = $state("");
-    let triggerRef = $state<HTMLButtonElement>(null!);
-
-    const selectedValue = $derived(
-      frameworks.find((f) => f.value === combovalue)?.label ??
-        "Select a framework..."
-    );
-
-    // We want to refocus the trigger button when the user selects
-    // an item from the list so users can continue navigating the
-    // rest of the form with the keyboard.
-    function closeAndFocusTrigger() {
-      open = false;
-      tick().then(() => {
-        triggerRef.focus();
-      });
-    }
-      `;
+  import Check from "lucide-svelte/icons/check";
+  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import * as Popover from "$lib/components/ui/popover/index";
+  import * as Command from "$lib/components/ui/command/index";
+  import { tick } from "svelte";
+  import { cn } from "$lib/utils";
+  // Combobox
+  let frameworks = [
+    {
+      value: "sveltekit",
+      label: "SvelteKit",
+    },
+    {
+      value: "next.js",
+      label: "Next.js",
+    },
+    {
+      value: "nuxt.js",
+      label: "Nuxt.js",
+    },
+    {
+      value: "remix",
+      label: "Remix",
+    },
+    {
+      value: "astro",
+      label: "Astro",
+    },
+  ];
+  let open = $state(false);
+  let combovalue = $state("");
+  let triggerRef = $state<HTMLButtonElement>(null!);
+  const selectedValue = $derived(
+    frameworks.find((f) => f.value === combovalue)?.label ??
+      "Select a framework..."
+  );
+  // We want to refocus the trigger button when the user selects
+  // an item from the list so users can continue navigating the
+  // rest of the form with the keyboard.
+  function closeAndFocusTrigger() {
+    open = false;
+    tick().then(() => {
+      triggerRef.focus();
+    });
+  }
+    `;
       }
     });
     if (this.date_picker_named_id) {
       clientrawCode += `
-    $effect(() => {
-      dvalue = $form.${this.date_picker_named_id.named_id} ? parseDate($form.${this.date_picker_named_id.named_id}) : undefined;
-    });
-      `;
+  $effect(() => {
+    dvalue = $form.${this.date_picker_named_id.named_id} ? parseDate($form.${this.date_picker_named_id.named_id}) : undefined;
+  });
+    `;
     }
     if (this.adapter === "zod") {
-      clientrawCode += `
-    import { zod } from 'sveltekit-superforms/adapters';
+      clientrawCode += `\n    import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 
 	let {
@@ -884,8 +879,7 @@ export const actions: Actions = {
   });
 
   formsnapCode = $derived.by(() => {
-    let formsnapCode = `
-  <script lang="ts">
+    let formsnapCode = `<script lang="ts">
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";

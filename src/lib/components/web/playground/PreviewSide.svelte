@@ -5,7 +5,7 @@
 
 <div class="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
   <div class="size-full">
-    <div class="mb-6 max-w-5xl space-y-3">
+    <div class="mb-4 max-w-5xl space-y-3">
       <h1 class="text-2xl font-bold">Playground</h1>
       <p class="text-muted-foreground">
         After successfully installing Shadcn-Svelte, you can simply copy and

@@ -33,7 +33,9 @@
         bind:value
         onValueChange={updateAdapter}
       >
-        <Select.Trigger class="w-[150px] rounded-full border-primary/50">
+        <Select.Trigger
+          class="w-[150px] rounded-full border-primary/35 border-dashed"
+        >
           {triggerContent}
         </Select.Trigger>
         <Select.Content>
