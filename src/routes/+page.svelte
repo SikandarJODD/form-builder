@@ -1,13 +1,11 @@
 <script lang="ts">
-  import SidebarSide from "$lib/components/web/playground/SidebarSide.svelte";
-  import PreviewSide from "$lib/components/web/playground/PreviewSide.svelte";
+  import Features from "$lib/landing/comps/Features.svelte";
+  import Footer from "$lib/landing/comps/Footer.svelte";
+  import Hero from "$lib/landing/comps/Hero.svelte";
+  import HowItWorks from "$lib/landing/comps/HowItWorks.svelte";
 </script>
 
-<div class="flex min-h-full flex-col">
-  <div class="mx-auto w-full grow lg:flex xl:px-2">
-    <div class="flex-1 md:flex">
-      <SidebarSide />
-      <PreviewSide />
-    </div>
-  </div>
-</div>
+<Hero></Hero>
+<Features></Features>
+<HowItWorks></HowItWorks>
+<Footer></Footer>
