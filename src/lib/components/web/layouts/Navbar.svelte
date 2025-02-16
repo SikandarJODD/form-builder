@@ -22,33 +22,39 @@
         <a href="/" aria-label="home" class="shrink-0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="1.25"
+            stroke-width="1.5"
             stroke-linecap="round"
             stroke-linejoin="round"
+            class="icon icon-tabler icons-tabler-outline icon-tabler-table-column"
             ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
-              d="M15 8h.01"
-            /><path
-              d="M19.875 6.27c.7 .398 1.13 1.143 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z"
-            /><path
-              d="M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5"
-            /><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5" /></svg
+              d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z"
+            /><path d="M10 10h11" /><path d="M10 3v18" /><path
+              d="M9 3l-6 6"
+            /><path d="M10 7l-7 7" /><path d="M10 12l-7 7" /><path
+              d="M10 17l-4 4"
+            /></svg
           >
         </a>
         <div class="hidden sm:ml-6 sm:flex justify-between w-full items-center">
           <div class="flex space-x-4">
             {#each navs as nav}
               <a href={nav.url}>
-                <span class="text-muted-foreground hover:text-primary transition-all duration-150">{nav.name}</span>
+                <span
+                  class="text-muted-foreground hover:text-primary transition-all duration-150"
+                  >{nav.name}</span
+                >
               </a>
             {/each}
           </div>
           <div>
-            <Button class="font-normal rounded-full">Playground</Button>
+            <Button class="font-normal rounded-full" href="/playground"
+              >Playground</Button
+            >
           </div>
         </div>
       </div>
