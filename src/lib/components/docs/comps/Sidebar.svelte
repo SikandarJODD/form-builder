@@ -24,18 +24,10 @@
           name: "Password Input",
           url: "/docs/components/password-input",
         },
-        {
-          name: "Tags Input",
-          url: "/docs/components/tags-input",
-        },
-        {
-          name: "Phone Input",
-          url: "/docs/components/phone-input",
-        },
-        {
-          name: "Location Input",
-          url: "/docs/components/location-input",
-        },
+        // {
+        //   name: "Location Input",
+        //   url: "/docs/components/location-input",
+        // },
       ],
     },
   ];
@@ -45,8 +37,8 @@
 </script>
 
 <div class="max-w-5xl mx-auto">
-  <div class="flex gap-4">
-    <div class="sticky top-20 w-52 bg-accent/60 rounded-lg p-4 h-fit">
+  <div class="flex gap-6">
+    <div class="sticky top-20 min-w-52 bg-accent/60 rounded-lg p-4 h-fit">
       {#each templates as item}
         <div>
           <div class="flex justify-between items-center">
@@ -55,12 +47,12 @@
               {item.sub.length}
             </Button>
           </div>
-          <div class="border-l px-2 ml-1 mt-1">
+          <div class="border-l px-1 ml-1 my-1">
             {#each item.sub as subItem}
               <a
                 href={subItem.url}
                 class={[
-                  "block text-muted-foreground px-1 py-1 text-sm rounded-md transition-all duration-150 hover:text-primary",
+                  "block text-muted-foreground px-2 py-1 text-sm rounded-sm transition-all duration-150 hover:text-primary",
                   isActive(subItem.url) && "text-primary bg-primary/5",
                 ]}>{subItem.name}</a
               >
