@@ -1,5 +1,5 @@
+//schema
 import { z } from 'zod';
 export let schema = z.object({
-  email: z.string().email(),
-  password: z.string().nonempty(),
-})
+	datepicker: z.string().refine((v) => v, { message: 'A date of birth is required.' })
+});

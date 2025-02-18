@@ -1,15 +1,17 @@
 <script lang="ts">
-  import Button from "$lib/components/ui/button/button.svelte";
+  import Button, {
+    buttonVariants,
+  } from "$lib/components/ui/button/button.svelte";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import Label from "$lib/components/ui/label/label.svelte";
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
-  import { Calendar } from "$lib/components/ui/calendar/index";
   import * as Select from "$lib/components/ui/select/index";
   import * as Popover from "$lib/components/ui/popover/index";
   import * as Command from "$lib/components/ui/command/index";
   import * as InputOTP from "$lib/components/ui/input-otp/index";
+  import * as Calendar from "$lib/components/ui/calendar/index";
 
   // Main Form Generator Code
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
@@ -21,31 +23,76 @@
   import CalendarIcon from "lucide-svelte/icons/calendar";
   import Check from "lucide-svelte/icons/check";
   import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-
-  import {
-    CalendarDate,
-    DateFormatter,
-    type DateValue,
-    getLocalTimeZone,
-    parseDate,
-    today,
-  } from "@internationalized/date";
   import { cn } from "$lib/utils";
   // Shadcn Extra Components : https://www.shadcn-svelte-extras.com
   import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
   import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";
 
+  // DatePicker Utils
+  import {
+    CalendarDate,
+    type DateValue,
+    getLocalTimeZone,
+    today,
+    DateFormatter,
+  } from "@internationalized/date";
+  import { Calendar as CalendarPrimitive } from "bits-ui";
+
+  // Date Picker
+
+  let dvalue = $state<DateValue | undefined>();
+  // Month formatter
+  const monthFmt = new DateFormatter("en-US", {
+    month: "long",
+  });
+
+  // Generate month options
+  const monthOptions = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ].map((month, i) => ({ value: String(i + 1), label: month }));
+
+  // Generate year options (from 1900 to current year)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: currentYear - 1899 }, (_, i) => ({
+    label: String(currentYear - i),
+    value: String(currentYear - i),
+  }));
   const df = new DateFormatter("en-US", {
     dateStyle: "long",
   });
-
-  let dvalue = $state<DateValue>();
   let placeholder = $state(today(getLocalTimeZone()));
 
-  // $effect(() => {
-  //   dvalue = $formData.dob ? parseDate($formData.dob) : undefined;
-  // });
+  const defaultYear = $derived(
+    placeholder
+      ? { value: String(placeholder.year), label: String(placeholder.year) }
+      : undefined
+  );
+
+  const defaultMonth = $derived(
+    placeholder
+      ? {
+          value: String(placeholder.month),
+          label: monthFmt.format(placeholder.toDate(getLocalTimeZone())),
+        }
+      : undefined
+  );
+
+  const monthLabel = $derived(
+    monthOptions.find((m) => m.value === defaultMonth?.value)?.label ??
+      "Select a month"
+  );
 
   // select and radio box need options
   let select_examples = [
@@ -53,7 +100,7 @@
     { value: "vue", label: "Vue" },
     { value: "react", label: "React" },
     { value: "angular", label: "Angular" },
-    {value: "astro", label: "Astro"},
+    { value: "astro", label: "Astro" },
   ];
 
   let value = $state("");
@@ -241,44 +288,121 @@
             </div>
           {/if}
           {#if comp.category === "date-picker"}
-            <div>
-              <Label for={comp.named_id}>{comp.label}</Label>
-              <div>
+            <div class="flex flex-col">
+              <div class="grid gap-2">
+                <Label>Date of birth</Label>
                 <Popover.Root>
-                  <Popover.Trigger>
-                    {#snippet child({ props })}
-                      <Button
-                        variant="outline"
-                        class={cn(
-                          "w-[240px] justify-start text-left font-normal",
-                          !value && "text-muted-foreground"
-                        )}
-                        {...props}
-                      >
-                        <CalendarIcon />
-                        {dvalue
-                          ? df.format(dvalue.toDate(getLocalTimeZone()))
-                          : "Pick a date"}
-                      </Button>
-                    {/snippet}
+                  <Popover.Trigger
+                    class={[
+                      buttonVariants({ variant: "outline" }),
+                      "w-[250px] justify-start pl-4 text-left font-normal",
+                      !dvalue && "text-muted-foreground",
+                    ]}
+                  >
+                    {dvalue
+                      ? df.format(dvalue.toDate(getLocalTimeZone()))
+                      : "Pick a date"}
+                    <CalendarIcon class="ml-auto h-4 w-4 opacity-50" />
                   </Popover.Trigger>
-                  <Popover.Content class="w-auto p-0" side="top">
-                    <Calendar
-                      type="single"
-                      id={comp.named_id}
-                      value={dvalue}
+                  <Popover.Content class="w-auto p-0" side="bottom">
+                    <CalendarPrimitive.Root
+                      bind:value={dvalue}
                       bind:placeholder
+                      class="rounded-md border p-3"
+                      type="single"
                       minValue={new CalendarDate(1900, 1, 1)}
                       maxValue={today(getLocalTimeZone())}
                       calendarLabel="Date of birth"
-                    />
+                      initialFocus
+                    >
+                      {#snippet children({ months, weekdays })}
+                        <Calendar.Header>
+                          <Calendar.Heading
+                            class="flex w-full items-center justify-between gap-2"
+                          >
+                            <Select.Root
+                              type="single"
+                              value={defaultMonth?.value}
+                              onValueChange={(v) => {
+                                if (!placeholder) return;
+                                if (v === `${placeholder.month}`) return;
+                                placeholder = placeholder.set({
+                                  month: Number.parseInt(v),
+                                });
+                              }}
+                            >
+                              <Select.Trigger
+                                aria-label="Select month"
+                                class="w-[60%]"
+                              >
+                                {monthLabel}
+                              </Select.Trigger>
+                              <Select.Content
+                                class="max-h-[200px] overflow-y-auto"
+                              >
+                                {#each monthOptions as { value, label }}
+                                  <Select.Item {value} {label} />
+                                {/each}
+                              </Select.Content>
+                            </Select.Root>
+                            <Select.Root
+                              type="single"
+                              value={defaultYear?.value}
+                              onValueChange={(v) => {
+                                if (!v || !placeholder) return;
+                                if (v === `${placeholder?.year}`) return;
+                                placeholder = placeholder.set({
+                                  year: Number.parseInt(v),
+                                });
+                              }}
+                            >
+                              <Select.Trigger
+                                aria-label="Select year"
+                                class="w-[40%]"
+                              >
+                                {defaultYear?.label ?? "Select year"}
+                              </Select.Trigger>
+                              <Select.Content
+                                class="max-h-[200px] overflow-y-auto"
+                              >
+                                {#each yearOptions as { value, label }}
+                                  <Select.Item {value} {label} />
+                                {/each}
+                              </Select.Content>
+                            </Select.Root>
+                          </Calendar.Heading>
+                        </Calendar.Header>
+                        <Calendar.Months>
+                          {#each months as month}
+                            <Calendar.Grid>
+                              <Calendar.GridHead>
+                                <Calendar.GridRow class="flex">
+                                  {#each weekdays as weekday}
+                                    <Calendar.HeadCell>
+                                      {weekday.slice(0, 2)}
+                                    </Calendar.HeadCell>
+                                  {/each}
+                                </Calendar.GridRow>
+                              </Calendar.GridHead>
+                              <Calendar.GridBody>
+                                {#each month.weeks as weekDates}
+                                  <Calendar.GridRow class="mt-2 w-full">
+                                    {#each weekDates as date}
+                                      <Calendar.Cell {date} month={month.value}>
+                                        <Calendar.Day />
+                                      </Calendar.Cell>
+                                    {/each}
+                                  </Calendar.GridRow>
+                                {/each}
+                              </Calendar.GridBody>
+                            </Calendar.Grid>
+                          {/each}
+                        </Calendar.Months>
+                      {/snippet}
+                    </CalendarPrimitive.Root>
                   </Popover.Content>
                 </Popover.Root>
               </div>
-              <p class="text-xs text-muted-foreground">
-                {comp.description}
-              </p>
-              <!-- <input hidden value={$formData.dob} name={props.name} /> -->
             </div>
           {/if}
           {#if comp.category === "phone"}
