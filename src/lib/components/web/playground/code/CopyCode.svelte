@@ -6,8 +6,9 @@
   interface Props {
     code: string;
     lang?: string;
+    class?: string;
   }
-  let { code, lang = "ts" }: Props = $props();
+  let { code, lang = "ts", class: _class = "" }: Props = $props();
 
   let codeContent = code; // input code
   let htmlCode = $state(""); // highlighted html code
@@ -27,7 +28,10 @@
 </script>
 
 <div
-  class="relative border w-full px-4 py-2 rounded-lg overflow-scroll scrollbar"
+  class={[
+    "relative border w-full px-4 py-2 rounded-lg overflow-scroll scrollbar",
+    _class,
+  ]}
 >
   <span>{@html htmlCode}</span>
   <div class=" absolute top-2 right-2">
