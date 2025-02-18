@@ -33,7 +33,6 @@ let dummyInput: InputType[] = [
     placeholder: "Enter your email",
     min: 0,
     max: 0,
-    isNew: true,
   },
   {
     name: "Textarea",
@@ -87,6 +86,18 @@ let dummyInput: InputType[] = [
     max: 0,
   },
   {
+    name: "File Input",
+    type: "file",
+    category: "file",
+    label: "Upload File*",
+    description:
+      "Select File to upload.",
+    placeholder: "Placeholder",
+    min: 0,
+    max: 0,
+    isNew: true,
+  },
+  {
     name: "Select",
     type: "select",
     category: "select",
@@ -115,6 +126,7 @@ let dummyInput: InputType[] = [
     placeholder: "Placeholder",
     min: 0,
     max: 0,
+    isNew: true,
   },
   {
     name: "Tags Input",
@@ -125,7 +137,6 @@ let dummyInput: InputType[] = [
     placeholder: "Enter your tags",
     min: 0,
     max: 0,
-    isNew: true,
   },
   {
     name: "Phone",
@@ -136,7 +147,6 @@ let dummyInput: InputType[] = [
     description: "Enter your phone number",
     min: 0,
     max: 0,
-    isNew: true,
   },
   {
     name: "ComboBox",
@@ -147,7 +157,6 @@ let dummyInput: InputType[] = [
     placeholder: "Select your favorite framework",
     min: 0,
     max: 0,
-    isNew: true,
   },
 ];
 
@@ -185,11 +194,18 @@ class FormGenerator {
     return tagid;
   });
 
+  file_input_named_id = $derived.by(() => {
+    let fileid = this.selected_inputs.filter(
+      (input) => input.type === "file"
+    )[0];
+    return fileid;
+  });
+
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
-    let random_id = this.unique_imports.includes(item.type) ? `${item.type.split("-").join("")}_${crypto
-      .randomUUID()
-      .slice(0, 2)}` : item.type.split("-").join("");
+    let random_id = this.unique_imports.includes(item.type)
+      ? `${item.type.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`
+      : item.type.split("-").join("");
     let new_input: InputType = {
       id: id,
       named_id: random_id,
@@ -221,7 +237,9 @@ class FormGenerator {
   };
 
   generateZodSchemaString(inputs: InputType[]): string {
-    let schemaString = `import { z } from 'zod';\nexport let schema = z.object({\n`;
+    let schemaString = `import { z } from 'zod';
+${this.file_input_named_id ? `export const KILOBYTE = 1024;
+export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n`;
 
     inputs.forEach((input) => {
       let fieldSchema = `z.string()`;
@@ -241,6 +259,13 @@ class FormGenerator {
       } else if (input.type === "tags-input") {
         fieldSchema = `z.string().array()`;
       }
+      else if (input.type === 'file') {
+        fieldSchema = `z.array(z.instanceof(File, {
+        message: "Please select an image file.",
+      }).refine((file) => file.size <= (MEGABYTE*2) , {
+        message:"The image is too large.",
+      }))`;
+      }
 
       // Add `min` and `max` constraints if available for number, password, and text fields
       if (min_max_types.includes(input.type)) {
@@ -256,14 +281,19 @@ class FormGenerator {
           fieldSchema += `.max(${input.max})`;
         }
       }
-      if (!input.required && input.type !== 'tags-input' && input.type !== 'boolean') {
+      if (
+        !input.required &&
+        input.type !== "tags-input" &&
+        input.type !== "boolean"
+      ) {
         fieldSchema += `.optional()`;
       } else if (
         !non_empty_types.includes(input.type) &&
         input.min === 0 &&
-        input.type !== "boolean" && input.type !== "input-otp"
+        input.type !== "boolean" &&
+        input.type !== "input-otp" && input.type !== "file"
       ) {
-        if (input.type === 'tags-input') {
+        if (input.type === "tags-input") {
           fieldSchema += `\n   .min(1, { message: 'Please enter at least one tag' })`;
         } else {
           fieldSchema += `.nonempty()`;
@@ -280,7 +310,9 @@ class FormGenerator {
   }
 
   generateValibotSchemaString(inputs: InputType[]): string {
-    let schemaString = `import * as v from 'valibot';\n`;
+    let schemaString = `import * as v from 'valibot';
+${this.file_input_named_id ? `export const KILOBYTE = 1024;
+export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
     schemaString += `export const schema = v.object({\n`;
 
     inputs.forEach((input) => {
@@ -317,6 +349,9 @@ class FormGenerator {
         fieldSchema += `    v.date('A date of birth is required.')`;
       } else if (input.type === "tags-input") {
         fieldSchema += `    v.array(v.string(), 'Please enter your tags.')`;
+      }
+      else if (input.type === 'file') {
+        fieldSchema += `v.array(v.pipe(v.file(), v.maxSize(MEGABYTE * 2)))`
       }
 
       // Add `min` and `max` constraints if available for number, password, and text fields
@@ -388,7 +423,7 @@ export const actions: Actions = {
 
   clientCode = $derived.by(() => {
     let clientrawCode = `<script lang="ts">
-	import { superForm } from 'sveltekit-superforms';
+	import { superForm ${this.file_input_named_id ? ',filesProxy' : ''} } from 'sveltekit-superforms';
     // add your own path
 	import type { PageData } from './$types';
 	import Label from '$lib/components/ui/label/label.svelte';
@@ -417,7 +452,7 @@ export const actions: Actions = {
         clientrawCode += `
     import * as InputOTP from "$lib/components/ui/input-otp/index";`;
       } else if (input === "date-picker") {
-        clientrawCode+=`import { CalendarIcon } from "lucide-svelte";
+        clientrawCode += `import { CalendarIcon } from "lucide-svelte";
   import * as Popover from "$lib/components/ui/popover";
   import * as Select from "$lib/components/ui/select";
   import * as Calendar from "$lib/components/ui/calendar/index";
@@ -483,7 +518,7 @@ export const actions: Actions = {
     monthOptions.find((m) => m.value === defaultMonth?.value)?.label ??
       "Select a month"
   );
-`
+`;
       } else if (input === "tags-input") {
         clientrawCode += `
     import { TagsInput } from "$lib/components/ui/tags-input";`;
@@ -539,42 +574,46 @@ export const actions: Actions = {
     }
     `;
       }
+      else if (input === 'file') {
+        clientrawCode += `
+      // File Upload
+  import { toast } from "svelte-sonner";
+  import {
+    displaySize,
+    FileDropZone,
+    MEGABYTE,
+    type FileDropZoneProps,
+  } from "$lib/components/ui/file-drop-zone";
+  import { fly, slide } from "svelte/transition";
+  import { Trash2 } from "lucide-svelte";
+
+  const onUpload: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
+    // we use set instead of an assignment since it accepts a File[]
+    files.set([...Array.from($files), ...uploadedFiles]);
+  };
+  const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
+    reason,
+    file,
+  }) => {
+    toast.error(\`\${ file.name } failed to upload!\`, { description: reason });
+  };`
+      }
     });
-    if (this.adapter === "zod") {
-      clientrawCode += `\n    import { zod } from 'sveltekit-superforms/adapters';
+    clientrawCode += `
+  import { ${this.adapter} } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 
 	let {
 		data
 	}: {
 		data: PageData;
-	} = $props();\n`;
-    } else if (this.adapter === "valibot") {
-      clientrawCode += `
-    import { valibot } from 'sveltekit-superforms/adapters';
-	import { schema } from './schema';
+	} = $props();
 
-	let {
-		data
-	}: {
-		data: PageData;
-	} = $props(); \n`;
-    }
+  let { form, message, errors, enhance } = superForm(data.form, {
+      validators: ${this.adapter}(schema)`
 
-    if (this.adapter === "zod") {
-      clientrawCode += `
-    let { form, message, errors, enhance } = superForm(data.form, {
-		validators: zod(schema)`;
-    } else if (this.adapter === "valibot") {
-      clientrawCode += `
-    let { form, message, errors, enhance } = superForm(data.form, {
-      validators: valibot(schema)
-    `;
-    }
 
-    if (
-      this.tags_input_named_id && this.combobox_named_id
-    ) {
+    if (this.tags_input_named_id && this.combobox_named_id) {
       clientrawCode += `,
         onUpdated(event) {
           if (event.form.valid) {
@@ -582,16 +621,14 @@ export const actions: Actions = {
             combovalue = "";
           }
         }`;
-    }
-    else if (this.tags_input_named_id) {
+    } else if (this.tags_input_named_id) {
       clientrawCode += `,
         onUpdated(event) {
           if (event.form.valid) {
             tagsvalue = [];
           }
         }`;
-    }
-    else if (this.combobox_named_id) {
+    } else if (this.combobox_named_id) {
       clientrawCode += `,
         onUpdated(event) {
           if (event.form.valid) {
@@ -607,16 +644,27 @@ export const actions: Actions = {
       let tagsvalue = $state([]);
   $effect(() => {
     $form.${this.tags_input_named_id.named_id} = tagsvalue;
-  });`
+  });`;
     }
+    if (this.file_input_named_id) {
+      clientrawCode += `
+    message.subscribe((message) => {
+      if (message) {
+        toast.success(message.text, {
+          description: "Your attachments were uploaded.",
+        });
+      }
+    });
 
+    const files = filesProxy(form, "${this.file_input_named_id.named_id}");`
+    }
 
     clientrawCode += `</script>
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
 	{#if $message}
 		<p class="text-emerald-400">{$message}</p>
 	{/if}
-  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+  <form ${this.file_input_named_id ? 'enctype="multipart/form-data"' : ''} method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
       if (
         input.type === "text" ||
@@ -764,7 +812,7 @@ export const actions: Actions = {
       {/if}
     </div>`;
       } else if (input.category === "date-picker") {
-        clientrawCode+=` <div class="flex flex-col">
+        clientrawCode += ` <div class="flex flex-col">
       <div class="grid gap-2">
         <Label>
           ${input.label}
@@ -882,7 +930,7 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
         <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
-    </div>`
+    </div>`;
       } else if (input.category === "tags-input") {
         clientrawCode += `
     <div>
@@ -979,6 +1027,74 @@ export const actions: Actions = {
       </div>
         `;
       }
+      else if (input.category === 'file') {
+        clientrawCode += `
+  <div>
+    <Label for="${input.named_id}">
+        ${input.label}
+    </Label>
+    <FileDropZone
+      {onUpload}
+      {onFileRejected}
+      maxFileSize={10 * MEGABYTE}
+      accept="image/*"
+      maxFiles={4}
+      fileCount={$files.length}
+    />
+    <p class="text-sm text-muted-foreground">Select file to upload.</p>
+    <input name="${input.named_id}" type="file" bind:files={$files} class="hidden" />
+    <div class="flex flex-col">
+      {#each Array.from($files) as file, i (file.name)}
+        <div
+          in:slide
+          out:fly={{ x: 20 }}
+          class="flex place-items-center justify-between gap-0.5 hover:bg-accent dark:hover:bg-accent/60 p-2 rounded-lg transition-all duration-200"
+        >
+          <div class="flex gap-2 items-center">
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-paperclip"
+                ><path d="M13.234 20.252 21 12.3" /><path
+                  d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"
+                /></svg
+              >
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm">{file.name}</span>
+              <span class="text-xs text-muted-foreground"
+                >{displaySize(file.size)}</span
+              >
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            class="hover:text-primary text-muted-foreground"
+            onclick={() => {
+              // we use set instead of an assignment since it accepts a File[]
+              files.set([
+                ...Array.from($files).slice(0, i),
+                ...Array.from($files).slice(i + 1),
+              ]);
+            }}
+          >
+            <Trash2 />
+          </Button>
+        </div>
+      {/each}
+    </div>
+  <div>
+        `
+      }
     });
     clientrawCode += `
     <Button type="submit" size="sm">Submit</Button>
@@ -990,7 +1106,7 @@ export const actions: Actions = {
 
   formsnapCode = $derived.by(() => {
     let formsnapCode = `<script lang="ts">
-  import { superForm } from "sveltekit-superforms";
+  import { superForm ${this.file_input_named_id ? ',filesProxy' : ''} } from "sveltekit-superforms";
   import {  ${this.adapter} } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
   import { schema } from "./schema";
@@ -1014,13 +1130,11 @@ export const actions: Actions = {
       } else if (input === "select") {
         formsnapCode += `
   import * as Select from "$lib/components/ui/select/index";`;
-      }
-      else if (input === 'input-otp') {
+      } else if (input === "input-otp") {
         formsnapCode += `
-  import * as InputOTP from "$lib/components/ui/input-otp/index";`
-      }
-      else if (input === 'date-picker') {
-        formsnapCode+=`
+  import * as InputOTP from "$lib/components/ui/input-otp/index";`;
+      } else if (input === "date-picker") {
+        formsnapCode += `
   import { CalendarIcon } from "lucide-svelte";
   import * as Popover from "$lib/components/ui/popover";
   import * as Select from "$lib/components/ui/select";
@@ -1086,17 +1200,14 @@ export const actions: Actions = {
   const monthLabel = $derived(
     monthOptions.find((m) => m.value === defaultMonth?.value)?.label ??
       "Select a month"
-  );`
-      }
-      else if (input === 'tags-input') {
+  );`;
+      } else if (input === "tags-input") {
         formsnapCode += `
   import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";`;
-      }
-      else if (input === 'phone') {
+      } else if (input === "phone") {
         formsnapCode += `
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
-      }
-      else if (input === 'combobox') {
+      } else if (input === "combobox") {
         formsnapCode += `
   // Combobox
   import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
@@ -1145,7 +1256,30 @@ export const actions: Actions = {
     tick().then(() => {
       triggerRef.focus();
     });
-  }`
+  }`;
+      }
+      else if (input === 'file') {
+        formsnapCode += `// File Upload
+  import { toast } from "svelte-sonner";
+  import {
+    displaySize,
+    FileDropZone,
+    MEGABYTE,
+    type FileDropZoneProps,
+  } from "$lib/components/ui/file-drop-zone";
+  import { fly, slide } from "svelte/transition";
+  import { Trash2 } from "lucide-svelte";
+
+  const onUpload: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
+    // we use set instead of an assignment since it accepts a File[]
+    files.set([...Array.from($files), ...uploadedFiles]);
+  };
+  const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
+    reason,
+    file,
+  }) => {
+    toast.error(\`\${file.name} failed to upload!\`, { description: reason });
+  };`
       }
     });
 
@@ -1156,7 +1290,7 @@ export const actions: Actions = {
     data: PageData;
   } = $props();
   let form = superForm(data.form, {
-    validators: ${this.adapter}(schema),`
+    validators: ${this.adapter}(schema),`;
     if (this.tags_input_named_id && this.combobox_named_id) {
       formsnapCode += `
     onUpdated(event) {
@@ -1165,16 +1299,14 @@ export const actions: Actions = {
         combovalue = "";
       }
     },`;
-    }
-    else if (this.tags_input_named_id) {
+    } else if (this.tags_input_named_id) {
       formsnapCode += `
       onUpdated(event) {
         if (event.form.valid) {
           tagsvalue = [];
         }
       },`;
-    }
-    else if (this.combobox_named_id) {
+    } else if (this.combobox_named_id) {
       formsnapCode += `
       onUpdated(event) {
         if (event.form.valid) {
@@ -1190,7 +1322,19 @@ export const actions: Actions = {
   let tagsvalue = $state([]);
   $effect(() => {
     $formData.${this.tags_input_named_id.named_id} = tagsvalue;
-  });`
+  });`;
+    }
+    if (this.file_input_named_id) {
+      formsnapCode += `
+    message.subscribe((message) => {
+      if (message) {
+        toast.success(message.text, {
+          description: "Your attachments were uploaded.",
+        });
+      }
+    });
+
+    const files = filesProxy(form, "${this.file_input_named_id.named_id}");`
     }
     //   if (this.date_picker_named_id) {
     //     formsnapCode += `
@@ -1207,7 +1351,7 @@ export const actions: Actions = {
       {$message}
     </span>
   {/if}
-  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+  <form method="post" ${this.file_input_named_id ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
       if (
         input.type === "text" ||
@@ -1304,8 +1448,7 @@ export const actions: Actions = {
         </Control>
       </Field>
     </div>`;
-      }
-      else if (input.type === "select") {
+      } else if (input.type === "select") {
         formsnapCode += `
       <div>
         <Field {form} name="${input.named_id}">
@@ -1340,8 +1483,7 @@ export const actions: Actions = {
           <FieldErrors class='text-sm text-destructive' />
         </Field>
       </div>`;
-      }
-      else if (input.type === 'input-otp') {
+      } else if (input.type === "input-otp") {
         formsnapCode += `
       <div>
         <Field {form} name="${input.named_id}">
@@ -1370,9 +1512,8 @@ export const actions: Actions = {
           </Description>
           <FieldErrors class="text-sm text-destructive" />
         </Field>
-      </div>`
-      }
-      else if (input.type === 'date-picker') {
+      </div>`;
+      } else if (input.type === "date-picker") {
         formsnapCode += `
         <div class="flex flex-col">
       <div class="grid gap-2">
@@ -1506,9 +1647,8 @@ export const actions: Actions = {
         </Field>
       </div>
     </div>
-        `
-      }
-      else if (input.type === 'tags-input') {
+        `;
+      } else if (input.type === "tags-input") {
         formsnapCode += `
        <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
     <div>
@@ -1532,8 +1672,7 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      }
-      else if (input.type === 'phone') {
+      } else if (input.type === "phone") {
         formsnapCode += `<div>
       <Field {form} name="${input.named_id}">
         <Control>
@@ -1555,8 +1694,7 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      }
-      else if (input.type === 'combobox') {
+      } else if (input.type === "combobox") {
         formsnapCode += `
       <div>
       <Field {form} name="${input.named_id}">
@@ -1624,7 +1762,82 @@ export const actions: Actions = {
         </Description>
         <FieldErrors class="text-sm text-destructive" />
       </Field>
-    </div>`
+    </div>`;
+      }
+      else if (input.type === 'file') {
+        formsnapCode += `
+  <div>
+    <Field {form} name="${input.named_id}">
+      <Control>
+        {#snippet children({ props })}
+          <Label>${input.label}</Label>
+          <FileDropZone
+            {onUpload}
+            {onFileRejected}
+            maxFileSize={1 * MEGABYTE}
+            accept="image/*"
+            maxFiles={4}
+            fileCount={$files.length}
+            class="my-1"
+          />
+          <input name="${input.named_id}" type="file" bind:files={$files} class="hidden" />
+        {/snippet}
+      </Control>
+      <Description class="text-sm text-muted-foreground">
+        ${input.description}
+      </Description>
+      <FieldErrors />
+      <div class="flex flex-col">
+        {#each Array.from($files) as file, i (file.name)}
+          <div
+            in:slide
+            out:fly={{ x: 20 }}
+            class="flex place-items-center justify-between gap-0.5 hover:bg-accent dark:hover:bg-accent/60 p-2 rounded-lg transition-all duration-200"
+          >
+            <div class="flex gap-2 items-center">
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-paperclip"
+                  ><path d="M13.234 20.252 21 12.3" /><path
+                    d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"
+                  /></svg
+                >
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm">{file.name}</span>
+                <span class="text-xs text-muted-foreground"
+                  >{displaySize(file.size)}</span
+                >
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              class="hover:text-primary text-muted-foreground"
+              onclick={() => {
+                // we use set instead of an assignment since it accepts a File[]
+                files.set([
+                  ...Array.from($files).slice(0, i),
+                  ...Array.from($files).slice(i + 1),
+                ]);
+              }}
+            >
+              <Trash2 />
+            </Button>
+          </div>
+        {/each}
+      </div>
+    </Field>
+  </div>`;
       }
     });
     formsnapCode += `

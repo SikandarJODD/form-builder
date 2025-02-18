@@ -151,6 +151,26 @@
       triggerRef.focus();
     });
   }
+
+  // File Upload
+
+  import { toast } from "svelte-sonner";
+  import {
+    FileDropZone,
+    MEGABYTE,
+    type FileDropZoneProps,
+  } from "$lib/components/ui/file-drop-zone";
+
+  const onUpload: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
+    // we use set instead of an assignment since it accepts a File[]
+    console.log(uploadedFiles);
+  };
+  const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
+    reason,
+    file,
+  }) => {
+    toast.error(`${file.name} failed to upload!`, { description: reason });
+  };
 </script>
 
 {#if form_generator.selected_inputs.length === 0}
@@ -433,8 +453,20 @@
     {/if} -->
 
           {#if comp.type === "file"}
-            <input type="file" id={comp.id} />
-            <label for={comp.id}>{comp.name}</label>
+            <div>
+              <Label for="attachments">Upload File*</Label>
+              <FileDropZone
+                {onUpload}
+                {onFileRejected}
+                maxFileSize={10 * MEGABYTE}
+                accept="image/*"
+                maxFiles={4}
+                class='mt-1'
+              />
+              <p class="text-sm text-muted-foreground">
+                Select file to upload.
+              </p>
+            </div>
           {/if}
           {#if comp.type === "range"}
             <input type="range" id={comp.id} />

@@ -47,7 +47,6 @@
 </script>
 
 <script lang="ts">
-  import { cn } from "$lib/utils";
   import { Upload } from "lucide-svelte";
   import { displaySize } from "./index";
   import { useId } from "bits-ui";
@@ -79,9 +78,9 @@
       currentTarget: EventTarget & HTMLLabelElement;
     }
   ) => {
-    e.preventDefault();
+    if (disabled || !canUploadFiles) return;
 
-    if (disabled) return;
+    e.preventDefault();
 
     const droppedFiles = Array.from(e.dataTransfer?.files ?? []);
 
@@ -94,7 +93,9 @@
     }
   ) => {
     if (disabled) return;
+
     const selectedFiles = e.currentTarget.files;
+
     if (!selectedFiles) return;
 
     await upload(Array.from(selectedFiles));
@@ -103,15 +104,14 @@
     (e.target as HTMLInputElement).value = "";
   };
 
-  const shouldAcceptFile = (file: File): FileRejectedReason | undefined => {
+  const shouldAcceptFile = (
+    file: File,
+    fileNumber: number
+  ): FileRejectedReason | undefined => {
     if (maxFileSize !== undefined && file.size > maxFileSize)
       return "Maximum file size exceeded";
 
-    if (
-      maxFiles !== undefined &&
-      fileCount !== undefined &&
-      fileCount >= maxFiles
-    )
+    if (maxFiles !== undefined && fileNumber > maxFiles)
       return "Maximum files uploaded";
 
     if (!accept) return undefined;
@@ -146,8 +146,10 @@
 
     const validFiles: File[] = [];
 
-    for (const file of uploadFiles) {
-      const rejectedReason = shouldAcceptFile(file);
+    for (let i = 0; i < uploadFiles.length; i++) {
+      const file = uploadFiles[i];
+
+      const rejectedReason = shouldAcceptFile(file, (fileCount ?? 0) + i + 1);
 
       if (rejectedReason) {
         onFileRejected?.({ file, reason: rejectedReason });
@@ -178,10 +180,10 @@
   ondrop={drop}
   for={id}
   aria-disabled={!canUploadFiles}
-  class={cn(
-    "flex h-48 w-full place-items-center justify-center rounded-lg border-2 border-dashed border-border p-6 transition-all hover:cursor-pointer hover:bg-accent/25 aria-disabled:opacity-50 aria-disabled:hover:cursor-not-allowed",
-    className
-  )}
+  class={[
+    "flex h-40 w-full place-items-center justify-center rounded-lg border-2 border-dashed border-border p-6 transition-all hover:cursor-pointer hover:bg-accent/25 aria-disabled:opacity-50 aria-disabled:hover:cursor-not-allowed",
+    className,
+  ]}
 >
   {#if children}
     {@render children()}
@@ -217,7 +219,7 @@
     disabled={!canUploadFiles}
     {id}
     {accept}
-    multiple
+    multiple={maxFiles === undefined || maxFiles - (fileCount ?? 0) > 1}
     type="file"
     onchange={change}
     class="hidden"
