@@ -46,7 +46,7 @@
   </p>
 </div>
 
-<style>
+<style lang="postcss">
   ul li > code {
     @apply bg-zinc-900 px-2 py-1 rounded-[2px] text-primary;
   }
