@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state";
+  import Button from "../ui/button/button.svelte";
 
   let { children } = $props();
   let templates = [
@@ -51,13 +52,18 @@
     <div class="sticky top-20 col-span-2 bg-accent/50 rounded-lg p-4 h-fit">
       {#each templates as item}
         <div>
-          <h2 class="text-lg font-semibold">{item.name}</h2>
-          <div class="border-l px-2 ml-1 mt-1">
+          <div class="flex justify-between items-center">
+            <h2 class="text-md font-semibold">{item.name}</h2>
+            <Button size="icon" class="size-6 text-xs" variant="secondary">
+              {item.sub.length}
+            </Button>
+          </div>
+          <div class="border-l px-2 ml-1 mt-1.5">
             {#each item.sub as subItem}
               <a
                 href={subItem.url}
                 class={[
-                  "block text-muted-foreground px-2 py-1 rounded-md transition-all duration-150 hover:text-primary",
+                  "block text-sm text-muted-foreground px-2 py-1 rounded-md transition-all duration-150 hover:text-primary",
                   isActive(subItem.url) && "text-primary bg-primary/5",
                 ]}>{subItem.name}</a
               >
