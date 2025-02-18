@@ -417,25 +417,73 @@ export const actions: Actions = {
         clientrawCode += `
     import * as InputOTP from "$lib/components/ui/input-otp/index";`;
       } else if (input === "date-picker") {
-        clientrawCode += `
-    import { Calendar } from "$lib/components/ui/calendar/index";
-    import * as Popover from "$lib/components/ui/popover/index";
-    import CalendarIcon from "lucide-svelte/icons/calendar";
-    import {
-      CalendarDate,
-      DateFormatter,
-      type DateValue,
-      getLocalTimeZone,
-      parseDate,
-      today,
-    } from "@internationalized/date";
+        clientrawCode+=`import { CalendarIcon } from "lucide-svelte";
+  import * as Popover from "$lib/components/ui/popover";
+  import * as Select from "$lib/components/ui/select";
+  import * as Calendar from "$lib/components/ui/calendar/index";
+  import { Calendar as CalendarPrimitive } from "bits-ui";
+  import {
+    CalendarDate,
+    type DateValue,
+    getLocalTimeZone,
+    today,
+    DateFormatter,
+  } from "@internationalized/date";
+  // Components
+  import { buttonVariants } from "$lib/components/ui/button/button.svelte";
+  let value = $state<DateValue | undefined>();
+  // Month formatter
+  const monthFmt = new DateFormatter("en-US", {
+    month: "long",
+  });
 
-    const df = new DateFormatter("en-US", {
-      dateStyle: "long",
-    });
+  // Generate month options
+  const monthOptions = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ].map((month, i) => ({ value: String(i + 1), label: month }));
 
-    let dvalue = $state<DateValue>();
-    let placeholder = $state(today(getLocalTimeZone()));`;
+  // Generate year options (from 1900 to current year)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: currentYear - 1899 }, (_, i) => ({
+    label: String(currentYear - i),
+    value: String(currentYear - i),
+  }));
+  const df = new DateFormatter("en-US", {
+    dateStyle: "long",
+  });
+  let placeholder = $state(today(getLocalTimeZone()));
+
+  const defaultYear = $derived(
+    placeholder
+      ? { value: String(placeholder.year), label: String(placeholder.year) }
+      : undefined
+  );
+
+  const defaultMonth = $derived(
+    placeholder
+      ? {
+          value: String(placeholder.month),
+          label: monthFmt.format(placeholder.toDate(getLocalTimeZone())),
+        }
+      : undefined
+  );
+
+  const monthLabel = $derived(
+    monthOptions.find((m) => m.value === defaultMonth?.value)?.label ??
+      "Select a month"
+  );
+`
       } else if (input === "tags-input") {
         clientrawCode += `
     import { TagsInput } from "$lib/components/ui/tags-input";`;
@@ -492,13 +540,6 @@ export const actions: Actions = {
     `;
       }
     });
-    if (this.date_picker_named_id) {
-      clientrawCode += `
-  $effect(() => {
-    dvalue = $form.${this.date_picker_named_id.named_id} ? parseDate($form.${this.date_picker_named_id.named_id}) : undefined;
-  });
-    `;
-    }
     if (this.adapter === "zod") {
       clientrawCode += `\n    import { zod } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
@@ -723,37 +764,34 @@ export const actions: Actions = {
       {/if}
     </div>`;
       } else if (input.category === "date-picker") {
-        clientrawCode += `
-    <div>
-      <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
-      <div>
+        clientrawCode+=` <div class="flex flex-col">
+      <div class="grid gap-2">
+        <Label>
+          ${input.label}
+        </Label>
         <Popover.Root>
-          <Popover.Trigger>
-            {#snippet child({ props })}
-              <Button
-                variant="outline"
-                class={[
-                  "w-[240px] justify-start text-left font-normal",
-                  !dvalue && "text-muted-foreground"
-                ]}
-                {...props}
-              >
-                <CalendarIcon />
-                {dvalue
-                  ? df.format(dvalue.toDate(getLocalTimeZone()))
-                  : "Pick a date"}
-              </Button>
-            {/snippet}
+          <Popover.Trigger
+            class={[
+              buttonVariants({ variant: "outline" }),
+              "w-[250px] justify-start pl-4 text-left font-normal",
+              !value && "text-muted-foreground",
+            ]}
+          >
+            {value
+              ? df.format(value.toDate(getLocalTimeZone()))
+              : "Pick a date"}
+            <CalendarIcon class="ml-auto h-4 w-4 opacity-50" />
           </Popover.Trigger>
-          <Popover.Content class="w-auto p-0" side="top">
-            <Calendar
-              type="single"
-              value={dvalue}
+          <Popover.Content class="w-auto p-0" side="bottom">
+            <CalendarPrimitive.Root
+              bind:value
               bind:placeholder
-              id="${input.named_id}"
+              class="rounded-md border p-3"
+              type="single"
               minValue={new CalendarDate(1900, 1, 1)}
               maxValue={today(getLocalTimeZone())}
               calendarLabel="Date of birth"
+              initialFocus
               onValueChange={(v) => {
                 if (v) {
                   $form.${input.named_id} = v.toString();
@@ -761,18 +799,90 @@ export const actions: Actions = {
                   $form.${input.named_id} = "";
                 }
               }}
-            />
+            >
+              {#snippet children({ months, weekdays })}
+                <Calendar.Header>
+                  <Calendar.Heading
+                    class="flex w-full items-center justify-between gap-2"
+                  >
+                    <Select.Root
+                      type="single"
+                      value={defaultMonth?.value}
+                      onValueChange={(v) => {
+                        if (!placeholder) return;
+                        if (v === \`\${placeholder.month}\`) return;
+                        placeholder = placeholder.set({
+                          month: Number.parseInt(v),
+                        });
+                      }}
+                    >
+                      <Select.Trigger aria-label="Select month" class="w-[60%]">
+                        {monthLabel}
+                      </Select.Trigger>
+                      <Select.Content class="max-h-[200px] overflow-y-auto">
+                        {#each monthOptions as { value, label }}
+                          <Select.Item {value} {label} />
+                        {/each}
+                      </Select.Content>
+                    </Select.Root>
+                    <Select.Root
+                      type="single"
+                      value={defaultYear?.value}
+                      onValueChange={(v) => {
+                        if (!v || !placeholder) return;
+                        if (v === \`\${placeholder?.year}\`) return;
+                        placeholder = placeholder.set({
+                          year: Number.parseInt(v),
+                        });
+                      }}
+                    >
+                      <Select.Trigger aria-label="Select year" class="w-[40%]">
+                        {defaultYear?.label ?? "Select year"}
+                      </Select.Trigger>
+                      <Select.Content class="max-h-[200px] overflow-y-auto">
+                        {#each yearOptions as { value, label }}
+                          <Select.Item {value} {label} />
+                        {/each}
+                      </Select.Content>
+                    </Select.Root>
+                  </Calendar.Heading>
+                </Calendar.Header>
+                <Calendar.Months>
+                  {#each months as month}
+                    <Calendar.Grid>
+                      <Calendar.GridHead>
+                        <Calendar.GridRow class="flex">
+                          {#each weekdays as weekday}
+                            <Calendar.HeadCell>
+                              {weekday.slice(0, 2)}
+                            </Calendar.HeadCell>
+                          {/each}
+                        </Calendar.GridRow>
+                      </Calendar.GridHead>
+                      <Calendar.GridBody>
+                        {#each month.weeks as weekDates}
+                          <Calendar.GridRow class="mt-2 w-full">
+                            {#each weekDates as date}
+                              <Calendar.Cell {date} month={month.value}>
+                                <Calendar.Day />
+                              </Calendar.Cell>
+                            {/each}
+                          </Calendar.GridRow>
+                        {/each}
+                      </Calendar.GridBody>
+                    </Calendar.Grid>
+                  {/each}
+                </Calendar.Months>
+              {/snippet}
+            </CalendarPrimitive.Root>
           </Popover.Content>
         </Popover.Root>
+        <input hidden value={$form.${input.named_id}} name="${input.named_id}" />
       </div>
-      <p class="text-xs text-muted-foreground">
-          ${input.description}
-      </p>
       {#if $errors.${input.named_id}}
-          <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
+        <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
-      <input hidden value={$form.${input.named_id}} name="${input.named_id}" />
-    </div>`;
+    </div>`
       } else if (input.category === "tags-input") {
         clientrawCode += `
     <div>
@@ -910,25 +1020,73 @@ export const actions: Actions = {
   import * as InputOTP from "$lib/components/ui/input-otp/index";`
       }
       else if (input === 'date-picker') {
-        formsnapCode += `
-  import CalendarIcon from "lucide-svelte/icons/calendar";
+        formsnapCode+=`
+  import { CalendarIcon } from "lucide-svelte";
+  import * as Popover from "$lib/components/ui/popover";
+  import * as Select from "$lib/components/ui/select";
+  import * as Calendar from "$lib/components/ui/calendar/index";
+  import { Calendar as CalendarPrimitive } from "bits-ui";
   import {
     CalendarDate,
-    DateFormatter,
     type DateValue,
     getLocalTimeZone,
-    parseDate,
     today,
+    DateFormatter,
   } from "@internationalized/date";
-  import { Calendar } from "$lib/components/ui/calendar/index";
-  import * as Popover from "$lib/components/ui/popover/index";
+  // Components
+  import { buttonVariants } from "$lib/components/ui/button/button.svelte";
+  let value = $state<DateValue | undefined>();
+  // Month formatter
+  const monthFmt = new DateFormatter("en-US", {
+    month: "long",
+  });
 
+  // Generate month options
+  const monthOptions = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ].map((month, i) => ({ value: String(i + 1), label: month }));
+
+  // Generate year options (from 1900 to current year)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: currentYear - 1899 }, (_, i) => ({
+    label: String(currentYear - i),
+    value: String(currentYear - i),
+  }));
   const df = new DateFormatter("en-US", {
     dateStyle: "long",
   });
+  let placeholder = $state(today(getLocalTimeZone()));
 
-  let value = $state<DateValue | undefined>();
-  let placeholder = $state(today(getLocalTimeZone()));`
+  const defaultYear = $derived(
+    placeholder
+      ? { value: String(placeholder.year), label: String(placeholder.year) }
+      : undefined
+  );
+
+  const defaultMonth = $derived(
+    placeholder
+      ? {
+          value: String(placeholder.month),
+          label: monthFmt.format(placeholder.toDate(getLocalTimeZone())),
+        }
+      : undefined
+  );
+
+  const monthLabel = $derived(
+    monthOptions.find((m) => m.value === defaultMonth?.value)?.label ??
+      "Select a month"
+  );`
       }
       else if (input === 'tags-input') {
         formsnapCode += `
@@ -1034,13 +1192,13 @@ export const actions: Actions = {
     $formData.${this.tags_input_named_id.named_id} = tagsvalue;
   });`
     }
-    if (this.date_picker_named_id) {
-      formsnapCode += `
-  $effect(() => {
-    value = $formData.${this.date_picker_named_id.named_id} ? parseDate($formData.${this.date_picker_named_id.named_id}) : undefined;
-  });
-      `
-    }
+    //   if (this.date_picker_named_id) {
+    //     formsnapCode += `
+    // $effect(() => {
+    //   value = $formData.${this.date_picker_named_id.named_id} ? parseDate($formData.${this.date_picker_named_id.named_id}) : undefined;
+    // });
+    //     `
+    //   }
     formsnapCode += `
   </script> \n\n`; // close script tag
     formsnapCode += `<div class="flex min-h-[60vh] flex-col items-center justify-center">
@@ -1216,37 +1374,36 @@ export const actions: Actions = {
       }
       else if (input.type === 'date-picker') {
         formsnapCode += `
-      <div class="flex flex-col">
-        <Field {form} name="${input.named_id}">
+        <div class="flex flex-col">
+      <div class="grid gap-2">
+        <Field {form} name="datepicker">
           <Control>
             {#snippet children({ props })}
               <Label>${input.label}</Label>
               <Popover.Root>
-                <Popover.Trigger {...props}>
-                  {#snippet child({ props })}
-                    <Button
-                      variant="outline"
-                      class={[
-                        "w-[280px] justify-start pl-4 text-left font-normal",
-                        !value && "text-muted-foreground",
-                      ]}
-                      {...props}
-                    >
-                      {value
-                        ? df.format(value.toDate(getLocalTimeZone()))
-                        : "Pick a date"}
-                      <CalendarIcon class="ml-auto size-4 opacity-50" />
-                    </Button>
-                  {/snippet}
+                <Popover.Trigger
+                  {...props}
+                  class={[
+                    buttonVariants({ variant: "outline" }),
+                    "w-[250px] justify-start pl-4 text-left font-normal",
+                    !value && "text-muted-foreground",
+                  ]}
+                >
+                  {value
+                    ? df.format(value.toDate(getLocalTimeZone()))
+                    : "Pick a date"}
+                  <CalendarIcon class="ml-auto h-4 w-4 opacity-50" />
                 </Popover.Trigger>
-                <Popover.Content class="w-auto p-0" side="top">
-                  <Calendar
-                    type="single"
-                    {value}
+                <Popover.Content class="w-auto p-0" side="bottom">
+                  <CalendarPrimitive.Root
+                    bind:value
                     bind:placeholder
+                    class="rounded-md border p-3"
+                    type="single"
                     minValue={new CalendarDate(1900, 1, 1)}
                     maxValue={today(getLocalTimeZone())}
                     calendarLabel="Date of birth"
+                    initialFocus
                     onValueChange={(v) => {
                       if (v) {
                         $formData.${input.named_id} = v.toString();
@@ -1254,18 +1411,102 @@ export const actions: Actions = {
                         $formData.${input.named_id} = "";
                       }
                     }}
-                  />
+                  >
+                    {#snippet children({ months, weekdays })}
+                      <Calendar.Header>
+                        <Calendar.Heading
+                          class="flex w-full items-center justify-between gap-2"
+                        >
+                          <Select.Root
+                            type="single"
+                            value={defaultMonth?.value}
+                            onValueChange={(v) => {
+                              if (!placeholder) return;
+                              if (v === \`\${ placeholder.month } \`) return;
+                              placeholder = placeholder.set({
+                                month: Number.parseInt(v),
+                              });
+                            }}
+                          >
+                            <Select.Trigger
+                              aria-label="Select month"
+                              class="w-[60%]"
+                            >
+                              {monthLabel}
+                            </Select.Trigger>
+                            <Select.Content
+                              class="max-h-[200px] overflow-y-auto"
+                            >
+                              {#each monthOptions as { value, label }}
+                                <Select.Item {value} {label} />
+                              {/each}
+                            </Select.Content>
+                          </Select.Root>
+                          <Select.Root
+                            type="single"
+                            value={defaultYear?.value}
+                            onValueChange={(v) => {
+                              if (!v || !placeholder) return;
+                              if (v === \`\${placeholder?.year}\`) return;
+                              placeholder = placeholder.set({
+                                year: Number.parseInt(v),
+                              });
+                            }}
+                          >
+                            <Select.Trigger
+                              aria-label="Select year"
+                              class="w-[40%]"
+                            >
+                              {defaultYear?.label ?? "Select year"}
+                            </Select.Trigger>
+                            <Select.Content
+                              class="max-h-[200px] overflow-y-auto"
+                            >
+                              {#each yearOptions as { value, label }}
+                                <Select.Item {value} {label} />
+                              {/each}
+                            </Select.Content>
+                          </Select.Root>
+                        </Calendar.Heading>
+                      </Calendar.Header>
+                      <Calendar.Months>
+                        {#each months as month}
+                          <Calendar.Grid>
+                            <Calendar.GridHead>
+                              <Calendar.GridRow class="flex">
+                                {#each weekdays as weekday}
+                                  <Calendar.HeadCell>
+                                    {weekday.slice(0, 2)}
+                                  </Calendar.HeadCell>
+                                {/each}
+                              </Calendar.GridRow>
+                            </Calendar.GridHead>
+                            <Calendar.GridBody>
+                              {#each month.weeks as weekDates}
+                                <Calendar.GridRow class="mt-2 w-full">
+                                  {#each weekDates as date}
+                                    <Calendar.Cell {date} month={month.value}>
+                                      <Calendar.Day />
+                                    </Calendar.Cell>
+                                  {/each}
+                                </Calendar.GridRow>
+                              {/each}
+                            </Calendar.GridBody>
+                          </Calendar.Grid>
+                        {/each}
+                      </Calendar.Months>
+                    {/snippet}
+                  </CalendarPrimitive.Root>
                 </Popover.Content>
               </Popover.Root>
-              <Description class="text-muted-foreground text-xs"
-                >Your date of birth is used to calculator your age</Description
-              >
-              <FieldErrors class="text-sm text-destructive" />
               <input hidden value={$formData.${input.named_id}} name={props.name} />
             {/snippet}
           </Control>
+          <FieldErrors class='text-sm text-destructive' />
         </Field>
-      </div>`
+      </div>
+    </div>
+        `
       }
       else if (input.type === 'tags-input') {
         formsnapCode += `
@@ -1293,8 +1534,7 @@ export const actions: Actions = {
     </div>`;
       }
       else if (input.type === 'phone') {
-        formsnapCode += `
-    <div>
+        formsnapCode += `<div>
       <Field {form} name="${input.named_id}">
         <Control>
           {#snippet children({ props })}
