@@ -9,7 +9,7 @@
   const data = [
     {
       id: 1,
-      title: "1. Choose Your Components",
+      title: "1. Select Input Fields",
       content:
         "Select from a rich library of pre-built form components. Customize and combine them effortlessly to create forms tailored to your needs.",
       image: ChooseComponents,
@@ -17,17 +17,17 @@
     },
     {
       id: 2,
-      title: "2. Add or Reorder Fields",
+      title: "2. Edit or Reorder Fields",
       content:
-        "Easily add new form fields or rearrange existing ones. Our intuitive interface lets you structure your form exactly the way you want.",
+        "Drag and drop to reorder fields. Edit field properties like label, placeholder, and validation rules.",
       image: EditComponents,
       icon: ArrowUpDown,
     },
     {
       id: 3,
-      title: "3. Set Up Form Generation Options",
+      title: "3. Copy the Code",
       content:
-        "Define how your form should behave. Configure validation rules, set SSR options, and choose your validation library for maximum flexibility.",
+        "Copy the generated code and use it in your project. The code is clean, readable, and easy to understand.",
       image: FinalCode,
       icon: Code,
     },

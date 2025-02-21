@@ -58,7 +58,7 @@
               {item.sub.length}
             </Button>
           </div>
-          <div class="border-l px-2 ml-1 mt-1.5">
+          <div class="border-l px-2 ml-1 my-1">
             {#each item.sub as subItem}
               <a
                 href={subItem.url}

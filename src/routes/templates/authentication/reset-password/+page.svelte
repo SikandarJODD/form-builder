@@ -5,10 +5,11 @@
   import ResetPassword from "$lib/components/templates/forms/ResetPassword.svelte";
   import ResetPasswordCode from "$lib/components/templates/forms/ResetPassword.svelte?raw";
   import { pageServerCode } from "../../serverCopyCode";
+  import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
   let spl_comps = [
     {
       name: "Password Input",
-      url: "https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte",
+      url: "/docs/components/password-input",
     },
   ];
   let tab_value = $state("preview");
@@ -48,14 +49,7 @@ export let schema = z.object({
       </ul>
     </div>
     <div>
-      <Tabs.Root bind:value={tab_value}>
-        <Tabs.List>
-          <Tabs.Trigger value="preview">Preview</Tabs.Trigger>
-          <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
-          <Tabs.Trigger value="client">Client</Tabs.Trigger>
-          <Tabs.Trigger value="server">Server</Tabs.Trigger>
-        </Tabs.List>
-      </Tabs.Root>
+      <TemplatesTabs bind:tab_value />
     </div>
   </div>
 </div>

@@ -13,7 +13,6 @@
   import Dock from "lucide-svelte/icons/dock";
   import CodeXML from "lucide-svelte/icons/code-xml";
   import Zap from "lucide-svelte/icons/zap";
-  import Badge from "$lib/components/ui/badge/badge.svelte";
 </script>
 
 <div class="col-span-3">

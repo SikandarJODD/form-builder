@@ -200,6 +200,6 @@
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.8, ease }}
   >
-    <Button variant="secondary" class="rounded-lg">Go to Playground</Button>
+    <Button variant="secondary" href="/playground" class="rounded-lg">Go to Playground</Button>
   </Motion.div>
 {/snippet}
