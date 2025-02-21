@@ -3,11 +3,11 @@
   // add your own path
   import type { PageData } from "./$types";
   import { zod } from "sveltekit-superforms/adapters";
-  import * as Tabs from "$lib/components/ui/tabs/index";
   import CopyCode from "$lib/components/web/playground/code/CopyCode.svelte";
   import { schema } from "./schema";
   import Register from "$lib/components/templates/forms/Register.svelte";
   import RegisterCode from "$lib/components/templates/forms/Register.svelte?raw";
+  import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
 
   let {
     data,
@@ -21,7 +21,7 @@
   let spl_comps = [
     {
       name: "Password Input",
-      url: "https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte",
+      url: "/docs/components/password-input",
     },
   ];
   let tab_value = $state("preview");
@@ -83,14 +83,7 @@ export const actions: Actions = {
       </ul>
     </div>
     <div>
-      <Tabs.Root bind:value={tab_value}>
-        <Tabs.List>
-          <Tabs.Trigger value="preview">Preview</Tabs.Trigger>
-          <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
-          <Tabs.Trigger value="client">Client</Tabs.Trigger>
-          <Tabs.Trigger value="server">Server</Tabs.Trigger>
-        </Tabs.List>
-      </Tabs.Root>
+      <TemplatesTabs bind:tab_value />
     </div>
   </div>
   {#if tab_value === "preview"}

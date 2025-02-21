@@ -50,7 +50,7 @@
     handleScroll();
   });
   let handleScroll = () => {
-    let autoScrollTimer: NodeJS.Timeout ;
+    let autoScrollTimer: NodeJS.Timeout;
     let handleAutoScroll = () => {
       currentIndex.update((prevIndex) =>
         prevIndex !== undefined ? (prevIndex + 1) % data.length : 0
@@ -65,9 +65,11 @@
 </script>
 
 <section id="features">
-  <div class="container">
+  <div class="md:container px-4 md:px-0">
     <div class="mx-auto max-w-6xl">
-      <div class="mx-auto my-12 grid h-full items-center gap-10 lg:grid-cols-2">
+      <div
+        class="mx-auto my-0 md:my-12 grid h-full items-center gap-6 md:gap-10 lg:grid-cols-2"
+      >
         <div
           class="order-1 hidden lg:order-none lg:flex {ltr
             ? 'lg:order-2 lg:justify-end'
@@ -135,7 +137,7 @@
           </div>
         </div>
 
-        <div class="h-[380px] min-h-[200px] w-auto {ltr && 'lg:order-1'}">
+        <div class="h-[380px] md:min-h-[200px] {ltr && 'lg:order-1'}">
           {#if data[$currentIndex]?.image}
             <img
               src={data[$currentIndex].image}
@@ -150,7 +152,7 @@
               autoplay
               loop
               muted
-            />
+            ></video>
           {:else}
             <div
               class="aspect-auto size-full rounded-xl border border-neutral-300/50 bg-gray-200 p-1"
@@ -159,7 +161,7 @@
         </div>
 
         <div
-          class="relative md:hidden pb-0.5 [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] -mb-8"
+          class="relative md:hidden pb-0.5 [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)]"
         >
           {#each data as _, index}
             <div
@@ -186,12 +188,12 @@
             <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 
             <li
-              class="card_code relative mr-8 grid h-full max-w-full pl-2 shrink-0 items-start justify-center last:mr-0"
+              class="card_code relative mr-8 grid h-full w-full pl-4 shrink-0 items-start justify-center last:mr-0"
               on:click={() => currentIndex.set(index)}
               style="scroll-snap-align: center;"
             >
               <h2 class="text-xl font-bold">{item.title}</h2>
-              <p class="mx-0 max-w-sm text-balance text-sm">{item.content}</p>
+              <p class="mx-0 max-w-sm text-sm">{item.content}</p>
             </li>
           {/each}
         </ul>
