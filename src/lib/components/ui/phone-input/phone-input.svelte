@@ -18,6 +18,7 @@
     value = $bindable(null),
     valid = $bindable(false),
     detailedValue = $bindable(),
+    id = undefined,
     order = undefined,
     name = undefined,
     ...rest
@@ -42,6 +43,7 @@
   />
   <TelInput
     {name}
+    id={id}
     bind:country
     bind:detailedValue
     bind:value

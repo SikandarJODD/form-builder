@@ -203,9 +203,9 @@ class FormGenerator {
 
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
-    let random_id = this.unique_imports.includes(item.type)
-      ? `${item.type.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`
-      : item.type.split("-").join("");
+    let random_id = this.unique_imports.includes(item.category)
+      ? `${item.category.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`
+      : item.category.split("-").join("");
     let new_input: InputType = {
       id: id,
       named_id: random_id,
@@ -1416,7 +1416,7 @@ export const actions: Actions = {
             {#snippet children({ props })}
               <div class="space-y-0.5">
                 <Label class='font-medium'> ${input.label} </Label>
-                <Description class='text-muted-foreground text-sm'>
+                <Description class='text-muted-foreground text-xs'>
                   ${input.description}
                 </Description>
               </div>
