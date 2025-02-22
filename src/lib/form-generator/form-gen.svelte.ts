@@ -203,9 +203,9 @@ class FormGenerator {
 
   add_input = (item: InputType) => {
     let id = crypto.randomUUID().slice(0, 5);
-    let random_id = this.unique_imports.includes(item.type)
-      ? `${item.type.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`
-      : item.type.split("-").join("");
+    let random_id = this.unique_imports.includes(item.category)
+      ? `${item.category.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`
+      : item.category.split("-").join("");
     let new_input: InputType = {
       id: id,
       named_id: random_id,
@@ -450,7 +450,8 @@ export const actions: Actions = {
     import * as Select from "$lib/components/ui/select/index";`;
       } else if (input === "input-otp") {
         clientrawCode += `
-    import * as InputOTP from "$lib/components/ui/input-otp/index";`;
+    import * as InputOTP from "$lib/components/ui/input-otp/index";
+    import { REGEXP_ONLY_DIGITS } from "bits-ui";`;
       } else if (input === "date-picker") {
         clientrawCode += `import { CalendarIcon } from "lucide-svelte";
   import * as Popover from "$lib/components/ui/popover";
@@ -789,6 +790,7 @@ export const actions: Actions = {
         name="${input.named_id}"
         id="${input.named_id}"
         bind:value={$form.${input.named_id}}
+        pattern={REGEXP_ONLY_DIGITS}
       >
         {#snippet children({ cells })}
           <InputOTP.Group>
@@ -1132,7 +1134,8 @@ export const actions: Actions = {
   import * as Select from "$lib/components/ui/select/index";`;
       } else if (input === "input-otp") {
         formsnapCode += `
-  import * as InputOTP from "$lib/components/ui/input-otp/index";`;
+  import * as InputOTP from "$lib/components/ui/input-otp/index";
+  import { REGEXP_ONLY_DIGITS } from "bits-ui";`;
       } else if (input === "date-picker") {
         formsnapCode += `
   import { CalendarIcon } from "lucide-svelte";
@@ -1416,7 +1419,7 @@ export const actions: Actions = {
             {#snippet children({ props })}
               <div class="space-y-0.5">
                 <Label class='font-medium'> ${input.label} </Label>
-                <Description class='text-muted-foreground text-sm'>
+                <Description class='text-muted-foreground text-xs'>
                   ${input.description}
                 </Description>
               </div>
@@ -1490,7 +1493,7 @@ export const actions: Actions = {
           <Control>
             {#snippet children({ props })}
               <Label class="font-medium text-sm">${input.label}</Label>
-              <InputOTP.Root maxlength={6} {...props} bind:value={$formData.${input.named_id}}>
+              <InputOTP.Root maxlength={6} {...props} bind:value={$formData.${input.named_id}} pattern={REGEXP_ONLY_DIGITS}>
                 {#snippet children({ cells })}
                   <InputOTP.Group>
                     {#each cells.slice(0, 3) as cell}
@@ -1510,7 +1513,7 @@ export const actions: Actions = {
           <Description class="text-muted-foreground text-xs">
             ${input.description}
           </Description>
-          <FieldErrors class="text-sm text-destructive" />
+          <FieldErrors class="text-xs text-destructive" />
         </Field>
       </div>`;
       } else if (input.type === "date-picker") {

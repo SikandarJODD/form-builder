@@ -27,6 +27,7 @@ export type Props = {
 	detailedValue?: Partial<DetailedValue> | null;
 	options?: TelInputOptions;
 	order?: ((a: Country, b: Country) => number) | undefined;
+	id?: string;
 };
 
 export const defaultOptions: TelInputOptions = {
