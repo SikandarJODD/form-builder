@@ -12,6 +12,7 @@
   import * as Popover from "$lib/components/ui/popover/index";
   import * as Command from "$lib/components/ui/command/index";
   import * as InputOTP from "$lib/components/ui/input-otp/index";
+  import { REGEXP_ONLY_DIGITS } from "bits-ui";
   import * as Calendar from "$lib/components/ui/calendar/index";
 
   // Main Form Generator Code
@@ -30,6 +31,8 @@
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
   import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";
 
+  // Tags Input
+  let tagsvalue = $state([]);
   // DatePicker Utils
   import {
     CalendarDate,
@@ -200,6 +203,7 @@
               <div>
                 <Label for={comp.named_id}>{comp.label}</Label>
                 <Input
+                  required
                   type={comp.type}
                   id={comp.named_id}
                   name={comp.named_id}
@@ -214,6 +218,7 @@
               <div>
                 <Label for={comp.named_id}>{comp.label}</Label>
                 <Input
+                  required
                   type={comp.type}
                   id={comp.named_id}
                   name={comp.named_id}
@@ -250,10 +255,16 @@
               </div>
             {/if}
             {#if comp.type === "textarea"}
-              <Label>
+              <Label for={comp.named_id}>
                 {comp.label}
               </Label>
-              <Textarea placeholder={comp.placeholder} class="resize-none" />
+              <Textarea
+                required
+                name={comp.named_id}
+                id={comp.named_id}
+                placeholder={comp.placeholder}
+                class="resize-none"
+              />
               <p class="text-xs text-muted-foreground">
                 {comp.description}
               </p>
@@ -302,6 +313,7 @@
                   maxlength={6}
                   id={comp.named_id}
                   name={comp.named_id}
+                  pattern={REGEXP_ONLY_DIGITS}
                 >
                   {#snippet children({ cells })}
                     <InputOTP.Group>
@@ -441,6 +453,7 @@
                       </CalendarPrimitive.Root>
                     </Popover.Content>
                   </Popover.Root>
+                  <input type="hidden" name={comp.named_id} value={dvalue} />
                 </div>
               </div>
             {/if}
@@ -494,7 +507,16 @@
             {#if comp.type === "tags-input"}
               <div>
                 <Label for={comp.named_id}>{comp.label}</Label>
-                <TagsInput placeholder={comp.placeholder} />
+                <TagsInput
+                  placeholder={comp.placeholder}
+                  bind:value={tagsvalue}
+                  id={comp.named_id}
+                />
+                <input
+                  type="hidden"
+                  name={comp.named_id}
+                  bind:value={tagsvalue}
+                />
                 <p class="text-xs text-muted-foreground">
                   {comp.description}
                 </p>
@@ -551,6 +573,11 @@
                       </Command.Root>
                     </Popover.Content>
                   </Popover.Root>
+                  <input
+                    type="hidden"
+                    name={comp.named_id}
+                    value={combovalue}
+                  />
                 </div>
                 <p class="text-xs text-muted-foreground">
                   {comp.description}
