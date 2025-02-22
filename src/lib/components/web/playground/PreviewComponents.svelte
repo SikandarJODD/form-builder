@@ -160,15 +160,19 @@
 
   import { toast } from "svelte-sonner";
   import {
+    displaySize,
     FileDropZone,
     MEGABYTE,
     type FileDropZoneProps,
   } from "$lib/components/ui/file-drop-zone";
   import { enhance } from "$app/forms";
 
-  const onUpload: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
-    // we use set instead of an assignment since it accepts a File[]
-    console.log(uploadedFiles);
+  import { Trash2, X } from "lucide-svelte";
+  import { onDestroy } from "svelte";
+  import { SvelteDate } from "svelte/reactivity";
+  import { fly, slide } from "svelte/transition";
+  const onUpload: FileDropZoneProps["onUpload"] = async (files) => {
+    await Promise.allSettled(files.map((file) => uploadFile(file)));
   };
   const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
     reason,
@@ -176,8 +180,44 @@
   }) => {
     toast.error(`${file.name} failed to upload!`, { description: reason });
   };
-
-  // Checkobox
+  const uploadFile = async (file: File) => {
+    // don't upload duplicate files
+    if (files.find((f) => f.name === file.name)) return;
+    const urlPromise = new Promise<string>((resolve) => {
+      resolve(URL.createObjectURL(file));
+    });
+    files.push({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      uploadedAt: Date.now(),
+      url: urlPromise,
+    });
+    // we await since we don't want the onUpload to be complete until the files are actually uploaded
+    await urlPromise;
+  };
+  type UploadedFile = {
+    name: string;
+    type: string;
+    size: number;
+    uploadedAt: number;
+    url: Promise<string>;
+  };
+  let files = $state<UploadedFile[]>([]);
+  let date = new SvelteDate();
+  onDestroy(async () => {
+    for (const file of files) {
+      URL.revokeObjectURL(await file.url);
+    }
+  });
+  $effect(() => {
+    const interval = setInterval(() => {
+      date.setTime(Date.now());
+    }, 10);
+    return () => {
+      clearInterval(interval);
+    };
+  });
 </script>
 
 {#if form_generator.selected_inputs.length === 0}
@@ -473,18 +513,6 @@
                 </p>
               </div>
             {/if}
-            <!-- {#if comp.type === "radio"}
-      {#each comp.options as option}
-        <input
-          type="radio"
-          id={option.id}
-          name={comp.name}
-          value={option.value}
-        />
-        <label for={option.id}>{option.label}</label>
-      {/each}
-    {/if} -->
-
             {#if comp.type === "file"}
               <div>
                 <Label for="attachments">Upload File*</Label>
@@ -499,6 +527,55 @@
                 <p class="text-sm text-muted-foreground">
                   Select file to upload.
                 </p>
+                <div class="flex flex-col">
+                  {#each Array.from(files) as file, i (file.name)}
+                    <div
+                      in:slide
+                      out:fly={{ x: 20 }}
+                      class="flex place-items-center justify-between gap-0.5 hover:bg-accent dark:hover:bg-accent/60 p-2 rounded-lg transition-all duration-200"
+                    >
+                      <div class="flex gap-2 items-center">
+                        <div>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-paperclip"
+                            ><path d="M13.234 20.252 21 12.3" /><path
+                              d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"
+                            /></svg
+                          >
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="text-sm">{file.name}</span>
+                          <span class="text-xs text-muted-foreground"
+                            >{displaySize(file.size)}</span
+                          >
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        class="hover:text-primary text-muted-foreground"
+                        onclick={() => {
+                          // we use set instead of an assignment since it accepts a File[]
+                          files = [
+                            ...Array.from(files).slice(0, i),
+                            ...Array.from(files).slice(i + 1),
+                          ];
+                        }}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  {/each}
+                </div>
               </div>
             {/if}
             {#if comp.type === "range"}
