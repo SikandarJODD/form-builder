@@ -612,7 +612,7 @@ export const actions: Actions = {
 
   let { form, message, errors, enhance } = superForm(data.form, {
       validators: ${this.adapter}(schema)`
-    if (this.tags_input_named_id && this.combobox_named_id) {
+    if (this.tags_input_named_id.length > 0 && this.combobox_named_id) {
 
       clientrawCode += `,
         onUpdated(event) {
@@ -626,7 +626,7 @@ export const actions: Actions = {
       clientrawCode += `
         }
       }`;
-    } else if (this.tags_input_named_id) {
+    } else if (this.tags_input_named_id.length > 0) {
       // ${this.tags_input_named_id.map((tag) => tag.named_id + '_value' + '= [];\n')}
       clientrawCode += `,
         onUpdated(event) {
@@ -650,19 +650,18 @@ export const actions: Actions = {
     });\n`;
 
 
-    if (this.tags_input_named_id) {
+    if (this.tags_input_named_id.length > 0) {
       this.tags_input_named_id.map((tag) => {
         clientrawCode += `
-        let ${tag.named_id}_value = $state([]);
-        `;
+    let ${tag.named_id}_value = $state([]);`;
       })
-      clientrawCode += `$effect(() => {`;
+      clientrawCode += `\n$effect(() => {`;
       this.tags_input_named_id.map((tag) => {
         clientrawCode += `
-        $form.${tag.named_id} = ${tag.named_id}_value;`;
+    $form.${tag.named_id} = ${tag.named_id}_value;`;
       }
       )
-      clientrawCode += `});`;
+      clientrawCode += `\n  });`;
     }
     if (this.file_input_named_id) {
       clientrawCode += `
@@ -677,7 +676,7 @@ export const actions: Actions = {
     const files = filesProxy(form, "${this.file_input_named_id.named_id}");`
     }
 
-    clientrawCode += `</script>
+    clientrawCode += `\n</script>
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
 	{#if $message}
 		<p class="text-emerald-400">{$message}</p>
@@ -1303,55 +1302,62 @@ export const actions: Actions = {
       }
     });
 
-    formsnapCode += `\n
-  let {
-    data,
-  }: {
-    data: PageData;
-  } = $props();
-  let form = superForm(data.form, {
-    validators: ${this.adapter}(schema),`;
-    if (this.tags_input_named_id && this.combobox_named_id) {
-      formsnapCode += `
-    onUpdated(event) {
-      if (event.form.valid) {
-        ${this.tags_input_named_id.map((tag) => tag.named_id + '_value')} = [];
-        combovalue = "";
-      }
-    },`;
-    } else if (this.tags_input_named_id) {
-      formsnapCode += `
-      onUpdated(event) {
-        if (event.form.valid) {
-          ${this.tags_input_named_id.map((tag) => tag.named_id + '_value')} = [];
-        }
-      },`;
-    } else if (this.combobox_named_id) {
-      formsnapCode += `
-      onUpdated(event) {
-        if (event.form.valid) {
-          combovalue = "";
-        }
-      },`;
-    }
     formsnapCode += `
-  });
-  let { form: formData, enhance, message } = form;`;
-    if (this.tags_input_named_id) {
-      //     formsnapCode += `
-      // let tagsvalue = $state([]);
-      // $effect(() => {
-      //   $formData.${this.tags_input_named_id.named_id} = tagsvalue;
-      // });`;
+	let {
+		data
+	}: {
+		data: PageData;
+	} = $props();
+
+  let form = superForm(data.form, {
+      validators: ${this.adapter}(schema)`
+    if (this.tags_input_named_id.length > 0 && this.combobox_named_id) {
+      formsnapCode += `,
+        onUpdated(event) {
+          if (event.form.valid) {`
       this.tags_input_named_id.map((tag) => {
         formsnapCode += `
-        let ${tag.named_id + '_value'} = $state([]);`;
+                ${tag.named_id}_value = [];`;
+      })
+      formsnapCode += `
+                combovalue = "";`;
+      formsnapCode += `
+        }
+      }`;
+    } else if (this.tags_input_named_id.length > 0) {
+      // ${this.tags_input_named_id.map((tag) => tag.named_id + '_value' + '= [];\n')}
+      formsnapCode += `,
+        onUpdated(event) {
+          if (event.form.valid) {`;
+      this.tags_input_named_id.map((tag) => {
+        formsnapCode += `
+            ${tag.named_id}_value = [];`;
+      })
+      formsnapCode += `
+          }
+        }`;
+    } else if (this.combobox_named_id) {
+      formsnapCode += `,
+        onUpdated(event) {
+          if (event.form.valid) {
+            combovalue = "";
+          }
+        }`;
+    }
+    formsnapCode += `
+    });\n`;
+    formsnapCode += `
+let { form: formData, enhance, message } = form;`;
+    if (this.tags_input_named_id.length > 0) {
+      this.tags_input_named_id.map((tag) => {
+        formsnapCode += `
+    let ${tag.named_id + '_value'} = $state([]);`;
       })
       this.tags_input_named_id.map((tag) => {
         formsnapCode += `
-        $effect(() => {
-          $formData.${tag.named_id} = ${tag.named_id + '_value'};
-        });`
+    $effect(() => {
+      $formData.${tag.named_id} = ${tag.named_id + '_value'};
+    });`
       })
     }
     if (this.file_input_named_id) {
@@ -1366,13 +1372,7 @@ export const actions: Actions = {
 
     const files = filesProxy(form, "${this.file_input_named_id.named_id}");`
     }
-    //   if (this.date_picker_named_id) {
-    //     formsnapCode += `
-    // $effect(() => {
-    //   value = $formData.${this.date_picker_named_id.named_id} ? parseDate($formData.${this.date_picker_named_id.named_id}) : undefined;
-    // });
-    //     `
-    //   }
+
     formsnapCode += `
   </script> \n\n`; // close script tag
     formsnapCode += `<div class="flex min-h-[60vh] flex-col items-center justify-center">
