@@ -1,41 +1,56 @@
 <script lang="ts">
-  import { superForm, filesProxy } from "sveltekit-superforms";
+  import { superForm } from "sveltekit-superforms";
   // add your own path
   import type { PageData } from "./$types";
   import Label from "$lib/components/ui/label/label.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
-  // File Upload
-  import { toast } from "svelte-sonner";
-  import {
-    displaySize,
-    FileDropZone,
-    MEGABYTE,
-    type FileDropZoneProps,
-  } from "$lib/components/ui/file-drop-zone";
-  import { fly, slide } from "svelte/transition";
-  import { Trash2 } from "lucide-svelte";
+  import { TagsInput } from "$lib/components/ui/tags-input";
+  import Check from "lucide-svelte/icons/check";
+  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import * as Popover from "$lib/components/ui/popover/index";
+  import * as Command from "$lib/components/ui/command/index";
+  import { tick } from "svelte";
+  import { cn } from "$lib/utils";
+  // Combobox
+  let frameworks = [
+    {
+      value: "sveltekit",
+      label: "SvelteKit",
+    },
+    {
+      value: "next.js",
+      label: "Next.js",
+    },
+    {
+      value: "nuxt.js",
+      label: "Nuxt.js",
+    },
+    {
+      value: "remix",
+      label: "Remix",
+    },
+    {
+      value: "astro",
+      label: "Astro",
+    },
+  ];
+  let open = $state(false);
+  let combovalue = $state("");
+  let triggerRef = $state<HTMLButtonElement>(null!);
+  const selectedValue = $derived(
+    frameworks.find((f) => f.value === combovalue)?.label ??
+      "Select a framework..."
+  );
+  // We want to refocus the trigger button when the user selects
+  // an item from the list so users can continue navigating the
+  // rest of the form with the keyboard.
+  function closeAndFocusTrigger() {
+    open = false;
+    tick().then(() => {
+      triggerRef.focus();
+    });
+  }
 
-  const onUpload: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
-    // we use set instead of an assignment since it accepts a File[]
-    files.set([...Array.from($files), ...uploadedFiles]);
-  };
-  const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
-    reason,
-    file,
-  }) => {
-    toast.error(`${file.name} failed to upload!`, { description: reason });
-  };
-
-  const onUpload2: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
-    // we use set instead of an assignment since it accepts a File[]
-    files2.set([...Array.from($files2), ...uploadedFiles]);
-  };
-  const onFileRejected2: FileDropZoneProps["onFileRejected"] = async ({
-    reason,
-    file,
-  }) => {
-    toast.error(`${file.name} failed to upload!`, { description: reason });
-  };
   import { zod } from "sveltekit-superforms/adapters";
   import { schema } from "./schema";
 
@@ -47,156 +62,153 @@
 
   let { form, message, errors, enhance } = superForm(data.form, {
     validators: zod(schema),
+    onUpdated(event) {
+      if (event.form.valid) {
+        tagsinput_value = [];
+        tagsinput_f6_value = [];
+        tagsinput_eb_value = [];
+        combovalue = "";
+      }
+    },
   });
 
-  message.subscribe((message) => {
-    if (message) {
-      toast.success(message.text, {
-        description: "Your attachments were uploaded.",
-      });
-    }
-  });
+  let tagsinput_value = $state([]);
 
-  const files = filesProxy(form, "file");
-  const files2 = filesProxy(form, "file2");
+  let tagsinput_f6_value = $state([]);
+
+  let tagsinput_eb_value = $state([]);
+  $effect(() => {
+    $form.tagsinput = tagsinput_value;
+    $form.tagsinput_f6 = tagsinput_f6_value;
+    $form.tagsinput_eb = tagsinput_eb_value;
+  });
 </script>
 
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
   {#if $message}
     <p class="text-emerald-400">{$message}</p>
   {/if}
-  <form
-    enctype="multipart/form-data"
-    method="post"
-    use:enhance
-    class="w-full md:w-96 space-y-2 p-4 lg:p-0"
-  >
+  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
     <div>
-      <Label for="file">Upload File*</Label>
-      <FileDropZone
-        {onUpload}
-        {onFileRejected}
-        maxFileSize={10 * MEGABYTE}
-        accept="image/*"
-        maxFiles={4}
-        fileCount={$files.length}
-      />
-      <p class="text-sm text-muted-foreground">Select file to upload.</p>
-      <input name="file" type="file" bind:files={$files} class="hidden" />
-      <div class="flex flex-col">
-        {#each Array.from($files) as file, i (file.name)}
-          <div
-            in:slide
-            out:fly={{ x: 20 }}
-            class="flex place-items-center justify-between gap-0.5 hover:bg-accent dark:hover:bg-accent/60 p-2 rounded-lg transition-all duration-200"
-          >
-            <div class="flex gap-2 items-center">
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-paperclip"
-                  ><path d="M13.234 20.252 21 12.3" /><path
-                    d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"
-                  /></svg
-                >
-              </div>
-              <div class="flex flex-col">
-                <span class="text-sm">{file.name}</span>
-                <span class="text-xs text-muted-foreground"
-                  >{displaySize(file.size)}</span
-                >
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              class="hover:text-primary text-muted-foreground"
-              onclick={() => {
-                // we use set instead of an assignment since it accepts a File[]
-                files.set([
-                  ...Array.from($files).slice(0, i),
-                  ...Array.from($files).slice(i + 1),
-                ]);
-              }}
-            >
-              <Trash2 />
-            </Button>
-          </div>
-        {/each}
-      </div>
+      <Label for="tagsinput" class={$errors.tagsinput && "text-destructive"}
+        >Enter your tech stack.</Label
+      >
+      <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
+      <TagsInput bind:value={tagsinput_value} placeholder="Add Tech Stack" />
+      {#each $form.tagsinput as item, i}
+        <input
+          type="hidden"
+          bind:value={$form.tagsinput[i]}
+          name="tagsinput"
+          id="tagsinput"
+        />
+      {/each}
+      <p class="text-xs text-muted-foreground">Add tags.</p>
+      {#if $errors.tagsinput}
+        <p class="text-sm text-destructive">{$errors.tagsinput?._errors}</p>
+      {/if}
     </div>
     <div>
-      <Label for="file2">Upload File*</Label>
-      <FileDropZone
-        onUpload={onUpload2}
-        onFileRejected={onFileRejected2}
-        maxFileSize={10 * MEGABYTE}
-        accept="image/*"
-        maxFiles={4}
-        fileCount={$files2.length}
-      />
-      <p class="text-sm text-muted-foreground">Select file to upload.</p>
-      <input name="file2" type="file" bind:files={$files2} class="hidden" />
-      <div class="flex flex-col">
-        {#each Array.from($files2) as file, i (file.name)}
-          <div
-            in:slide
-            out:fly={{ x: 20 }}
-            class="flex place-items-center justify-between gap-0.5 hover:bg-accent dark:hover:bg-accent/60 p-2 rounded-lg transition-all duration-200"
-          >
-            <div class="flex gap-2 items-center">
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-paperclip"
-                  ><path d="M13.234 20.252 21 12.3" /><path
-                    d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"
-                  /></svg
-                >
-              </div>
-              <div class="flex flex-col">
-                <span class="text-sm">{file.name}</span>
-                <span class="text-xs text-muted-foreground"
-                  >{displaySize(file.size)}</span
-                >
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              class="hover:text-primary text-muted-foreground"
-              onclick={() => {
-                // we use set instead of an assignment since it accepts a File[]
-                files2.set([
-                  ...Array.from($files).slice(0, i),
-                  ...Array.from($files).slice(i + 1),
-                ]);
-              }}
-            >
-              <Trash2 />
-            </Button>
-          </div>
-        {/each}
-      </div>
+      <Label
+        for="tagsinput_f6"
+        class={$errors.tagsinput_f6 && "text-destructive"}
+        >Enter your tech stack.</Label
+      >
+      <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
+      <TagsInput bind:value={tagsinput_f6_value} placeholder="Add Tech Stack" />
+      {#each $form.tagsinput_f6 as item, i}
+        <input
+          type="hidden"
+          bind:value={$form.tagsinput_f6[i]}
+          name="tagsinput_f6"
+          id="tagsinput_f6"
+        />
+      {/each}
+      <p class="text-xs text-muted-foreground">Add tags.</p>
+      {#if $errors.tagsinput_f6}
+        <p class="text-sm text-destructive">{$errors.tagsinput_f6?._errors}</p>
+      {/if}
+    </div>
+    <div>
+      <Label for="combobox" class={$errors.combobox && "text-destructive"}>
+        Framework
+      </Label>
       <div>
-        <Button type="submit" size="sm">Submit</Button>
+        <Popover.Root bind:open>
+          <Popover.Trigger bind:ref={triggerRef}>
+            {#snippet child({ props })}
+              <Button
+                variant="outline"
+                class="w-full justify-between"
+                {...props}
+                role="combobox"
+                aria-expanded={open}
+              >
+                {selectedValue || "Select a framework..."}
+                <ChevronsUpDown class="opacity-50" />
+              </Button>
+              <input hidden value={$form.combobox} name="combobox" />
+            {/snippet}
+          </Popover.Trigger>
+          <Popover.Content align="start" class="w-full p-0">
+            <Command.Root>
+              <Command.Input
+                placeholder="Select your favorite framework"
+                class="h-9"
+              />
+              <Command.List>
+                <Command.Empty>No framework found.</Command.Empty>
+                <Command.Group>
+                  {#each frameworks as framework}
+                    <Command.Item
+                      value={framework.value}
+                      onSelect={() => {
+                        combovalue = framework.value;
+                        $form.combobox = framework.value;
+                        closeAndFocusTrigger();
+                      }}
+                    >
+                      <Check
+                        class={cn(
+                          framework.value !== $form.combobox &&
+                            "text-transparent"
+                        )}
+                      />
+                      {framework.label}
+                    </Command.Item>
+                  {/each}
+                </Command.Group>
+              </Command.List>
+            </Command.Root>
+          </Popover.Content>
+        </Popover.Root>
       </div>
+      <p class="text-xs text-muted-foreground">
+        Select your favorite framework
+      </p>
     </div>
+
+    <div>
+      <Label
+        for="tagsinput_eb"
+        class={$errors.tagsinput_eb && "text-destructive"}
+        >Enter your tech stack.</Label
+      >
+      <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
+      <TagsInput bind:value={tagsinput_eb_value} placeholder="Add Tech Stack" />
+      {#each $form.tagsinput_eb as item, i}
+        <input
+          type="hidden"
+          bind:value={$form.tagsinput_eb[i]}
+          name="tagsinput_eb"
+          id="tagsinput_eb"
+        />
+      {/each}
+      <p class="text-xs text-muted-foreground">Add tags.</p>
+      {#if $errors.tagsinput_eb}
+        <p class="text-sm text-destructive">{$errors.tagsinput_eb?._errors}</p>
+      {/if}
+    </div>
+    <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>
