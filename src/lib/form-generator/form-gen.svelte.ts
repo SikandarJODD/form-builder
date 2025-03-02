@@ -190,7 +190,7 @@ class FormGenerator {
   tags_input_named_id = $derived.by(() => {
     let tagid = this.selected_inputs.filter(
       (input) => input.type === "tags-input"
-    )[0];
+    );
     return tagid;
   });
 
@@ -612,40 +612,57 @@ export const actions: Actions = {
 
   let { form, message, errors, enhance } = superForm(data.form, {
       validators: ${this.adapter}(schema)`
-
-
     if (this.tags_input_named_id && this.combobox_named_id) {
+
       clientrawCode += `,
         onUpdated(event) {
-          if (event.form.valid) {
-            tagsvalue = [];
-            combovalue = "";
-          }
-        }`;
+          if (event.form.valid) {`
+      this.tags_input_named_id.map((tag) => {
+        clientrawCode += `
+                ${tag.named_id}_value = [];`;
+      })
+      clientrawCode += `
+                combovalue = "";`;
+      clientrawCode += `
+        }
+      }`;
     } else if (this.tags_input_named_id) {
+      // ${this.tags_input_named_id.map((tag) => tag.named_id + '_value' + '= [];\n')}
       clientrawCode += `,
         onUpdated(event) {
-          if (event.form.valid) {
-            tagsvalue = [];
+          if (event.form.valid) {`;
+      this.tags_input_named_id.map((tag) => {
+        clientrawCode += `
+            ${tag.named_id}_value = [];`;
+      })
+      clientrawCode += `
           }
         }`;
     } else if (this.combobox_named_id) {
       clientrawCode += `,
         onUpdated(event) {
           if (event.form.valid) {
-            tagsvalue = [];
+            combovalue = "";
           }
         }`;
     }
     clientrawCode += `
     });\n`;
 
+
     if (this.tags_input_named_id) {
-      clientrawCode += `
-      let tagsvalue = $state([]);
-  $effect(() => {
-    $form.${this.tags_input_named_id.named_id} = tagsvalue;
-  });`;
+      this.tags_input_named_id.map((tag) => {
+        clientrawCode += `
+        let ${tag.named_id}_value = $state([]);
+        `;
+      })
+      clientrawCode += `$effect(() => {`;
+      this.tags_input_named_id.map((tag) => {
+        clientrawCode += `
+        $form.${tag.named_id} = ${tag.named_id}_value;`;
+      }
+      )
+      clientrawCode += `});`;
     }
     if (this.file_input_named_id) {
       clientrawCode += `
@@ -938,7 +955,7 @@ export const actions: Actions = {
     <div>
       <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
        <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
-      <TagsInput bind:value={tagsvalue} placeholder="Add Tech Stack" />
+      <TagsInput bind:value={${input.named_id + '_value'}} placeholder="Add Tech Stack" />
       {#each $form.${input.named_id} as item, i}
         <input type="hidden" bind:value={$form.${input.named_id}[i]} name="${input.named_id}" id="${input.named_id}" />
       {/each}
@@ -1298,7 +1315,7 @@ export const actions: Actions = {
       formsnapCode += `
     onUpdated(event) {
       if (event.form.valid) {
-        tagsvalue = [];
+        ${this.tags_input_named_id.map((tag) => tag.named_id + '_value')} = [];
         combovalue = "";
       }
     },`;
@@ -1306,7 +1323,7 @@ export const actions: Actions = {
       formsnapCode += `
       onUpdated(event) {
         if (event.form.valid) {
-          tagsvalue = [];
+          ${this.tags_input_named_id.map((tag) => tag.named_id + '_value')} = [];
         }
       },`;
     } else if (this.combobox_named_id) {
@@ -1321,11 +1338,21 @@ export const actions: Actions = {
   });
   let { form: formData, enhance, message } = form;`;
     if (this.tags_input_named_id) {
-      formsnapCode += `
-  let tagsvalue = $state([]);
-  $effect(() => {
-    $formData.${this.tags_input_named_id.named_id} = tagsvalue;
-  });`;
+      //     formsnapCode += `
+      // let tagsvalue = $state([]);
+      // $effect(() => {
+      //   $formData.${this.tags_input_named_id.named_id} = tagsvalue;
+      // });`;
+      this.tags_input_named_id.map((tag) => {
+        formsnapCode += `
+        let ${tag.named_id + '_value'} = $state([]);`;
+      })
+      this.tags_input_named_id.map((tag) => {
+        formsnapCode += `
+        $effect(() => {
+          $formData.${tag.named_id} = ${tag.named_id + '_value'};
+        });`
+      })
     }
     if (this.file_input_named_id) {
       formsnapCode += `
@@ -1659,7 +1686,7 @@ export const actions: Actions = {
         <Control>
           {#snippet children({ props })}
             <Label>${input.label}</Label>
-            <TagsInput bind:value={tagsvalue} placeholder="${input.placeholder}" />
+            <TagsInput bind:value={${input.named_id + '_value'}} placeholder="${input.placeholder}" />
             {#each $formData.${input.named_id} as item, i}
               <input
                 {...props}

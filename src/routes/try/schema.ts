@@ -1,15 +1,10 @@
 import { z } from 'zod';
-export const KILOBYTE = 1024;
-export const MEGABYTE = 1024 * KILOBYTE;
 export let schema = z.object({
-  file: z.array(z.instanceof(File, {
-        message: "Please select an image file.",
-      }).refine((file) => file.size <= (MEGABYTE*2) , {
-        message:"The image is too large.",
-      })),
-  file2: z.array(z.instanceof(File, {
-        message: "Please select an image file.",
-      }).refine((file) => file.size <= (MEGABYTE*2) , {
-        message:"The image is too large.",
-      })),
+  tagsinput: z.string().array()
+   .min(1, { message: 'Please enter at least one tag' }),
+  tagsinput_f6: z.string().array()
+   .min(1, { message: 'Please enter at least one tag' }),
+  combobox: z.string().nonempty(),
+  tagsinput_eb: z.string().array()
+   .min(1, { message: 'Please enter at least one tag' }),
 })
