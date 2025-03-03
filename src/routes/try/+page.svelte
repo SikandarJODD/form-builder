@@ -7,75 +7,108 @@
   import { Field, Control, Label, Description, FieldErrors } from "formsnap";
   // Components
   import Button from "$lib/components/ui/button/button.svelte";
-  // Combobox
-  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-  import Check from "lucide-svelte/icons/check";
-  import * as Popover from "$lib/components/ui/popover/index";
-  import * as Command from "$lib/components/ui/command/index";
-  import { tick } from "svelte";
-  import { cn } from "$lib/utils";
-  let frameworks = [
-    {
-      value: "sveltekit",
-      label: "SvelteKit",
-    },
-    {
-      value: "next.js",
-      label: "Next.js",
-    },
-    {
-      value: "nuxt.js",
-      label: "Nuxt.js",
-    },
-    {
-      value: "remix",
-      label: "Remix",
-    },
-    {
-      value: "astro",
-      label: "Astro",
-    },
-  ];
-  // Popover State
-  let open_combobox = $state(false);
-  // Combobox Value
-  let combovalue_combobox = $state("");
-  let triggerRef_combobox = $state<HTMLButtonElement>(null!);
+  import { CalendarIcon } from "lucide-svelte";
+  import * as Popover from "$lib/components/ui/popover";
+  import * as Select from "$lib/components/ui/select";
+  import * as Calendar from "$lib/components/ui/calendar/index";
+  import { Calendar as CalendarPrimitive } from "bits-ui";
+  import {
+    CalendarDate,
+    type DateValue,
+    getLocalTimeZone,
+    today,
+    DateFormatter,
+  } from "@internationalized/date";
+  // Components
+  import { buttonVariants } from "$lib/components/ui/button/button.svelte";
+  // Month formatter
+  const monthFmt = new DateFormatter("en-US", {
+    month: "long",
+  });
 
-  const selectedValue_combobox = $derived(
-    frameworks.find((f) => f.value === combovalue_combobox)?.label ??
-      "Select a framework..."
+  // Generate month options
+  const monthOptions = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ].map((month, i) => ({ value: String(i + 1), label: month }));
+
+  // Generate year options (from 1900 to current year)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: currentYear - 1899 }, (_, i) => ({
+    label: String(currentYear - i),
+    value: String(currentYear - i),
+  }));
+
+  let value_datepicker = $state<DateValue | undefined>();
+  let df_datepicker = new DateFormatter("en-US", {
+    dateStyle: "long",
+  });
+  let placeholder_datepicker = $state(today(getLocalTimeZone()));
+
+  let defaultYear_datepicker = $derived(
+    placeholder_datepicker
+      ? {
+          value: String(placeholder_datepicker.year),
+          label: String(placeholder_datepicker.year),
+        }
+      : undefined
   );
 
-  // We want to refocus the trigger button when the user selects
-  // an item from the list so users can continue navigating the
-  // rest of the form with the keyboard.
-  function closeAndFocusTrigger_combobox() {
-    open_combobox = false;
-    tick().then(() => {
-      triggerRef_combobox.focus();
-    });
-  }
-  // Popover State
-  let open_frame = $state(false);
-  // Combobox Value
-  let combovalue_frame = $state("");
-  let triggerRef_frame = $state<HTMLButtonElement>(null!);
-
-  const selectedValue_frame = $derived(
-    frameworks.find((f) => f.value === combovalue_frame)?.label ??
-      "Select a framework..."
+  let defaultMonth_datepicker = $derived(
+    placeholder_datepicker
+      ? {
+          value: String(placeholder_datepicker.month),
+          label: monthFmt.format(
+            placeholder_datepicker.toDate(getLocalTimeZone())
+          ),
+        }
+      : undefined
   );
 
-  // We want to refocus the trigger button when the user selects
-  // an item from the list so users can continue navigating the
-  // rest of the form with the keyboard.
-  function closeAndFocusTrigger_frame() {
-    open_frame = false;
-    tick().then(() => {
-      triggerRef_frame.focus();
-    });
-  }
+  let monthLabel_datepicker = $derived(
+    monthOptions.find((m) => m.value === defaultMonth_datepicker?.value)
+      ?.label ?? "Select a month"
+  );
+  let value_datepicker_72 = $state<DateValue | undefined>();
+  let df_datepicker_72 = new DateFormatter("en-US", {
+    dateStyle: "long",
+  });
+  let placeholder_datepicker_72 = $state(today(getLocalTimeZone()));
+
+  let defaultYear_datepicker_72 = $derived(
+    placeholder_datepicker_72
+      ? {
+          value: String(placeholder_datepicker_72.year),
+          label: String(placeholder_datepicker_72.year),
+        }
+      : undefined
+  );
+
+  let defaultMonth_datepicker_72 = $derived(
+    placeholder_datepicker_72
+      ? {
+          value: String(placeholder_datepicker_72.month),
+          label: monthFmt.format(
+            placeholder_datepicker_72.toDate(getLocalTimeZone())
+          ),
+        }
+      : undefined
+  );
+
+  let monthLabel_datepicker_72 = $derived(
+    monthOptions.find((m) => m.value === defaultMonth_datepicker_72?.value)
+      ?.label ?? "Select a month"
+  );
   let {
     data,
   }: {
@@ -84,12 +117,6 @@
 
   let form = superForm(data.form, {
     validators: zod(schema),
-    onUpdated(event) {
-      if (event.form.valid) {
-        combovalue_combobox = "";
-        combovalue_frame = "";
-      }
-    },
   });
 
   let { form: formData, enhance, message } = form;
@@ -102,132 +129,285 @@
     </span>
   {/if}
   <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
-    <div>
-      <Field {form} name="combobox">
-        <Control>
-          {#snippet children({ props })}
-            <Label for="combobox">Work</Label>
-            <div>
-              <Popover.Root bind:open={open_combobox}>
-                <Popover.Trigger bind:ref={triggerRef_combobox} {...props}>
-                  {#snippet child({ props })}
-                    <Button
-                      variant="outline"
-                      class="w-full justify-between"
-                      {...props}
-                      role="combobox"
-                      aria-expanded={open_combobox}
-                    >
-                      {selectedValue_combobox || "Select a framework..."}
-                      <ChevronsUpDown class="opacity-50" />
-                    </Button>
-                    <input hidden value={$formData.combobox} name="combobox" />
-                  {/snippet}
+    <div class="flex flex-col">
+      <div class="grid gap-2">
+        <Field {form} name="datepicker">
+          <Control>
+            {#snippet children({ props })}
+              <Label for="datepicker">Date of Birth</Label>
+              <Popover.Root>
+                <Popover.Trigger
+                  {...props}
+                  class={[
+                    buttonVariants({ variant: "outline" }),
+                    "w-[250px] justify-start pl-4 text-left font-normal",
+                    !value_datepicker && "text-muted-foreground",
+                  ]}
+                >
+                  {value_datepicker
+                    ? df_datepicker.format(
+                        value_datepicker.toDate(getLocalTimeZone())
+                      )
+                    : "Pick a date"}
+                  <CalendarIcon class="ml-auto h-4 w-4 opacity-50" />
                 </Popover.Trigger>
-                <Popover.Content align="start" class="w-full p-0">
-                  <Command.Root>
-                    <Command.Input
-                      placeholder="Select your favorite framework"
-                      class="h-9"
-                    />
-                    <Command.List>
-                      <Command.Empty>No framework found.</Command.Empty>
-                      <Command.Group>
-                        {#each frameworks as framework}
-                          <Command.Item
-                            value={framework.value}
-                            onSelect={() => {
-                              combovalue_combobox = framework.value;
-                              $formData.combobox = framework.value;
-                              closeAndFocusTrigger_combobox();
+                <Popover.Content class="w-auto p-0" side="bottom">
+                  <CalendarPrimitive.Root
+                    bind:value={value_datepicker}
+                    bind:placeholder={placeholder_datepicker}
+                    class="rounded-md border p-3"
+                    type="single"
+                    minValue={new CalendarDate(1900, 1, 1)}
+                    maxValue={today(getLocalTimeZone())}
+                    calendarLabel="Date of birth"
+                    initialFocus
+                    onValueChange={(v) => {
+                      if (v) {
+                        $formData.datepicker = v.toString();
+                      } else {
+                        $formData.datepicker = "";
+                      }
+                    }}
+                  >
+                    {#snippet children({ months, weekdays })}
+                      <Calendar.Header>
+                        <Calendar.Heading
+                          class="flex w-full items-center justify-between gap-2"
+                        >
+                          <Select.Root
+                            type="single"
+                            value={defaultMonth_datepicker?.value}
+                            onValueChange={(v) => {
+                              if (!placeholder_datepicker) return;
+                              if (v === `${placeholder_datepicker.month} `)
+                                return;
+                              placeholder_datepicker =
+                                placeholder_datepicker.set({
+                                  month: Number.parseInt(v),
+                                });
                             }}
                           >
-                            <Check
-                              class={cn(
-                                framework.value !== $formData.combobox &&
-                                  "text-transparent"
-                              )}
-                            />
-                            {framework.label}
-                          </Command.Item>
-                        {/each}
-                      </Command.Group>
-                    </Command.List>
-                  </Command.Root>
-                </Popover.Content>
-              </Popover.Root>
-            </div>
-          {/snippet}
-        </Control>
-        <Description class="text-sm text-muted-foreground">
-          Select your favorite framework
-        </Description>
-        <FieldErrors class="text-sm text-destructive" />
-      </Field>
-    </div>
-    <div>
-      <Field {form} name="frame">
-        <Control>
-          {#snippet children({ props })}
-            <Label for="frame">Framework</Label>
-            <div>
-              <Popover.Root bind:open={open_frame}>
-                <Popover.Trigger bind:ref={triggerRef_frame} {...props}>
-                  {#snippet child({ props })}
-                    <Button
-                      variant="outline"
-                      class="w-full justify-between"
-                      {...props}
-                      role="combobox"
-                      aria-expanded={open_frame}
-                    >
-                      {selectedValue_frame || "Select a framework..."}
-                      <ChevronsUpDown class="opacity-50" />
-                    </Button>
-                    <input hidden value={$formData.frame} name="frame" />
-                  {/snippet}
-                </Popover.Trigger>
-                <Popover.Content align="start" class="w-full p-0">
-                  <Command.Root>
-                    <Command.Input
-                      placeholder="Select your favorite framework"
-                      class="h-9"
-                    />
-                    <Command.List>
-                      <Command.Empty>No framework found.</Command.Empty>
-                      <Command.Group>
-                        {#each frameworks as framework}
-                          <Command.Item
-                            value={framework.value}
-                            onSelect={() => {
-                              combovalue_frame = framework.value;
-                              $formData.frame = framework.value;
-                              closeAndFocusTrigger_frame();
+                            <Select.Trigger
+                              aria-label="Select month"
+                              class="w-[60%]"
+                            >
+                              {monthLabel_datepicker}
+                            </Select.Trigger>
+                            <Select.Content
+                              class="max-h-[200px] overflow-y-auto"
+                            >
+                              {#each monthOptions as { value, label }}
+                                <Select.Item {value} {label} />
+                              {/each}
+                            </Select.Content>
+                          </Select.Root>
+                          <Select.Root
+                            type="single"
+                            value={defaultYear_datepicker?.value}
+                            onValueChange={(v) => {
+                              if (!v || !placeholder_datepicker) return;
+                              if (v === `${placeholder_datepicker?.year}`)
+                                return;
+                              placeholder_datepicker =
+                                placeholder_datepicker.set({
+                                  year: Number.parseInt(v),
+                                });
                             }}
                           >
-                            <Check
-                              class={cn(
-                                framework.value !== $formData.frame &&
-                                  "text-transparent"
-                              )}
-                            />
-                            {framework.label}
-                          </Command.Item>
+                            <Select.Trigger
+                              aria-label="Select year"
+                              class="w-[40%]"
+                            >
+                              {defaultYear_datepicker?.label ?? "Select year"}
+                            </Select.Trigger>
+                            <Select.Content
+                              class="max-h-[200px] overflow-y-auto"
+                            >
+                              {#each yearOptions as { value, label }}
+                                <Select.Item {value} {label} />
+                              {/each}
+                            </Select.Content>
+                          </Select.Root>
+                        </Calendar.Heading>
+                      </Calendar.Header>
+                      <Calendar.Months>
+                        {#each months as month}
+                          <Calendar.Grid>
+                            <Calendar.GridHead>
+                              <Calendar.GridRow class="flex">
+                                {#each weekdays as weekday}
+                                  <Calendar.HeadCell>
+                                    {weekday.slice(0, 2)}
+                                  </Calendar.HeadCell>
+                                {/each}
+                              </Calendar.GridRow>
+                            </Calendar.GridHead>
+                            <Calendar.GridBody>
+                              {#each month.weeks as weekDates}
+                                <Calendar.GridRow class="mt-2 w-full">
+                                  {#each weekDates as date}
+                                    <Calendar.Cell {date} month={month.value}>
+                                      <Calendar.Day />
+                                    </Calendar.Cell>
+                                  {/each}
+                                </Calendar.GridRow>
+                              {/each}
+                            </Calendar.GridBody>
+                          </Calendar.Grid>
                         {/each}
-                      </Command.Group>
-                    </Command.List>
-                  </Command.Root>
+                      </Calendar.Months>
+                    {/snippet}
+                  </CalendarPrimitive.Root>
                 </Popover.Content>
               </Popover.Root>
-            </div>
-          {/snippet}
-        </Control>
-        <Description class="text-sm text-muted-foreground">
-          Select your favorite framework
-        </Description>
-        <FieldErrors class="text-sm text-destructive" />
-      </Field>
+              <input hidden value={$formData.datepicker} name={props.name} />
+            {/snippet}
+          </Control>
+          <FieldErrors class="text-sm text-destructive" />
+        </Field>
+      </div>
     </div>
+
+    <div class="flex flex-col">
+      <div class="grid gap-2">
+        <Field {form} name="datepicker_72">
+          <Control>
+            {#snippet children({ props })}
+              <Label for="datepicker_72">Date of Birth</Label>
+              <Popover.Root>
+                <Popover.Trigger
+                  {...props}
+                  class={[
+                    buttonVariants({ variant: "outline" }),
+                    "w-[250px] justify-start pl-4 text-left font-normal",
+                    !value_datepicker_72 && "text-muted-foreground",
+                  ]}
+                >
+                  {value_datepicker_72
+                    ? df_datepicker_72.format(
+                        value_datepicker_72.toDate(getLocalTimeZone())
+                      )
+                    : "Pick a date"}
+                  <CalendarIcon class="ml-auto h-4 w-4 opacity-50" />
+                </Popover.Trigger>
+                <Popover.Content class="w-auto p-0" side="bottom">
+                  <CalendarPrimitive.Root
+                    bind:value={value_datepicker_72}
+                    bind:placeholder={placeholder_datepicker_72}
+                    class="rounded-md border p-3"
+                    type="single"
+                    minValue={new CalendarDate(1900, 1, 1)}
+                    maxValue={today(getLocalTimeZone())}
+                    calendarLabel="Date of birth"
+                    initialFocus
+                    onValueChange={(v) => {
+                      if (v) {
+                        $formData.datepicker_72 = v.toString();
+                      } else {
+                        $formData.datepicker_72 = "";
+                      }
+                    }}
+                  >
+                    {#snippet children({ months, weekdays })}
+                      <Calendar.Header>
+                        <Calendar.Heading
+                          class="flex w-full items-center justify-between gap-2"
+                        >
+                          <Select.Root
+                            type="single"
+                            value={defaultMonth_datepicker_72?.value}
+                            onValueChange={(v) => {
+                              if (!placeholder_datepicker_72) return;
+                              if (v === `${placeholder_datepicker_72.month} `)
+                                return;
+                              placeholder_datepicker_72 =
+                                placeholder_datepicker_72.set({
+                                  month: Number.parseInt(v),
+                                });
+                            }}
+                          >
+                            <Select.Trigger
+                              aria-label="Select month"
+                              class="w-[60%]"
+                            >
+                              {monthLabel_datepicker_72}
+                            </Select.Trigger>
+                            <Select.Content
+                              class="max-h-[200px] overflow-y-auto"
+                            >
+                              {#each monthOptions as { value, label }}
+                                <Select.Item {value} {label} />
+                              {/each}
+                            </Select.Content>
+                          </Select.Root>
+                          <Select.Root
+                            type="single"
+                            value={defaultYear_datepicker_72?.value}
+                            onValueChange={(v) => {
+                              if (!v || !placeholder_datepicker_72) return;
+                              if (v === `${placeholder_datepicker_72?.year}`)
+                                return;
+                              placeholder_datepicker_72 =
+                                placeholder_datepicker_72.set({
+                                  year: Number.parseInt(v),
+                                });
+                            }}
+                          >
+                            <Select.Trigger
+                              aria-label="Select year"
+                              class="w-[40%]"
+                            >
+                              {defaultYear_datepicker_72?.label ??
+                                "Select year"}
+                            </Select.Trigger>
+                            <Select.Content
+                              class="max-h-[200px] overflow-y-auto"
+                            >
+                              {#each yearOptions as { value, label }}
+                                <Select.Item {value} {label} />
+                              {/each}
+                            </Select.Content>
+                          </Select.Root>
+                        </Calendar.Heading>
+                      </Calendar.Header>
+                      <Calendar.Months>
+                        {#each months as month}
+                          <Calendar.Grid>
+                            <Calendar.GridHead>
+                              <Calendar.GridRow class="flex">
+                                {#each weekdays as weekday}
+                                  <Calendar.HeadCell>
+                                    {weekday.slice(0, 2)}
+                                  </Calendar.HeadCell>
+                                {/each}
+                              </Calendar.GridRow>
+                            </Calendar.GridHead>
+                            <Calendar.GridBody>
+                              {#each month.weeks as weekDates}
+                                <Calendar.GridRow class="mt-2 w-full">
+                                  {#each weekDates as date}
+                                    <Calendar.Cell {date} month={month.value}>
+                                      <Calendar.Day />
+                                    </Calendar.Cell>
+                                  {/each}
+                                </Calendar.GridRow>
+                              {/each}
+                            </Calendar.GridBody>
+                          </Calendar.Grid>
+                        {/each}
+                      </Calendar.Months>
+                    {/snippet}
+                  </CalendarPrimitive.Root>
+                </Popover.Content>
+              </Popover.Root>
+              <input hidden value={$formData.datepicker_72} name={props.name} />
+            {/snippet}
+          </Control>
+          <FieldErrors class="text-sm text-destructive" />
+        </Field>
+      </div>
+    </div>
+
     <div>
       <Button size="sm" type="submit">Submit</Button>
     </div>
