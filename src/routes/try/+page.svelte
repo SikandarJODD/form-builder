@@ -1,96 +1,220 @@
 <script lang="ts">
-  import { superForm  } from "sveltekit-superforms";
-  import {  zod } from "sveltekit-superforms/adapters";
+  import { superForm } from "sveltekit-superforms";
+  // add your own path
   import type { PageData } from "./$types";
-  import { schema } from "./schema";
-  // FormSnap
-  import { Field, Control, Label, Description, FieldErrors } from "formsnap";
-  // Components
+  import Label from "$lib/components/ui/label/label.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
-  import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
-  import * as InputOTP from "$lib/components/ui/input-otp/index";
-  import { REGEXP_ONLY_DIGITS } from "bits-ui";
-	let {
-		data
-	}: {
-		data: PageData;
-	} = $props();
+  import Check from "lucide-svelte/icons/check";
+  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import * as Popover from "$lib/components/ui/popover/index";
+  import * as Command from "$lib/components/ui/command/index";
+  import { tick } from "svelte";
+  import { cn } from "$lib/utils";
+  // Combobox
+  let frameworks = [
+    {
+      value: "sveltekit",
+      label: "SvelteKit",
+    },
+    {
+      value: "next.js",
+      label: "Next.js",
+    },
+    {
+      value: "nuxt.js",
+      label: "Nuxt.js",
+    },
+    {
+      value: "remix",
+      label: "Remix",
+    },
+    {
+      value: "astro",
+      label: "Astro",
+    },
+  ];
+  // Popover State for combobox
+  let open_combobox = $state(false);
+  // Value
+  let combovalue_combobox = $state("");
+  let triggerRef_combobox = $state<HTMLButtonElement>(null!);
 
-  let form = superForm(data.form, {
-      validators: zod(schema),
-        onUpdated(event) {
-          if (event.form.valid) {
-            tagsinput_value = [];
-          }
-        }
+  // Selected Value
+  const selectedValue_combobox = $derived(
+    frameworks.find((f) => f.value === combovalue_combobox)?.label ??
+      "Select a framework..."
+  );
+  // We want to refocus the trigger button when the user selects
+  // an item from the list so users can continue navigating the
+  // rest of the form with the keyboard.
+  function closeAndFocusTrigger_combobox() {
+    open_combobox = false;
+    tick().then(() => {
+      triggerRef_combobox.focus();
     });
+  }
+  // Popover State for frame
+  let open_frame = $state(false);
+  // Value
+  let combovalue_frame = $state("");
+  let triggerRef_frame = $state<HTMLButtonElement>(null!);
 
-let { form: formData, enhance, message } = form;
-    let tagsinput_value = $state([]);
-    $effect(() => {
-      $formData.tagsinput = tagsinput_value;
+  // Selected Value
+  const selectedValue_frame = $derived(
+    frameworks.find((f) => f.value === combovalue_frame)?.label ??
+      "Select a framework..."
+  );
+  // We want to refocus the trigger button when the user selects
+  // an item from the list so users can continue navigating the
+  // rest of the form with the keyboard.
+  function closeAndFocusTrigger_frame() {
+    open_frame = false;
+    tick().then(() => {
+      triggerRef_frame.focus();
     });
-  </script>
+  }
+  import { zod } from "sveltekit-superforms/adapters";
+  import { schema } from "./schema";
+
+  let {
+    data,
+  }: {
+    data: PageData;
+  } = $props();
+
+  let { form, message, errors, enhance } = superForm(data.form, {
+    validators: zod(schema),
+    onUpdated(event) {
+      if (event.form.valid) {
+        combovalue_combobox = "";
+        combovalue_frame = "";
+      }
+    },
+  });
+</script>
 
 <div class="flex min-h-[60vh] flex-col items-center justify-center">
   {#if $message}
-    <span class="text-emerald-400">
-      {$message}
-    </span>
+    <p class="text-emerald-400">{$message}</p>
   {/if}
-  <form method="post"  use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
-       <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
+  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
     <div>
-      <Field {form} name="tagsinput">
-        <Control>
-          {#snippet children({ props })}
-            <Label>Enter your tech stack.</Label>
-            <TagsInput bind:value={tagsinput_value} placeholder="Enter your tags" />
-            {#each $formData.tagsinput as item, i}
-              <input
-                {...props}
-                type="hidden"
-                bind:value={$formData.tagsinput[i]}
-                name="tagsinput"
-              />
-            {/each}
-          {/snippet}
-        </Control>
-        <Description class="text-sm text-muted-foreground">Add tags.</Description
-        >
-        <FieldErrors class="text-sm text-destructive" />
-      </Field>
-    </div>
+      <Label for="combobox" class={$errors.combobox && "text-destructive"}>
+        Framework
+      </Label>
       <div>
-        <Field {form} name="inputotp">
-          <Control>
-            {#snippet children({ props })}
-              <Label class="font-medium text-sm">One-Time Password</Label>
-              <InputOTP.Root maxlength={6} {...props} bind:value={$formData.inputotp} pattern={REGEXP_ONLY_DIGITS}>
-                {#snippet children({ cells })}
-                  <InputOTP.Group>
-                    {#each cells.slice(0, 3) as cell}
-                      <InputOTP.Slot {cell} />
-                    {/each}
-                  </InputOTP.Group>
-                  <InputOTP.Separator />
-                  <InputOTP.Group>
-                    {#each cells.slice(3, 6) as cell}
-                      <InputOTP.Slot {cell} />
-                    {/each}
-                  </InputOTP.Group>
-                {/snippet}
-              </InputOTP.Root>
+        <Popover.Root bind:open={open_combobox}>
+          <Popover.Trigger bind:ref={triggerRef_combobox}>
+            {#snippet child({ props })}
+              <Button
+                variant="outline"
+                class="w-full justify-between"
+                {...props}
+                role="combobox"
+                aria-expanded={open_combobox}
+              >
+                {selectedValue_combobox || "Select a framework..."}
+                <ChevronsUpDown class="opacity-50" />
+              </Button>
+              <input hidden value={$form.combobox} name="combobox" />
             {/snippet}
-          </Control>
-          <Description class="text-muted-foreground text-xs">
-            Please enter the one-time password sent to your phone.
-          </Description>
-          <FieldErrors class="text-xs text-destructive" />
-        </Field>
+          </Popover.Trigger>
+          <Popover.Content align="start" class="w-full p-0">
+            <Command.Root>
+              <Command.Input
+                placeholder="Select your favorite framework"
+                class="h-9"
+              />
+              <Command.List>
+                <Command.Empty>No framework found.</Command.Empty>
+                <Command.Group>
+                  {#each frameworks as framework}
+                    <Command.Item
+                      value={framework.value}
+                      onSelect={() => {
+                        combovalue_combobox = framework.value;
+                        $form.combobox = framework.value;
+                        closeAndFocusTrigger_combobox();
+                      }}
+                    >
+                      <Check
+                        class={cn(
+                          framework.value !== $form.combobox &&
+                            "text-transparent"
+                        )}
+                      />
+                      {framework.label}
+                    </Command.Item>
+                  {/each}
+                </Command.Group>
+              </Command.List>
+            </Command.Root>
+          </Popover.Content>
+        </Popover.Root>
       </div>
-    <div>
-      <Button size="sm" type="submit">Submit</Button>
+      <p class="text-xs text-muted-foreground">
+        Select your favorite framework
+      </p>
     </div>
+
+    <div>
+      <Label for="frame" class={$errors.frame && "text-destructive"}>
+        Framework
+      </Label>
+      <div>
+        <Popover.Root bind:open={open_frame}>
+          <Popover.Trigger bind:ref={triggerRef_frame}>
+            {#snippet child({ props })}
+              <Button
+                variant="outline"
+                class="w-full justify-between"
+                {...props}
+                role="combobox"
+                aria-expanded={open_frame}
+              >
+                {selectedValue_frame || "Select a framework..."}
+                <ChevronsUpDown class="opacity-50" />
+              </Button>
+              <input hidden value={$form.frame} name="frame" />
+            {/snippet}
+          </Popover.Trigger>
+          <Popover.Content align="start" class="w-full p-0">
+            <Command.Root>
+              <Command.Input
+                placeholder="Select your favorite framework"
+                class="h-9"
+              />
+              <Command.List>
+                <Command.Empty>No framework found.</Command.Empty>
+                <Command.Group>
+                  {#each frameworks as framework}
+                    <Command.Item
+                      value={framework.value}
+                      onSelect={() => {
+                        combovalue_frame = framework.value;
+                        $form.frame = framework.value;
+                        closeAndFocusTrigger_frame();
+                      }}
+                    >
+                      <Check
+                        class={cn(
+                          framework.value !== $form.frame && "text-transparent"
+                        )}
+                      />
+                      {framework.label}
+                    </Command.Item>
+                  {/each}
+                </Command.Group>
+              </Command.List>
+            </Command.Root>
+          </Popover.Content>
+        </Popover.Root>
+      </div>
+      <p class="text-xs text-muted-foreground">
+        Select your favorite framework
+      </p>
+    </div>
+
+    <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>

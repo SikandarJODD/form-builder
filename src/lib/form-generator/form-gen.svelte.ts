@@ -183,7 +183,7 @@ class FormGenerator {
   combobox_named_id = $derived.by(() => {
     let comboid = this.selected_inputs.filter(
       (input) => input.type === "combobox"
-    )[0];
+    );
     return comboid;
   });
 
@@ -556,24 +556,7 @@ export const actions: Actions = {
         value: "astro",
         label: "Astro",
       },
-    ];
-    let open = $state(false);
-    let combovalue = $state("");
-    let triggerRef = $state<HTMLButtonElement>(null!);
-    const selectedValue = $derived(
-      frameworks.find((f) => f.value === combovalue)?.label ??
-        "Select a framework..."
-    );
-    // We want to refocus the trigger button when the user selects
-    // an item from the list so users can continue navigating the
-    // rest of the form with the keyboard.
-    function closeAndFocusTrigger() {
-      open = false;
-      tick().then(() => {
-        triggerRef.focus();
-      });
-    }
-    `;
+    ];`;
       }
       else if (input === 'file') {
         clientrawCode += `
@@ -600,6 +583,32 @@ export const actions: Actions = {
   };`
       }
     });
+
+    if (this.combobox_named_id.length > 0) {
+      this.combobox_named_id.map((combobox) => {
+        clientrawCode += `
+  // Popover State for ${combobox.named_id}
+  let open_${combobox.named_id} = $state(false);
+  // Value
+  let combovalue_${combobox.named_id} = $state("");
+  let triggerRef_${combobox.named_id} = $state<HTMLButtonElement>(null!);
+
+  // Selected Value
+  const selectedValue_${combobox.named_id} = $derived(
+    frameworks.find((f) => f.value === combovalue_${combobox.named_id})?.label ??
+      "Select a framework..."
+  );
+  // We want to refocus the trigger button when the user selects
+  // an item from the list so users can continue navigating the
+  // rest of the form with the keyboard.
+  function closeAndFocusTrigger_${combobox.named_id}() {
+    open_${combobox.named_id} = false;
+    tick().then(() => {
+      triggerRef_${combobox.named_id}.focus();
+    });
+  }`;
+      })
+    }
     clientrawCode += `
   import { ${this.adapter} } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
@@ -612,7 +621,7 @@ export const actions: Actions = {
 
   let { form, message, errors, enhance } = superForm(data.form, {
       validators: ${this.adapter}(schema)`
-    if (this.tags_input_named_id.length > 0 && this.combobox_named_id) {
+    if (this.tags_input_named_id.length > 0 && this.combobox_named_id.length > 0) {
 
       clientrawCode += `,
         onUpdated(event) {
@@ -621,8 +630,10 @@ export const actions: Actions = {
         clientrawCode += `
                 ${tag.named_id}_value = [];`;
       })
-      clientrawCode += `
-                combovalue = "";`;
+      this.combobox_named_id.map((combobox) => {
+        clientrawCode += `
+            combovalue_${combobox.named_id} = "";`;
+      })
       clientrawCode += `
         }
       }`;
@@ -638,12 +649,15 @@ export const actions: Actions = {
       clientrawCode += `
           }
         }`;
-    } else if (this.combobox_named_id) {
+    } else if (this.combobox_named_id.length > 0) {
       clientrawCode += `,
         onUpdated(event) {
-          if (event.form.valid) {
-            combovalue = "";
-          }
+          if (event.form.valid) {`;
+      this.combobox_named_id.map((combobox) => {
+        clientrawCode += `
+            combovalue_${combobox.named_id} = "";`;
+      })
+      clientrawCode += `}
         }`;
     }
     clientrawCode += `
@@ -990,17 +1004,17 @@ export const actions: Actions = {
             ${input.label}
           </Label>
           <div>
-            <Popover.Root bind:open>
-              <Popover.Trigger bind:ref={triggerRef}>
+            <Popover.Root bind:open={open_${input.named_id}}>
+              <Popover.Trigger bind:ref={triggerRef_${input.named_id}}>
                 {#snippet child({ props })}
                   <Button
                     variant="outline"
                     class="w-full justify-between"
                     {...props}
                     role="combobox"
-                    aria-expanded={open}
+                    aria-expanded={open_${input.named_id}}
                   >
-                    {selectedValue || "Select a framework..."}
+                    {selectedValue_${input.named_id} || "Select a framework..."}
                     <ChevronsUpDown class="opacity-50" />
                   </Button>
                    <input hidden value={$form.${input.named_id}} name="${input.named_id}" />
@@ -1019,9 +1033,9 @@ export const actions: Actions = {
                         <Command.Item
                           value={framework.value}
                           onSelect={() => {
-                            combovalue = framework.value;
+                            combovalue_${input.named_id} = framework.value;
                             $form.${input.named_id} = framework.value;
-                            closeAndFocusTrigger();
+                            closeAndFocusTrigger_${input.named_id}();
                           }}
                         >
                           <Check
