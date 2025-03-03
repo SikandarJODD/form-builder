@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { deserialize } from "$app/forms";
   import Button, {
     buttonVariants,
   } from "$lib/components/ui/button/button.svelte";
@@ -170,7 +169,7 @@
   import { Trash2, X } from "lucide-svelte";
   import { onDestroy } from "svelte";
   import { SvelteDate } from "svelte/reactivity";
-  import { fly, slide } from "svelte/transition";
+  import { fade, fly, scale, slide } from "svelte/transition";
   const onUpload: FileDropZoneProps["onUpload"] = async (files) => {
     await Promise.allSettled(files.map((file) => uploadFile(file)));
   };
