@@ -1,5 +1,7 @@
 import { z } from 'zod';
 export let schema = z.object({
-  combobox: z.string().nonempty(),
-  frame: z.string().nonempty(),
+  datepicker: z.string().refine((v) => v,
+ { message: "A date of birth is required." }),
+  datepick: z.string().refine((v) => v,
+ { message: "A date of birth is required." }),
 })
