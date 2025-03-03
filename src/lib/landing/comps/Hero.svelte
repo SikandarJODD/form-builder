@@ -190,14 +190,14 @@
       <a
         href="https://next.shadcn-svelte.com"
         target="_blank"
-        class="underline underline-offset-2"
+        class="underline underline-offset-2 text-primary/80"
       >
         Shadcn Svelte
       </a>,{" "}
       <a
         href="https://superforms.rocks"
         target="_blank"
-        class="underline underline-offset-2"
+        class="underline underline-offset-2 text-primary/80"
       >
         Superforms
       </a>{" "}

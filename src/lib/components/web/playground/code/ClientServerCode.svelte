@@ -52,19 +52,29 @@
   }
 </script>
 
-<div class="relative border rounded-lg">
+<div class="relative border rounded-lg bg-zinc-900 dark:bg-transparent">
   <div class="absolute top-2 right-3 flex space-x-1.5">
     <div class="flex">
       <Button
         size="sm"
-        class="rounded-s-lg rounded-r-none"
-        variant={codeType === "client" ? "default" : "secondary"}
+        class={[
+          "rounded-s-lg rounded-r-none border-r-0 ",
+          codeType === "client"
+            ? "text-primary  bg-secondary"
+            : "text-muted-foreground",
+        ]}
+        variant="outline"
         onclick={() => (codeType = "client")}>Client</Button
       >
       <Button
         size="sm"
-        class="rounded-e-lg rounded-l-none"
-        variant={codeType === "server" ? "default" : "secondary"}
+        class={[
+          "rounded-e-lg rounded-l-none",
+          codeType === "server"
+            ? "text-primary bg-secondary"
+            : "text-muted-foreground",
+        ]}
+        variant="outline"
         onclick={() => (codeType = "server")}>Server</Button
       >
     </div>

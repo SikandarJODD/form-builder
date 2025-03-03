@@ -1,7 +1,10 @@
 import { z } from 'zod';
+export const KILOBYTE = 1024;
+export const MEGABYTE = 1024 * KILOBYTE;
 export let schema = z.object({
-  datepicker: z.string().refine((v) => v,
- { message: "A date of birth is required." }),
-  datepicker_72: z.string().refine((v) => v,
- { message: "A date of birth is required." }),
+  file: z.array(z.instanceof(File, {
+    message: "Please select an image file.",
+  }).refine((file) => file.size <= (MEGABYTE * 2), {
+    message: "The image is too large.",
+  })).min(1,"Please select an image file."),
 })
