@@ -5,6 +5,7 @@
   import { onMount } from "svelte";
   import { Motion } from "motion-start";
   import NumberTicker from "$lib/components/magicui/NumberTicker/NumberTicker.svelte";
+  import GridPattern from "$lib/components/magicui/GridPattern/GridPattern.svelte";
 
   const ease = [0.16, 1, 0.3, 1];
   let stats = $state({
@@ -62,22 +63,20 @@
 </script>
 
 <div class="bg-background">
-  <div class="relative isolate px-6 pt-14 lg:px-8">
-    <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-32">
-      <div class="hidden sm:mb-8 sm:flex sm:justify-center">
+  <div class="relative isolate px-6 pt-0 md:pt-20 lg:px-8">
+    <GridPattern
+      width={30}
+      height={30}
+      strokeDashArray="4 2"
+      class="[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]"
+    />
+    <div class="mx-auto max-w-2xl py-10 sm:py-48 lg:py-32">
+      <div class="mb-4 sm:mb-8 sm:flex sm:justify-center">
         <div class="z-10 flex items-center justify-center">
           {@render heropill()}
         </div>
       </div>
       <div class="text-center">
-        <!-- <h1
-          class="text-balance text-5xl font-semibold tracking-tight text-primary sm:text-7xl"
-        >
-          Svelte Form Builder
-        </h1>
-        <p class="mt-8 text-pretty text-lg text-muted-foreground sm:text-xl/8">
-          Create forms with Shadcn-Svelte, Superforms and schema within minutes.
-        </p> -->
         <div>
           {@render heroTitle()}
         </div>
@@ -108,7 +107,7 @@
             class="group"
           >
             <Button
-              class="h-10 w-[9.5rem] flex justify-start rounded-full border-2 border-white dark:border-gray-800 shadow"
+              class="h-9 sm:h-10 w-[9.5rem] flex justify-start rounded-full border-2 border-white dark:border-gray-800 shadow"
             >
               <HeartIcon />
               Sponsor
@@ -117,15 +116,29 @@
           <a
             href="https://github.com/SikandarJODD/form-builder"
             target="_blank"
-            class="h-10 cursor-pointer flex w-auto items-center space-x-1 rounded-full bg-muted px-3 group border-2 border-white whitespace-pre shadow hover:shadow-lg"
+            class="h-9 sm:h-10 cursor-pointer flex w-auto items-center space-x-1 rounded-full bg-muted px-3 group border-2 border-white whitespace-pre shadow hover:shadow-lg"
           >
-            <p class="font-medium text-primary text-sm">
+            <p class="hidden md:flex font-medium text-primary text-sm">
               Star Project on GitHub
             </p>
             <div
               class="flex items-center rounded-full px-2 py-1 text-center font-medium text-sm"
             >
-              <StarIcon strokeWidth={1.6} />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                color="currentColor"
+                fill="none"
+                class="size-4 sm:size-5"
+              >
+                <path
+                  d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
               <NumberTicker class="ml-1" value={stats.stars} />
             </div>
           </a>
@@ -177,14 +190,14 @@
       <a
         href="https://next.shadcn-svelte.com"
         target="_blank"
-        class="hover:underline"
+        class="underline underline-offset-2 text-primary/80"
       >
         Shadcn Svelte
       </a>,{" "}
       <a
         href="https://superforms.rocks"
         target="_blank"
-        class="hover:underline"
+        class="underline underline-offset-2 text-primary/80"
       >
         Superforms
       </a>{" "}
@@ -200,6 +213,8 @@
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.8, ease }}
   >
-    <Button variant="secondary" href="/playground" class="rounded-lg">Go to Playground</Button>
+    <Button variant="secondary" href="/playground" class="rounded-lg"
+      >Go to Playground</Button
+    >
   </Motion.div>
 {/snippet}

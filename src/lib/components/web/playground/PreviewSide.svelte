@@ -31,7 +31,9 @@
         in:fly={{ x: 20, duration: 300 }}
         class="flex items-center justify-center w-full h-[450px]"
       >
-        <div class="bg-white flex justify-center items-center invert">
+        <div
+          class="bg-white dark:bg-white flex justify-center items-center dark:invert"
+        >
           <img src={OC_Thinking} alt="thinking" class="" />
         </div>
       </div>
