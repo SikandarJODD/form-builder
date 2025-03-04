@@ -197,7 +197,7 @@ class FormGenerator {
   file_input_named_id = $derived.by(() => {
     let fileid = this.selected_inputs.filter(
       (input) => input.type === "file"
-    )[0];
+    );
     return fileid;
   });
 
@@ -545,17 +545,13 @@ export const actions: Actions = {
   } from "$lib/components/ui/file-drop-zone";
   import { fly, slide } from "svelte/transition";
   import { Trash2 } from "lucide-svelte";
-
-  const onUpload: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
-    // we use set instead of an assignment since it accepts a File[]
-    files.set([...Array.from($files), ...uploadedFiles]);
-  };
   const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
     reason,
     file,
   }) => {
     toast.error(\`\${ file.name } failed to upload!\`, { description: reason });
-  };`
+  };
+  `
       }
     });
 
@@ -685,21 +681,28 @@ export const actions: Actions = {
       )
       clientrawCode += `\n  });`;
     }
-    if (this.file_input_named_id) {
+    if (this.file_input_named_id.length > 0) {
       clientrawCode += `
-    message.subscribe((message) => {
-      if (message) {
-        toast.success(message.text, {
-          description: "Your attachments were uploaded.",
-        });
-      }
-    });
-
-    const files = filesProxy(form, "${this.file_input_named_id.named_id}");`
+  message.subscribe((message) => {
+    if (message) {
+      toast.success(message.text, {
+        description: "Your attachments were uploaded.",
+      });
+    }
+  });
+      `
+      this.file_input_named_id.map((file) => {
+        clientrawCode += `
+  let files_${file.named_id} = filesProxy(form, "${file.named_id}");
+  let onUpload_${file.named_id}: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
+    // we use set instead of an assignment since it accepts a File[]
+    files_${file.named_id}.set([...Array.from($files_${file.named_id}), ...uploadedFiles]);
+  };`
+      })
     }
 
     clientrawCode += `\n</script>
-<div class="flex min-h-[60vh] flex-col items-center justify-center">
+<div class="flex min-h-[80vh] flex-col items-center justify-center">
 	{#if $message}
 		<p class="text-emerald-400">{$message}</p>
 	{/if}
@@ -1074,17 +1077,17 @@ export const actions: Actions = {
         ${input.label}
     </Label>
     <FileDropZone
-      {onUpload}
+      onUpload={onUpload_${input.named_id}}
       {onFileRejected}
       maxFileSize={10 * MEGABYTE}
       accept="image/*"
       maxFiles={4}
-      fileCount={$files.length}
+      fileCount={$files_${input.named_id}.length}
     />
     <p class="text-sm text-muted-foreground">Select file to upload.</p>
-    <input name="${input.named_id}" type="file" bind:files={$files} class="hidden" />
+    <input name="${input.named_id}" type="file" bind:files={$files_${input.named_id}} class="hidden" />
     <div class="flex flex-col">
-      {#each Array.from($files) as file, i (file.name)}
+      {#each Array.from($files_${input.named_id}) as file, i (file.name)}
         <div
           in:slide
           out:fly={{ x: 20 }}
@@ -1121,9 +1124,9 @@ export const actions: Actions = {
             class="hover:text-primary text-muted-foreground"
             onclick={() => {
               // we use set instead of an assignment since it accepts a File[]
-              files.set([
-                ...Array.from($files).slice(0, i),
-                ...Array.from($files).slice(i + 1),
+              files_${input.named_id}.set([
+                ...Array.from($files_${input.named_id}).slice(0, i),
+                ...Array.from($files_${input.named_id}).slice(i + 1),
               ]);
             }}
           >
@@ -1132,11 +1135,11 @@ export const actions: Actions = {
         </div>
       {/each}
     </div>
-  <div>
-        `
+  </div>`
       }
     });
     clientrawCode += `
+
     <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>
@@ -1146,7 +1149,7 @@ export const actions: Actions = {
 
   formsnapCode = $derived.by(() => {
     let formsnapCode = `<script lang="ts">
-  import { superForm ${this.file_input_named_id ? ',filesProxy' : ''} } from "sveltekit-superforms";
+  import { superForm ${this.file_input_named_id.length > 0 ? ',filesProxy' : ''} } from "sveltekit-superforms";
   import {  ${this.adapter} } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
   import { schema } from "./schema";
@@ -1268,10 +1271,6 @@ export const actions: Actions = {
   import { fly, slide } from "svelte/transition";
   import { Trash2 } from "lucide-svelte";
 
-  const onUpload: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
-    // we use set instead of an assignment since it accepts a File[]
-    files.set([...Array.from($files), ...uploadedFiles]);
-  };
   const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
     reason,
     file,
@@ -1281,9 +1280,9 @@ export const actions: Actions = {
       }
     });
 
-    if(this.date_picker_named_id.length > 0) {
-      this.date_picker_named_id.map((date)=>{
-        formsnapCode+=`
+    if (this.date_picker_named_id.length > 0) {
+      this.date_picker_named_id.map((date) => {
+        formsnapCode += `
   let value_${date.named_id} = $state<DateValue | undefined>();
   let df_${date.named_id} = new DateFormatter("en-US", {
     dateStyle: "long",
@@ -1385,28 +1384,34 @@ let { form: formData, enhance, message } = form;`;
     });`
       })
     }
-    if (this.file_input_named_id) {
+    if (this.file_input_named_id.length > 0) {
       formsnapCode += `
-    message.subscribe((message) => {
+  message.subscribe((message) => {
       if (message) {
         toast.success(message.text, {
           description: "Your attachments were uploaded.",
         });
       }
-    });
-
-    const files = filesProxy(form, "${this.file_input_named_id.named_id}");`
+  });`
+      this.file_input_named_id.map((file) => {
+        formsnapCode += `
+  let files_${file.named_id} = filesProxy(form, "${file.named_id}");
+  let onUpload_${file.named_id}: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
+    // we use set instead of an assignment since it accepts a File[]
+    files_${file.named_id}.set([...Array.from($files_${file.named_id}), ...uploadedFiles]);
+  };`
+      })
     }
 
     formsnapCode += `
   </script> \n\n`; // close script tag
-    formsnapCode += `<div class="flex min-h-[60vh] flex-col items-center justify-center">
+    formsnapCode += `<div class="flex min-h-[80vh] flex-col items-center justify-center">
   {#if $message}
     <span class="text-emerald-400">
       {$message}
     </span>
   {/if}
-  <form method="post" ${this.file_input_named_id ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+  <form method="post" ${this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
       if (
         input.type === "text" ||
@@ -1827,15 +1832,15 @@ let { form: formData, enhance, message } = form;`;
         {#snippet children({ props })}
           <Label>${input.label}</Label>
           <FileDropZone
-            {onUpload}
+            onUpload={onUpload_${input.named_id}}
             {onFileRejected}
             maxFileSize={1 * MEGABYTE}
             accept="image/*"
             maxFiles={4}
-            fileCount={$files.length}
+            fileCount={$files_${input.named_id}.length}
             class="my-1"
           />
-          <input name="${input.named_id}" type="file" bind:files={$files} class="hidden" />
+          <input name="${input.named_id}" type="file" bind:files={$files_${input.named_id}} class="hidden" />
         {/snippet}
       </Control>
       <Description class="text-sm text-muted-foreground">
@@ -1843,7 +1848,7 @@ let { form: formData, enhance, message } = form;`;
       </Description>
       <FieldErrors />
       <div class="flex flex-col">
-        {#each Array.from($files) as file, i (file.name)}
+        {#each Array.from($files_${input.named_id}) as file, i (file.name)}
           <div
             in:slide
             out:fly={{ x: 20 }}
@@ -1880,9 +1885,9 @@ let { form: formData, enhance, message } = form;`;
               class="hover:text-primary text-muted-foreground"
               onclick={() => {
                 // we use set instead of an assignment since it accepts a File[]
-                files.set([
-                  ...Array.from($files).slice(0, i),
-                  ...Array.from($files).slice(i + 1),
+                files_${input.named_id}.set([
+                  ...Array.from($files_${input.named_id}).slice(0, i),
+                  ...Array.from($files_${input.named_id}).slice(i + 1),
                 ]);
               }}
             >
@@ -1896,6 +1901,7 @@ let { form: formData, enhance, message } = form;`;
       }
     });
     formsnapCode += `
+
     <div>
       <Button size="sm" type="submit">Submit</Button>
     </div>
