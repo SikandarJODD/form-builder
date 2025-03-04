@@ -26,7 +26,7 @@ export let schema = z.object({
   <p class="text-muted-foreground">
     This form includes special component,add the component in your directory.
   </p>
-  <div class="flex items-center w-full justify-end mt-1">
+  <div class="flex sm:flex-row gap-2 sm:items-center flex-col w-full justify-end mt-1">
       <TemplatesTabs bind:tab_value />
   </div>
 </div>

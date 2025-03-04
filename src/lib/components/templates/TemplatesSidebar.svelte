@@ -40,16 +40,16 @@
   };
 </script>
 
-<div class="max-w-5xl mx-auto py-4 space-y-2">
+<div class="max-w-5xl mx-auto py-4 px-4 space-y-2">
   <h1 class="text-3xl font-semibold">Templates</h1>
   <p class="text-muted-foreground">
     Minimalist templates for building your next product. Built with Svelte,
     Sveltekit, TailwindCSS, ZOD, Superforms-Sveltekit and Typescript.
   </p>
 </div>
-<div class="max-w-5xl mx-auto">
-  <div class="grid grid-cols-9 gap-4">
-    <div class="sticky top-20 col-span-2 bg-accent/50 rounded-lg p-4 h-fit">
+<div class="max-w-5xl mx-auto px-4">
+  <div class="grid grid-cols-1 sm:grid-cols-9 gap-4">
+    <div class="sm:sticky top-20 sm:col-span-2 bg-accent/50 rounded-lg p-4 h-fit">
       {#each templates as item}
         <div>
           <div class="flex justify-between items-center">
@@ -58,12 +58,12 @@
               {item.sub.length}
             </Button>
           </div>
-          <div class="border-l px-2 ml-1 my-1">
+          <div class="border-l pl-2 ml-1 my-1">
             {#each item.sub as subItem}
               <a
                 href={subItem.url}
                 class={[
-                  "block text-sm text-muted-foreground px-2 py-1 rounded-md transition-all duration-150 hover:text-primary",
+                  "block text-sm text-muted-foreground pl-2 py-1 rounded-md transition-all duration-150 hover:text-primary",
                   isActive(subItem.url) && "text-primary bg-primary/5",
                 ]}>{subItem.name}</a
               >
@@ -72,7 +72,7 @@
         </div>
       {/each}
     </div>
-    <div class="col-span-7">
+    <div class="sm:col-span-7">
       {@render children()}
     </div>
   </div>
