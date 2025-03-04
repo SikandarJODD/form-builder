@@ -238,7 +238,7 @@ class FormGenerator {
 
   generateZodSchemaString(inputs: InputType[]): string {
     let schemaString = `import { z } from 'zod';
-${this.file_input_named_id ? `export const KILOBYTE = 1024;
+${this.file_input_named_id.length > 0 ? `export const KILOBYTE = 1024;
 export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n`;
 
     inputs.forEach((input) => {
@@ -423,7 +423,7 @@ export const actions: Actions = {
 
   clientCode = $derived.by(() => {
     let clientrawCode = `<script lang="ts">
-	import { superForm ${this.file_input_named_id ? ',filesProxy' : ''} } from 'sveltekit-superforms';
+	import { superForm${this.file_input_named_id.length > 0 ? ', filesProxy' : ''} } from 'sveltekit-superforms';
     // add your own path
 	import type { PageData } from './$types';
 	import Label from '$lib/components/ui/label/label.svelte';
@@ -706,7 +706,7 @@ export const actions: Actions = {
 	{#if $message}
 		<p class="text-emerald-400">{$message}</p>
 	{/if}
-  <form ${this.file_input_named_id ? 'enctype="multipart/form-data"' : ''} method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+  <form method="post" ${this.file_input_named_id.length > 0  ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
       if (
         input.type === "text" ||
@@ -1149,7 +1149,7 @@ export const actions: Actions = {
 
   formsnapCode = $derived.by(() => {
     let formsnapCode = `<script lang="ts">
-  import { superForm ${this.file_input_named_id.length > 0 ? ',filesProxy' : ''} } from "sveltekit-superforms";
+  import { superForm${this.file_input_named_id.length > 0 ? ', filesProxy' : ''} } from "sveltekit-superforms";
   import {  ${this.adapter} } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
   import { schema } from "./schema";

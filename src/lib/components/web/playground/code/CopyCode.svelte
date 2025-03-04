@@ -29,7 +29,7 @@
 
 <div
   class={[
-    "relative border w-full px-4 py-2 rounded-lg overflow-scroll scrollbar ",
+    "relative border w-full px-4 py-2 rounded-lg overflow-scroll scrollbar bg-zinc-900 dark:bg-transparent",
     _class,
   ]}
 >

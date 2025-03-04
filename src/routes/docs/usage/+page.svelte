@@ -11,15 +11,15 @@
 </p>
 <Separator class="mt-2" />
 
-<div class="mt-4 text-muted-foreground">
+<div class="mt-4">
   <ul class="space-y-1">
     <li>1. Select input fields from the list of available fields.</li>
-    <li>2. Edit input parameters like <code>min, max, required, type</code></li>
+    <li>2. Edit input parameters like min, max, required...</li>
     <li>3. Re-order list based on your needs. (Drag and Drop)</li>
-    <li>4. Select <code>Schema</code> and Copy Code. (Zod | Valibot)</li>
+    <li>4. Select Schema and Copy Code. (Zod | Valibot)</li>
     <li>
-      5. Copy <code>+page.svelte (Client)</code> and
-      <code>+page.server.ts (Server)</code> Code
+      5. Copy +page.svelte (Client) and
+      +page.server.ts (Server) Code
     </li>
     <li>6. Paste the code in your project.</li>
   </ul>
@@ -47,7 +47,5 @@
 </div>
 
 <style lang="postcss">
-  ul li > code {
-    @apply bg-zinc-900 px-2 py-1 rounded-[2px] text-primary;
-  }
+
 </style>

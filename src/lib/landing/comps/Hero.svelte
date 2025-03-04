@@ -70,7 +70,7 @@
       strokeDashArray="4 2"
       class="[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]"
     />
-    <div class="mx-auto max-w-2xl py-10 sm:py-48 lg:py-32">
+    <div class="mx-auto max-w-2xl py-24 sm:py-48 lg:py-32">
       <div class="mb-4 sm:mb-8 sm:flex sm:justify-center">
         <div class="z-10 flex items-center justify-center">
           {@render heropill()}
