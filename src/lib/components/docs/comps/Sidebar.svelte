@@ -36,9 +36,9 @@
   };
 </script>
 
-<div class="max-w-5xl mx-auto">
-  <div class="flex gap-6">
-    <div class="sticky top-20 min-w-52 bg-accent/60 rounded-lg p-4 h-fit">
+<div class="max-w-5xl mx-auto px-6 sm:px-0">
+  <div class="flex gap-6 flex-col sm:flex-row">
+    <div class="sm:sticky top-20 min-w-52 bg-accent/60 rounded-lg p-4 h-fit">
       {#each templates as item}
         <div>
           <div class="flex justify-between items-center">
@@ -47,7 +47,7 @@
               {item.sub.length}
             </Button>
           </div>
-          <div class="border-l px-1 ml-1 my-1">
+          <div class="border-l pl-1 ml-1 my-1">
             {#each item.sub as subItem}
               <a
                 href={subItem.url}
@@ -61,7 +61,7 @@
         </div>
       {/each}
     </div>
-    <div class="">
+    <div>
       {@render children()}
     </div>
   </div>

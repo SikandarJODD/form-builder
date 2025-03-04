@@ -34,7 +34,9 @@ export let schema = z.object({
   <p class="text-muted-foreground">
     This form includes special component,add the component in your directory.
   </p>
-  <div class="flex items-center w-full justify-between mt-1">
+  <div
+    class="flex sm:flex-row gap-2 sm:items-center flex-col w-full justify-between mt-1"
+  >
     <div>
       <ul>
         {#each spl_comps as item, index}
