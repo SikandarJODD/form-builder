@@ -17,11 +17,7 @@
     {
       question: "I encountered a bug; what should I do?",
       answer: `Please DM me or open an issue on GitHub, and I'll address it as soon as possible.`,
-    },
-    {
-      question: "How can I contribute?",
-      answer: `Please refer to the contribution guide on GitHub. You can also DM me  on Twitter to discuss how you can help.`,
-    },
+    }
   ];
 </script>
 

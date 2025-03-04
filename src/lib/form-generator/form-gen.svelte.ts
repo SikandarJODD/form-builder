@@ -311,7 +311,7 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
 
   generateValibotSchemaString(inputs: InputType[]): string {
     let schemaString = `import * as v from 'valibot';
-${this.file_input_named_id ? `export const KILOBYTE = 1024;
+${this.file_input_named_id.length > 0 ? `export const KILOBYTE = 1024;
 export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
     schemaString += `export const schema = v.object({\n`;
 
@@ -322,14 +322,15 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
         input.type === "text" ||
         input.type === "textarea" ||
         input.type === "password" ||
-        input.type === "select"
+        input.type === "select" || input.type === "phone" || input.type === "combobox"
       ) {
         if (!input.required) {
-          fieldSchema += `  v.optional(`;
-        }
-        fieldSchema += `    v.string()`;
-        if (!input.required) {
+          fieldSchema += `    v.optional(`;
+          fieldSchema += `v.string()`;
           fieldSchema += `)`;
+        }
+        else {
+          fieldSchema += `    v.string()`;
         }
         if (input.type === "password" && input.required && input.min === 0) {
           fieldSchema += `,\n    v.nonEmpty('Please enter your password.')`;
@@ -351,13 +352,14 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
         fieldSchema += `    v.array(v.string(), 'Please enter your tags.')`;
       }
       else if (input.type === 'file') {
-        fieldSchema += `v.array(v.pipe(v.file(), v.maxSize(MEGABYTE * 2)))`
+        fieldSchema += `    v.array(v.pipe(v.file(), v.maxSize(MEGABYTE * 2)))`
       }
+
 
       // Add `min` and `max` constraints if available for number, password, and text fields
       if (min_max_types.includes(input.type) && input.required) {
         if (input.min !== undefined && input.min > 0) {
-          fieldSchema += `,\n    v.minLength(${input.min}, 'The string must be ${input.min} or more characters long.')`;
+          fieldSchema += `,\n    v.minLength(${input.min}, 'Please enter at least ${input.min} characters.')`;
         }
         if (
           input.max !== undefined &&
@@ -706,7 +708,7 @@ export const actions: Actions = {
 	{#if $message}
 		<p class="text-emerald-400">{$message}</p>
 	{/if}
-  <form method="post" ${this.file_input_named_id.length > 0  ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+  <form method="post" ${this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
       if (
         input.type === "text" ||
