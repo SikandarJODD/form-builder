@@ -11,15 +11,6 @@
   }: {
     item: InputType;
   } = $props();
-  // $effect(() => {
-  //   if (
-  //     item.max !== undefined &&
-  //     item.min !== undefined &&
-  //     item.max < item.min
-  //   ) {
-  //     item.max = item.min;
-  //   }
-  // });
   let isOpen = $state(false);
   let selectTextTypes = ["text", "tel", "url"];
   let selectedMinMaxTypes = [
@@ -58,7 +49,7 @@
   </Dialog.Trigger>
   <Dialog.Content>
     <Dialog.Header>
-      <Dialog.Title>Edit Password Field</Dialog.Title>
+      <Dialog.Title>Edit Field</Dialog.Title>
     </Dialog.Header>
     <div class="space-y-2.5">
       <div>

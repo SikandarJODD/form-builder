@@ -1,15 +1,7 @@
-import { z } from 'zod';
-export const KILOBYTE = 1024;
-export const MEGABYTE = 1024 * KILOBYTE;
-export let schema = z.object({
-  file: z.array(z.instanceof(File, {
-        message: "Please select an image file.",
-      }).refine((file) => file.size <= (MEGABYTE*2) , {
-        message:"The image is too large.",
-      })),
-  file_cc: z.array(z.instanceof(File, {
-        message: "Please select an image file.",
-      }).refine((file) => file.size <= (MEGABYTE*2) , {
-        message:"The image is too large.",
-      })),
+import * as v from 'valibot';
+export const schema = v.object({
+  password: v.pipe(
+    v.string(),
+    v.minLength(6, 'Please enter at least 6 characters.')
+  ),
 })
