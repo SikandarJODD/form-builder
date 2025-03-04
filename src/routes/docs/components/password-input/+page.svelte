@@ -80,6 +80,10 @@
   <CopyCode {code} lang="svelte" class="h-[400px]" />
 </div>
 <h3 class="text-xl font-semibold mt-6">Preview</h3>
-<div class="w-80 mt-2 border border-dashed p-4">
-  <PasswordInput value='svelte' />
+<div
+  class="mt-2 border border-dashed p-4 w-full min-h-64 flex justify-center items-center"
+>
+  <div class="w-fit mx-auto">
+    <PasswordInput value="svelte" />
+  </div>
 </div>

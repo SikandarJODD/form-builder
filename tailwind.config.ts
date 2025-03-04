@@ -90,12 +90,21 @@ const config: Config = {
 						"background-position": "calc(100% + var(--shimmer-width)) 0",
 					},
 				},
+				ripple: {
+					"0%, 100%": {
+						transform: "translate(-50%, -50%) scale(1)",
+					},
+					"50%": {
+						transform: "translate(-50%, -50%) scale(0.9)",
+					},
+				},
 			},
 			animation: {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 				"caret-blink": "caret-blink 1.25s ease-out infinite",
 				shimmer: "shimmer 6s infinite",
+				ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite',
 			},
 		},
 	},

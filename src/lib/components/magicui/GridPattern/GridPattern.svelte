@@ -25,7 +25,7 @@
     strokeDashArray = "",
     squares = [[0, 0]],
     class: className = "",
-    fillColor = "rgb(156 163 175 / 0.3)",
+    fillColor = "rgb(156 163 175 / 0.4)",
     strokeWidth = 1,
     ...rest
   }: Props = $props();

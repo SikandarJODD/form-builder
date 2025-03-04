@@ -22,7 +22,9 @@
       </p>
     </div>
     {#if form_generator.selected_inputs.length > 0}
-      <div class="grid grid-cols-5 gap-10 max-w-7xl">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-5 sm:gap-10 space-y-10 sm:space-y-0 max-w-7xl"
+      >
         <InputsDragCode />
         <PreviewAndCode />
       </div>

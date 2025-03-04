@@ -33,7 +33,7 @@
         >
           {subtitle}
         </h3>
-        <p class="mt-6 text-lg leading-8 text-slate-600 max-w-2xl mx-auto">
+        <p class="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
           {description}
         </p>
       </div>
