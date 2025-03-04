@@ -70,7 +70,7 @@
       strokeDashArray="4 2"
       class="[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]"
     />
-    <div class="mx-auto max-w-2xl py-24 sm:py-48 lg:py-32">
+    <div class="mx-auto md:max-w-2xl py-24 sm:py-48 lg:py-32">
       <div class="mb-4 sm:mb-8 sm:flex sm:justify-center">
         <div class="z-10 flex items-center justify-center">
           {@render heropill()}
@@ -190,14 +190,14 @@
       <a
         href="https://next.shadcn-svelte.com"
         target="_blank"
-        class="underline underline-offset-2 text-primary/80"
+        class="underline underline-offset-2 text-primary/90"
       >
         Shadcn Svelte
       </a>,{" "}
       <a
         href="https://superforms.rocks"
         target="_blank"
-        class="underline underline-offset-2 text-primary/80"
+        class="underline underline-offset-2 text-primary/90"
       >
         Superforms
       </a>{" "}
@@ -208,12 +208,12 @@
 
 {#snippet heroCTA()}
   <Motion.div
-    className="mx-auto mt-3 flex w-full max-w-2xl flex-col items-center justify-center space-y-4 sm:mt-6 sm:flex-row sm:space-x-4 sm:space-y-0"
+    class="mx-auto mt-3 flex w-full sm:max-w-2xl flex-col items-center justify-center space-y-4 sm:mt-6 sm:flex-row sm:space-x-4 sm:space-y-0"
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.8, ease }}
   >
-    <Button variant="secondary" href="/playground" class="rounded-lg"
+    <Button variant="secondary" href="/playground" class="rounded-full sm:rounded-lg w-full sm:w-fit"
       >Go to Playground</Button
     >
   </Motion.div>

@@ -21,7 +21,7 @@
 
 <nav class="bg-background border-b sticky top-0 z-50">
   <div class="mx-auto max-w-5xl px-4 sm:px-0">
-    <div class="flex h-14 items-center justify-between">
+    <div class="flex h-16 sm:h-14 items-center justify-between">
       <div class="flex items-center w-full">
         <a href="/" aria-label="home" class="shrink-0">
           <svg
@@ -117,12 +117,14 @@
         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
         {#each navs as nav}
           <a
+            onclick={() => (isMobileMenu = false)}
             href={nav.url}
             class="block rounded-md px-3 py-2 text-base font-medium text-primary"
             >{nav.name}</a
           >
         {/each}
         <a
+          onclick={() => (isMobileMenu = false)}
           href="/playground"
           class="block rounded-md px-3 py-2 text-base font-medium text-primary"
           >Playground</a

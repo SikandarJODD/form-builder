@@ -126,7 +126,6 @@
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        console.log(entry.isIntersecting);
         isInView.set(entry.isIntersecting);
       },
       { threshold: 0 }

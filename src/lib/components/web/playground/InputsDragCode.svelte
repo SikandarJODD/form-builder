@@ -15,7 +15,7 @@
 </script>
 
 <div
-  class="w-full space-y-2 p-2 col-span-2"
+  class="w-full space-y-2 sm:p-2 col-span-1  sm:col-span-2"
   use:dragHandleZone={{
     items: form_generator.selected_inputs,
     flipDurationMs,
@@ -27,7 +27,7 @@
     <div
       animate:flip={{ duration: flipDurationMs }}
       in:fly={{ y: 20 }}
-      class="flex items-center gap-1 handle w-full"
+      class="flex items-center gap-1 handle w-full "
     >
       <button
         use:dragHandle
@@ -37,7 +37,7 @@
         <GripVertical strokeWidth={1.4} />
       </button>
       <div
-        class="border rounded-xl px-2 py-2 flex items-center justify-between min-w-72"
+        class="border rounded-xl px-2 py-2 flex items-center justify-between w-full sm:min-w-72"
       >
         <span class="capitalize pl-1 text-sm">{item.name}</span>
         <div>
