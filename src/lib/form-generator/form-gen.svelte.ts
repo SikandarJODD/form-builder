@@ -197,6 +197,12 @@ class FormGenerator {
     let unique_imports = [...new Set(all_imports)];
     return unique_imports;
   });
+  unique_inputs_imports = $derived.by(() => {
+    let all_imports = this.selected_inputs.map((input) => input.category);
+    all_imports = all_imports.map(el => ['email', 'password', 'number'].includes(el) ? 'text' : el);
+    let unique_imports = [...new Set(all_imports)];
+    return unique_imports;
+  })
   date_picker_named_id = $derived.by(() => {
     // did : date named_id (id) of date-picker
     let did = this.selected_inputs.filter(
@@ -225,7 +231,7 @@ class FormGenerator {
     return fileid;
   });
 
-  add_input = (item: InputType) => {
+  add_input = (item: InputType, unshift?: boolean) => {
     let id = crypto.randomUUID().slice(0, 5);
     let random_id = this.unique_imports.includes(item.category)
       ? `${item.category.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`
@@ -243,7 +249,11 @@ class FormGenerator {
       min: item.min || 0,
       max: item.max || 0,
     };
-    this.selected_inputs.push(new_input);
+    if (unshift) {
+      this.selected_inputs.unshift(new_input);
+    } else {
+      this.selected_inputs.push(new_input);
+    }
   };
 
   remove_input = (id: string) => {
@@ -274,8 +284,7 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         fieldSchema = `z.boolean().default(false)`;
       } else if (input.type === "email") {
         fieldSchema = `z.string().email()`;
-      }
-      else if (input.type === 'url') {
+      } else if (input.type === 'url') {
         fieldSchema = `z.string().url()`;
       } else if (input.type === "input-otp") {
         fieldSchema = `z.string().min(6, {
@@ -285,8 +294,7 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         fieldSchema = `z.string().refine((v) => v,\n { message: "A date of birth is required." })`;
       } else if (input.type === "tags-input") {
         fieldSchema = `z.string().array()`;
-      }
-      else if (input.type === 'file') {
+      } else if (input.type === 'file') {
         fieldSchema = `z.array(z.instanceof(File, {
         message: "Please select an image file.",
       }).refine((file) => file.size <= (MEGABYTE*2) , {
@@ -327,11 +335,17 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         }
       }
 
-      schemaString += `  ${input.named_id?.toLowerCase() || "name"
-        }: ${fieldSchema},\n`;
+      if (input.type === 'title' || input.type === 'desc') {
+        fieldSchema = '';
+      }
+      if (input.type !== 'title' && input.type !== 'desc') {
+        schemaString += `  ${input.named_id?.toLowerCase() || "name"
+          }: ${fieldSchema},\n`;
+      }
     });
 
     schemaString += `})`;
+
 
     return schemaString;
   }
@@ -402,9 +416,11 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
         }
       }
       fieldSchema += `\n  )`;
+      if (input.type !== 'title' && input.type !== 'desc') {
 
-      schemaString += `  ${input.named_id?.toLowerCase() || "name"
-        }: ${fieldSchema},\n`;
+        schemaString += `  ${input.named_id?.toLowerCase() || "name"
+          }: ${fieldSchema},\n`;
+      }
     });
 
     schemaString += `})`;
@@ -422,7 +438,7 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
     return sh;
   });
 
-  // replace below logic of zod and valibot
+  // Replace below logic of zod and valibot
   // This is short term logic only for 2 Schema Adapters
   serverCode = $derived.by(() => {
     return `import type { Actions } from '@sveltejs/kit';
@@ -465,7 +481,14 @@ export const actions: Actions = {
       if (input === "text") {
         clientrawCode += `
     import Input from '$lib/components/ui/input/input.svelte';`;
-      } else if (input === "password") {
+      }
+      else if (input === 'email') {
+        if (!this.unique_imports.includes('text')) {
+          clientrawCode += `
+    import Input from '$lib/components/ui/input/input.svelte';`;
+        }
+      }
+      else if (input === "password") {
         clientrawCode += `
     import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
       } else if (input === "switch") {
@@ -736,10 +759,22 @@ export const actions: Actions = {
     clientrawCode += `\n</script>
 <div class="flex min-h-[80vh] flex-col items-center justify-center">
 	{#if $message}
-		<p class="text-emerald-400">{$message}</p>
+		<p class="text-emerald-400 mb-2">{$message}</p>
 	{/if}
   <form method="post" ${this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
+      if (input.type === 'title') {
+        clientrawCode += `
+        <h2 class="text-2xl font-semibold leading-none tracking-tight">
+          ${input.label}
+        </h2>`
+      }
+      if (input.type === 'desc') {
+        clientrawCode += `
+        <p class="text-sm text-muted-foreground">
+          ${input.label}
+        </p>`
+      }
       if (
         input.type === "text" ||
         input.type === "number" ||
@@ -1189,11 +1224,12 @@ export const actions: Actions = {
   import { Field, Control, Label, Description, FieldErrors } from "formsnap";
   // Components
   import Button from "$lib/components/ui/button/button.svelte";`;
-    this.unique_imports.map((input) => {
-      if (input === "text" || input === "number" || input === "email") {
+    this.unique_inputs_imports.map((input) => {
+      if (input === "text") {
         formsnapCode += `
-  import { Input } from "$lib/components/ui/input";`;
-      } else if (input === "textarea") {
+  import Input from "$lib/components/ui/input/input.svelte";`;
+      }
+      else if (input === "textarea") {
         formsnapCode += `
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
       } else if (input === "switch") {
@@ -1439,12 +1475,24 @@ let { form: formData, enhance, message } = form;`;
   </script> \n\n`; // close script tag
     formsnapCode += `<div class="flex min-h-[80vh] flex-col items-center justify-center">
   {#if $message}
-    <span class="text-emerald-400">
+    <span class="text-emerald-400 mb-2">
       {$message}
     </span>
   {/if}
   <form method="post" ${this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
+      if (input.type === 'title') {
+        formsnapCode += `
+        <h2 class="text-2xl font-semibold leading-none tracking-tight">
+          ${input.label}
+        </h2>`
+      }
+      if (input.type === 'desc') {
+        formsnapCode += `
+        <p class="text-sm text-muted-foreground">
+          ${input.label}
+        </p>`
+      }
       if (
         input.type === "text" ||
         input.type === "number" ||
@@ -1948,7 +1996,7 @@ let { form: formData, enhance, message } = form;`;
     installCommand += `npm install sveltekit-superforms ${this.adapter} ${this.formsnap}\n`;
     installCommand += `npx shadcn-svelte@next add button label \n`;
     installCommand += `npx shadcn-svelte@next add`;
-    this.unique_imports.map((input) => {
+    this.unique_inputs_imports.map((input) => {
       if (input === 'text' || input === 'number' || input === 'email' || input === 'password') {
         if (!installCommand.includes('input')) {
           installCommand += ` input`;
@@ -1979,13 +2027,13 @@ let { form: formData, enhance, message } = form;`;
 
     this.unique_imports.map((input) => {
       if (input === 'file') {
-        installCommand += `\njsrepo add ui/file-drop-zone`
+        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/file-drop-zone`
       }
       else if (input === 'tags-input') {
-        installCommand += `\njsrepo add ui/tags-input`
+        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/tags-input`
       }
       else if (input === 'phone') {
-        installCommand += `\njsrepo add ui/phone-input`
+        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/phone-input`
       }
     });
     return installCommand;

@@ -1,7 +1,7 @@
-import * as v from 'valibot';
-export const schema = v.object({
-  password: v.pipe(
-    v.string(),
-    v.minLength(6, 'Please enter at least 6 characters.')
-  ),
+import { z } from 'zod';
+export let schema = z.object({
+  text: z.string().nonempty(),
+  email: z.string().email(),
+  textarea: z.string().nonempty(),
+  number: z.number().int(),
 })
