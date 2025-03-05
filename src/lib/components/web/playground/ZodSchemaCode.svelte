@@ -4,6 +4,7 @@
   import { codeToHtml } from "shiki";
   import { onMount } from "svelte";
   import { watch } from "runed";
+  import InstallationCode from "./InstallationCode.svelte";
 
   let codeContent = $derived(form_generator.zodSchema); // input code
   let valibotContent = $derived(form_generator.valibotSchema); // input code

@@ -7,8 +7,14 @@
     code: string;
     lang?: string;
     class?: string;
+    codeclass?: string;
   }
-  let { code, lang = "ts", class: _class = "" }: Props = $props();
+  let {
+    code,
+    lang = "ts",
+    class: _class = "",
+    codeclass = "",
+  }: Props = $props();
 
   let codeContent = code; // input code
   let htmlCode = $state(""); // highlighted html code
@@ -29,13 +35,12 @@
 
 <div
   class={[
-    "relative border w-full px-4 py-2 rounded-lg overflow-scroll scrollbar bg-zinc-900 dark:bg-transparent",
+    "relative border w-full px-4 py-2 rounded-lg text-balance bg-zinc-900 dark:bg-transparent",
     _class,
   ]}
 >
-  <span>{@html htmlCode}</span>
-  <div class=" absolute top-2 right-2">
-    <Button variant="outline" size="icon" onclick={handleCopy}>
+  <div class="absolute top-2 right-2 z-50">
+    <Button variant="outline" size="icon" class='z-50' onclick={handleCopy}>
       <div
         class={[
           "transition-all",
@@ -75,6 +80,9 @@
         </svg>
       </div>
     </Button>
+  </div>
+  <div class="relative overflow-x-scroll scrollbar">
+    <span class={codeclass}>{@html htmlCode}</span>
   </div>
 </div>
 

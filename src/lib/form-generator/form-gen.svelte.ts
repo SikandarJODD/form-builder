@@ -14,6 +14,29 @@ export type InputType = {
   isNew?: boolean;
 };
 let dummyInput: InputType[] = [
+  // Title and Description
+  // {
+  //   name: "Title",
+  //   type: "title",
+  //   category: "title",
+  //   label: "Create Account",
+  //   description: "",
+  //   placeholder: "",
+  //   min: 0,
+  //   max: 0,
+  // },
+  // {
+  //   name: "Desc",
+  //   type: "desc",
+  //   category: "desc",
+  //   label: "Please fill out the form below to create an account.",
+  //   description: "",
+  //   placeholder: "",
+  //   min: 0,
+  //   max: 0,
+  // },
+
+  // Form Fields
   {
     name: "Input",
     type: "text",
@@ -160,13 +183,14 @@ let dummyInput: InputType[] = [
   },
 ];
 
-let min_max_types = ["number", "password", "text", "textarea", "tags-input"];
+let min_max_types = ["number", "password", "text", "textarea", "tags-input", 'url'];
 let non_empty_types = ["date-picker", "email"];
 
 class FormGenerator {
   inputs: InputType[] = dummyInput;
   selected_inputs: InputType[] = $state([]);
   adapter: string = $state("zod");
+  formsnap: string = $state("");
 
   unique_imports = $derived.by(() => {
     let all_imports = this.selected_inputs.map((input) => input.category);
@@ -250,6 +274,9 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         fieldSchema = `z.boolean().default(false)`;
       } else if (input.type === "email") {
         fieldSchema = `z.string().email()`;
+      }
+      else if (input.type === 'url') {
+        fieldSchema = `z.string().url()`;
       } else if (input.type === "input-otp") {
         fieldSchema = `z.string().min(6, {
       message: "Your one-time password must be at least 6 characters."
@@ -322,7 +349,7 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
         input.type === "text" ||
         input.type === "textarea" ||
         input.type === "password" ||
-        input.type === "select" || input.type === "phone" || input.type === "combobox"
+        input.type === "select" || input.type === "phone" || input.type === "combobox" || input.type === "url"
       ) {
         if (!input.required) {
           fieldSchema += `    v.optional(`;
@@ -331,6 +358,9 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
         }
         else {
           fieldSchema += `    v.string()`;
+        }
+        if (input.type === 'url') {
+          fieldSchema += `,\n    v.url()`
         }
         if (input.type === "password" && input.required && input.min === 0) {
           fieldSchema += `,\n    v.nonEmpty('Please enter your password.')`;
@@ -1911,6 +1941,57 @@ let { form: formData, enhance, message } = form;`;
 </div>`;
     return formsnapCode;
   });
+
+  command = $derived.by(() => {
+    let installCommand: string = '';
+
+    installCommand += `npm install sveltekit-superforms ${this.adapter} ${this.formsnap}\n`;
+    installCommand += `npx shadcn-svelte@next add button label \n`;
+    installCommand += `npx shadcn-svelte@next add`;
+    this.unique_imports.map((input) => {
+      if (input === 'text' || input === 'number' || input === 'email' || input === 'password') {
+        if (!installCommand.includes('input')) {
+          installCommand += ` input`;
+        }
+      }
+      else if (input === 'textarea') {
+        installCommand += ` textarea`;
+      }
+      else if (input === 'switch') {
+        installCommand += ` switch`;
+      }
+      else if (input === 'checkbox') {
+        installCommand += ` checkbox`;
+      }
+      else if (input === 'select') {
+        installCommand += ` select`;
+      }
+      else if (input === 'input-otp') {
+        installCommand += ` input-otp`;
+      }
+      else if (input === 'date-picker') {
+        installCommand += ` popover calendar range-calendar`;
+      }
+      else if (input === 'combobox') {
+        installCommand += ` popover command lucide-svelte`;
+      }
+    })
+
+    this.unique_imports.map((input) => {
+      if (input === 'file') {
+        installCommand += `\njsrepo add ui/file-drop-zone`
+      }
+      else if (input === 'tags-input') {
+        installCommand += `\njsrepo add ui/tags-input`
+      }
+      else if (input === 'phone') {
+        installCommand += `\njsrepo add ui/phone-input`
+      }
+    });
+    return installCommand;
+  });
+
+
 }
 
 export let form_generator = new FormGenerator();

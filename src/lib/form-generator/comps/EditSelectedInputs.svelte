@@ -56,28 +56,30 @@
         <Label for="name">Label</Label>
         <Input type="text" id="name" bind:value={item.label} />
       </div>
-      <div>
-        <Label for="desc">Description</Label>
-        <Input type="text" id="desc" bind:value={item.description} />
-      </div>
-      <div>
-        <Label for="placeholder">Placeholder</Label>
-        <Input type="text" id="placeholder" bind:value={item.placeholder} />
-      </div>
-      <div>
-        <Label for="name">Zod Schema Name</Label>
-        <Input
-          type="text"
-          id="name"
-          bind:value={() => item.named_id,
-          (v) => {
-            return (item.named_id = v
-              ?.toString()
-              .replace(" ", "_")
-              .toLowerCase());
-          }}
-        />
-      </div>
+      {#if item.type !== "title" && item.type !== "desc"}
+        <div>
+          <Label for="desc">Description</Label>
+          <Input type="text" id="desc" bind:value={item.description} />
+        </div>
+        <div>
+          <Label for="placeholder">Placeholder</Label>
+          <Input type="text" id="placeholder" bind:value={item.placeholder} />
+        </div>
+        <div>
+          <Label for="name">Zod Schema Name</Label>
+          <Input
+            type="text"
+            id="name"
+            bind:value={() => item.named_id,
+            (v) => {
+              return (item.named_id = v
+                ?.toString()
+                .replace(" ", "_")
+                .toLowerCase());
+            }}
+          />
+        </div>
+      {/if}
       {#if selectTextTypes.includes(item.type)}
         <div>
           <Label for="type">Type</Label>
@@ -113,11 +115,12 @@
           </div>
         </div>
       {/if}
-
-      <div>
-        <Label for="required">Required</Label>
-        <Checkbox id="required" bind:checked={item.required} />
-      </div>
+      {#if item.type !== "title" && item.type !== "desc"}
+        <div>
+          <Label for="required">Required</Label>
+          <Checkbox id="required" bind:checked={item.required} />
+        </div>
+      {/if}
     </div>
     <div>
       <Button

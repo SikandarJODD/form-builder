@@ -238,6 +238,18 @@
       <div class="space-y-2">
         {#each form_generator.selected_inputs as comp (comp.id)}
           <div animate:flip={{ duration: 300 }}>
+            <div class="space-y-1">
+              {#if comp.type === "title"}
+                <h2 class="text-2xl font-semibold leading-none tracking-tight">
+                  {comp.label}
+                </h2>
+              {/if}
+              {#if comp.type === "desc"}
+                <p class="text-sm text-muted-foreground">
+                  {comp.label}
+                </p>
+              {/if}
+            </div>
             {#if comp.category === "text" || comp.category === "number"}
               <div>
                 <Label for={comp.named_id}>{comp.label}</Label>
