@@ -13,7 +13,13 @@
   import Dock from "lucide-svelte/icons/dock";
   import CodeXML from "lucide-svelte/icons/code-xml";
   import Zap from "lucide-svelte/icons/zap";
-
+  import { form_generator } from "$lib/form-generator/form-gen.svelte";
+  let isFormsnap = () => {
+    form_generator.formsnap = "formsnap";
+  };
+  let isNormalCode = () => {
+    form_generator.formsnap = "";
+  };
 </script>
 
 <div class="col-span-1 sm:col-span-3">
@@ -34,6 +40,7 @@
         Preview
       </TabsTrigger>
       <TabsTrigger
+        onclick={isFormsnap}
         value="formsnap"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
       >
@@ -46,11 +53,12 @@
         Formsnap
         <!-- <Badge class="ms-1.5 rounded-full text-xs">New</Badge> -->
         <span
-          class="hidden sm:inline-flex items-center rounded-full bg-green-50 dark:bg-white/80 dark:text-black/80 px-2.5 py-0.5 ms-2.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 "
+          class="hidden sm:inline-flex items-center rounded-full bg-green-50 dark:bg-white/80 dark:text-black/80 px-2.5 py-0.5 ms-2.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
           >New</span
         >
       </TabsTrigger>
       <TabsTrigger
+        onclick={isNormalCode}
         value="code"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
       >

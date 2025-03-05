@@ -5,6 +5,7 @@
   import { watch } from "runed";
   import { codeToHtml } from "shiki";
   import { onMount } from "svelte";
+  import InstallationCode from "../InstallationCode.svelte";
 
   type CodeType = "client" | "server";
   let codeType: CodeType = $state("client");
@@ -51,6 +52,7 @@
     }
     setTimeout(() => (copied = false), 1500);
   }
+  let blurbg = $state(false);
 </script>
 
 <div class="relative border rounded-lg bg-zinc-900 dark:bg-transparent">
@@ -61,8 +63,10 @@
         variant="outline"
         onclick={() => (codeType = "client")}
         class={[
-          "rounded-s-lg rounded-r-none border-r-0 ",
-          codeType === "client" ? "text-primary  bg-secondary" : "text-muted-foreground",
+          "rounded-s-lg rounded-r-none border-r-0 z-50",
+          codeType === "client"
+            ? "text-primary  bg-secondary"
+            : "text-muted-foreground",
         ]}>Client</Button
       >
       <Button
@@ -70,61 +74,68 @@
         variant="outline"
         onclick={() => (codeType = "server")}
         class={[
-          "rounded-e-lg rounded-l-none",
-          codeType === "server" ? "text-primary bg-secondary" : "text-muted-foreground",
+          "rounded-e-lg rounded-l-none z-50",
+          codeType === "server"
+            ? "text-primary bg-secondary"
+            : "text-muted-foreground",
         ]}>Server</Button
       >
     </div>
-    <Button
-      class="rounded-lg"
-      variant="outline"
-      size="icon"
-      onclick={handleCopy}
-    >
-      <div
-        class={[
-          "transition-all",
-          copied ? "scale-100 opacity-100" : "scale-0 opacity-0",
-        ]}
+    <div class="flex flex-col gap-1">
+      <Button
+        class="rounded-lg z-50"
+        variant="outline"
+        size="icon"
+        onclick={handleCopy}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          stroke-width={1.2}
-          fill="none"
-          aria-hidden="true"
+        <div
+          class={[
+            "transition-all",
+            copied ? "scale-100 opacity-100" : "scale-0 opacity-0",
+          ]}
         >
-          <path
-            fill="#10B981"
-            d="M14.548 3.488a.75.75 0 0 1-.036 1.06l-8.572 8a.75.75 0 0 1-1.023 0l-3.429-3.2a.75.75 0 0 1 1.024-1.096l2.917 2.722 8.06-7.522a.75.75 0 0 1 1.06.036Z"
-          />
-        </svg>
-      </div>
-      <div
-        class={[
-          "absolute transition-all",
-          copied ? "scale-0 opacity-0" : "scale-100 opacity-100",
-        ]}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.6"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          ><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path
-            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-          /></svg
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            stroke-width={1.2}
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              fill="#10B981"
+              d="M14.548 3.488a.75.75 0 0 1-.036 1.06l-8.572 8a.75.75 0 0 1-1.023 0l-3.429-3.2a.75.75 0 0 1 1.024-1.096l2.917 2.722 8.06-7.522a.75.75 0 0 1 1.06.036Z"
+            />
+          </svg>
+        </div>
+        <div
+          class={[
+            "absolute transition-all",
+            copied ? "scale-0 opacity-0" : "scale-100 opacity-100",
+          ]}
         >
-      </div>
-    </Button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path
+              d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+            /></svg
+          >
+        </div>
+      </Button>
+      <InstallationCode bind:blurbg />
+    </div>
   </div>
-  <div class="overflow-scroll scrollbar max-h-[420px] p-4">
+  <div
+    class={["overflow-scroll scrollbar max-h-[420px] p-4 ", blurbg && "blur-sm"]}
+  >
     {#if codeType === "client"}
       <div>
         {@html htmlClientCode}
