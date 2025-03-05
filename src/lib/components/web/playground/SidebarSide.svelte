@@ -5,6 +5,7 @@
 
   import * as Select from "$lib/components/ui/select/index";
   import Label from "$lib/components/ui/label/label.svelte";
+  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   let all_schema = [
     { value: "zod", label: "ZOD" },
     {
@@ -20,13 +21,70 @@
   let updateAdapter = () => {
     form_generator.adapter = value;
   };
+  // Title and Description
+  let headerfeauture = [
+    {
+      name: "Title",
+      type: "title",
+      category: "title",
+      label: "Create Account",
+      description: "",
+      placeholder: "",
+      min: 0,
+      max: 0,
+    },
+    {
+      name: "Desc",
+      type: "desc",
+      category: "desc",
+      label: "Please fill out the form below to create an account.",
+      description: "",
+      placeholder: "",
+      min: 0,
+      max: 0,
+    },
+  ];
+
+  let titlecheck = $state(false);
+  let desccheck = $state(false);
+  let addTitle = () => {
+    if (titlecheck) {
+      form_generator.add_input(headerfeauture[1], true);
+      form_generator.add_input(headerfeauture[0], true);
+    } else {
+      let titleid = form_generator.selected_inputs.find(
+        (f) => f.category === "title"
+      );
+      let descid = form_generator.selected_inputs.find(
+        (f) => f.category === "desc"
+      );
+      if (titleid?.id) {
+        form_generator.remove_input(titleid.id);
+      }
+      if (descid?.id) {
+        form_generator.remove_input(descid.id);
+      }
+    }
+  };
+  let addDesc = () => {
+    if (desccheck) {
+      form_generator.add_input(headerfeauture[1], true);
+    } else {
+      let descid = form_generator.selected_inputs.find(
+        (f) => f.category === "desc"
+      );
+      if (descid?.id) {
+        form_generator.remove_input(descid.id);
+      }
+    }
+  };
 </script>
 
 <div
-  class="border-b border-accent px-4 py-4 sm:px-6 lg:pl-8 xl:w-52 xl:shrink-0 xl:border-b-0 xl:border-r xl:pl-6 sm:min-h-[90vh]"
+  class="border-b border-accent pt-4 px-4 xl:w-56 xl:shrink-0 xl:border-b-0 xl:border-r sm:min-h-[90vh]"
 >
   <div class="space-y-2 flex flex-wrap sm:flex-col items-start">
-    <div class="block w-full mb-2">
+    <div class="block w-full">
       <Select.Root
         name="schema"
         type="single"
@@ -46,6 +104,40 @@
           </Select.Group>
         </Select.Content>
       </Select.Root>
+    </div>
+    <div
+      class="flex items-center justify-start sm:justify-between space-x-2 border rounded-lg p-2 sm:w-full"
+    >
+      <div class="flex items-center space-x-2">
+        <Checkbox
+          bind:checked={titlecheck}
+          id="title"
+          aria-labelledby="title"
+          onCheckedChange={addTitle}
+        />
+        <Label
+          id="title"
+          for="title"
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Title & Desc
+        </Label>
+      </div>
+      <!-- <div class="flex items-center space-x-2">
+        <Checkbox
+          bind:checked={desccheck}
+          id="desc"
+          aria-labelledby="desc"
+          onCheckedChange={addDesc}
+        />
+        <Label
+          id="desc"
+          for="desc"
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Description
+        </Label>
+      </div> -->
     </div>
     <div class="flex flex-wrap items-center gap-2">
       {#each form_generator.inputs as item, index}

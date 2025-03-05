@@ -81,7 +81,7 @@
         onclick={() => (codeType = "server")}>Server</Button
       >
     </div>
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-1.5">
       <Button
         class="rounded-lg z-50"
         variant="outline"
