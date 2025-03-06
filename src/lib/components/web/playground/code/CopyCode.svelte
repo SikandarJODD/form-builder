@@ -35,11 +35,11 @@
 
 <div
   class={[
-    "relative border w-full px-4 py-2 rounded-lg text-balance bg-zinc-900 dark:bg-transparent",
+    "relative border w-full px-4 py-2 rounded-lg overflow-scroll scrollbar text-balance bg-zinc-900 dark:bg-transparent",
     _class,
   ]}
 >
-  <div class="absolute top-2 right-2 z-50">
+  <div class="absolute top-2 right-2 z-40">
     <Button variant="outline" size="icon" class='z-50' onclick={handleCopy}>
       <div
         class={[
@@ -81,7 +81,7 @@
       </div>
     </Button>
   </div>
-  <div class="relative overflow-x-scroll scrollbar">
+  <div class="relative overflow-scroll scrollbar">
     <span class={codeclass}>{@html htmlCode}</span>
   </div>
 </div>
