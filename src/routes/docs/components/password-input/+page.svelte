@@ -1,5 +1,6 @@
 <script>
   import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";
+  import PasswordInputCode from "$lib/components/templates/comps/PasswordInput.svelte?raw";
   import CopyCode from "$lib/components/web/playground/code/CopyCode.svelte";
 
   let code =
@@ -69,6 +70,7 @@
   {/if}
 </div>
 `;
+let rawcode = PasswordInputCode;
 </script>
 
 <h2 class="text-2xl font-semibold">Password Input</h2>
@@ -77,11 +79,11 @@
   Password input is a component that consist of show/hide password feature.
 </p>
 <div class="w-full max-w-2xl mt-4">
-  <CopyCode {code} lang="svelte" class="h-[400px]" />
+  <CopyCode code={rawcode} lang="svelte" class="h-[400px]" />
 </div>
 <h3 class="text-xl font-semibold mt-6">Preview</h3>
 <div
-  class="mt-2 border border-dashed p-4 w-full min-h-64 flex justify-center items-center"
+  class="mt-2 border border-dashed border-muted-foreground p-4 w-full min-h-64 flex justify-center items-center"
 >
   <div class="w-fit mx-auto">
     <PasswordInput value="svelte" />

@@ -4,19 +4,19 @@
 
   let { children } = $props();
   let templates = [
-    {
-      name: "Guide",
-      sub: [
-        {
-          name: "Usage",
-          url: "/docs/usage",
-        },
-        {
-          name: "Sponsors",
-          url: "/docs/sponsors",
-        },
-      ],
-    },
+    // {
+    //   name: "Guide",
+    //   sub: [
+    //     {
+    //       name: "Usage",
+    //       url: "/docs/usage",
+    //     },
+    //     {
+    //       name: "Sponsors",
+    //       url: "/docs/sponsors",
+    //     },
+    //   ],
+    // },
     {
       name: "Components",
       sub: [
@@ -24,10 +24,10 @@
           name: "Password Input",
           url: "/docs/components/password-input",
         },
-        // {
-        //   name: "Location Input",
-        //   url: "/docs/components/location-input",
-        // },
+        {
+          name: "Location Input",
+          url: "/docs/components/location-input",
+        },
       ],
     },
   ];
