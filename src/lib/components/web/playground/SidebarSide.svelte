@@ -66,24 +66,12 @@
       }
     }
   };
-  let addDesc = () => {
-    if (desccheck) {
-      form_generator.add_input(headerfeauture[1], true);
-    } else {
-      let descid = form_generator.selected_inputs.find(
-        (f) => f.category === "desc"
-      );
-      if (descid?.id) {
-        form_generator.remove_input(descid.id);
-      }
-    }
-  };
 </script>
 
 <div
-  class="border-b border-accent pt-2 pb-5 px-4 xl:w-56 xl:shrink-0 xl:border-b-0 xl:border-r sm:min-h-[90vh]"
+  class="border-b border-accent py-2 sm:pb-5 px-4 sm:w-56 xl:shrink-0 sm:border-b-0 sm:border-r sm:min-h-[92vh]"
 >
-  <div class="space-y-2 flex flex-wrap sm:flex-col items-start">
+  <div class="space-y-2 flex flex-wrap sm:flex-nowrap sm:flex-col items-start">
     <div class="block w-full">
       <Select.Root
         name="schema"
@@ -139,7 +127,9 @@
         </Label>
       </div> -->
     </div>
-    <div class="flex flex-wrap items-center gap-2 sm:h-[74vh] overflow-scroll scrollbar">
+    <div
+      class="flex flex-wrap w-full flex-row sm:flex-nowrap sm:flex-col gap-2 sm:gap-0 sm:space-y-2 items-center lg:h-[74vh] overflow-scroll scrollbar"
+    >
       {#each form_generator.inputs as item, index}
         <div class="flex items-center w-fit sm:w-full space-x-2">
           <Button

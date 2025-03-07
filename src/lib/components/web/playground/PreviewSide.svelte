@@ -6,9 +6,9 @@
   import { fade, fly } from "svelte/transition";
 </script>
 
-<div class="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-8">
+<div class="px-4 py-6 sm:px-4 lg:px-6 lg:pl-8 xl:flex-1 xl:pl-8 ">
   <div class="size-full">
-    <div class="mb-4 max-w-5xl space-y-3">
+    <div class="mb-4 max-w-5xl  space-y-3">
       <h1 class="text-2xl font-bold">Playground</h1>
       <p class="text-muted-foreground">
         After successfully installing Shadcn-Svelte, you can simply copy and
@@ -23,7 +23,7 @@
     </div>
     {#if form_generator.selected_inputs.length > 0}
       <div
-        class="grid grid-cols-1 sm:grid-cols-5 sm:gap-10 space-y-10 sm:space-y-0 max-w-7xl"
+        class="grid grid-cols-1 lg:grid-cols-5 sm:gap-10 space-y-10 sm:space-y-0 max-w-7xl xl:mx-auto"
       >
         <InputsDragCode />
         <PreviewAndCode />

@@ -1,7 +1,6 @@
 <script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
   import { HeartIcon, Zap } from "lucide-svelte";
-  import StarIcon from "lucide-svelte/icons/star";
   import { onMount } from "svelte";
   import { Motion } from "motion-start";
   import NumberTicker from "$lib/components/magicui/NumberTicker/NumberTicker.svelte";
@@ -151,7 +150,7 @@
 {#snippet heroTitle()}
   <div class="flex w-full max-w-2xl flex-col space-y-4 overflow-hidden pt-2">
     <Motion.h1
-      class="text-center text-4xl font-medium leading-tight text-foreground sm:text-5xl md:text-6xl"
+      class="text-center text-4xl font-semibold leading-tight text-foreground sm:text-5xl md:text-6xl"
       initial={{ filter: "blur(10px)", opacity: 0, y: 50 }}
       animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
       transition={{

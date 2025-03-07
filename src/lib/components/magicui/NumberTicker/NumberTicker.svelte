@@ -1,6 +1,5 @@
 <script lang="ts">
   import { cubicOut } from "svelte/easing";
-  import { onMount } from "svelte";
   import { Tween } from "svelte/motion";
   import { cn } from "$lib/utils";
   import { watch } from "runed";
@@ -9,7 +8,7 @@
     class: className = "",
     value = 10,
     initial = 0,
-    duration = 6000,
+    duration = 2800,
     ...rest
   } = $props();
   let num = new Tween(value, {
