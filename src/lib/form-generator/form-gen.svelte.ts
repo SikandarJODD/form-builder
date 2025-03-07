@@ -149,6 +149,16 @@ let dummyInput: InputType[] = [
     placeholder: "Placeholder",
     min: 0,
     max: 0,
+  },
+  {
+    name: "Location Input",
+    type: "location-input",
+    category: "location-input",
+    label: "Select Country*",
+    description: "Select your country and state from the dropdown.",
+    placeholder: "Select your country...",
+    min: 0,
+    max: 0,
     isNew: true,
   },
   {
@@ -231,11 +241,23 @@ class FormGenerator {
     return fileid;
   });
 
+  location_input_named_id = $derived.by(() => {
+    let locationid = this.selected_inputs.filter(
+      (input) => input.type === "location-input"
+    );
+    return locationid;
+  });
+
   add_input = (item: InputType, unshift?: boolean) => {
     let id = crypto.randomUUID().slice(0, 5);
-    let random_id = this.unique_imports.includes(item.category)
-      ? `${item.category.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}`
-      : item.category.split("-").join("");
+    let random_id = '';
+    // here i am using loc for location-input and rest of the input type will be used as it is
+    if (item.type === 'location-input') {
+      random_id = this.unique_imports.includes(item.category) ? `loc_${crypto.randomUUID().slice(0, 2)}` : 'loc';
+    }
+    else {
+      random_id = this.unique_imports.includes(item.category) ? `${item.category.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}` : item.category.split("-").join("");
+    }
     let new_input: InputType = {
       id: id,
       named_id: random_id,
@@ -335,6 +357,13 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         }
       }
 
+      if (input.type === 'location-input') {
+        fieldSchema = `z.object({
+    country: z.string().nonempty(),
+    state: z.string().nonempty(),
+  })`
+      }
+
       if (input.type === 'title' || input.type === 'desc') {
         fieldSchema = '';
       }
@@ -414,6 +443,12 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
         ) {
           fieldSchema += `,\n    v.maxLength(${input.max}, 'The string must not exceed ${input.max} characters.')`;
         }
+      }
+      if (input.type === 'location-input') {
+        fieldSchema = `v.object({
+          country: v.string().nonEmpty(),
+          state: v.optional(v.string()),
+        })`
       }
       fieldSchema += `\n  )`;
       if (input.type !== 'title' && input.type !== 'desc') {
@@ -608,6 +643,11 @@ export const actions: Actions = {
   };
   `
       }
+      else if (input === 'location-input') {
+        clientrawCode += `
+        import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
+        `;
+      }
     });
 
     if (this.combobox_named_id.length > 0) {
@@ -667,6 +707,15 @@ export const actions: Actions = {
       })
     }
 
+    if (this.location_input_named_id.length > 0) {
+      this.location_input_named_id.map((location) => {
+        clientrawCode += `
+        // Location Input
+        let selectedCountry_${location.named_id} = $state(null);
+        let selectedState_${location.named_id} = $state(null);
+        `
+      })
+    }
     clientrawCode += `
   // Form Validation & Schema
   import { ${this.adapter} } from 'sveltekit-superforms/adapters';
@@ -680,49 +729,40 @@ export const actions: Actions = {
 
   let { form, message, errors, enhance } = superForm(data.form, {
       validators: ${this.adapter}(schema)`
-    if (this.tags_input_named_id.length > 0 && this.combobox_named_id.length > 0) {
+    if (this.location_input_named_id.length > 0) {
+      clientrawCode += `,
+      dataType: "json"`;
+    }
+    if (this.tags_input_named_id.length > 0 || this.combobox_named_id.length > 0 || this.location_input_named_id.length > 0) {
 
       clientrawCode += `,
         onUpdated(event) {
           if (event.form.valid) {`
-      this.tags_input_named_id.map((tag) => {
-        clientrawCode += `
+      if (this.tags_input_named_id.length > 0) {
+        this.tags_input_named_id.map((tag) => {
+          clientrawCode += `
                 ${tag.named_id}_value = [];`;
-      })
-      this.combobox_named_id.map((combobox) => {
-        clientrawCode += `
-            combovalue_${combobox.named_id} = "";`;
-      })
+        })
+      }
+      if (this.combobox_named_id.length > 0) {
+        this.combobox_named_id.map((combobox) => {
+          clientrawCode += `
+                combovalue_${combobox.named_id} = "";`;
+        })
+      }
+      if (this.location_input_named_id.length > 0) {
+        this.location_input_named_id.map((location) => {
+          clientrawCode += `
+                selectedCountry_${location.named_id} = null;
+                selectedState_${location.named_id} = null;`;
+        })
+      }
       clientrawCode += `
         }
       }`;
-    } else if (this.tags_input_named_id.length > 0) {
-      // ${this.tags_input_named_id.map((tag) => tag.named_id + '_value' + '= [];\n')}
-      clientrawCode += `,
-        onUpdated(event) {
-          if (event.form.valid) {`;
-      this.tags_input_named_id.map((tag) => {
-        clientrawCode += `
-            ${tag.named_id}_value = [];`;
-      })
-      clientrawCode += `
-          }
-        }`;
-    } else if (this.combobox_named_id.length > 0) {
-      clientrawCode += `,
-        onUpdated(event) {
-          if (event.form.valid) {`;
-      this.combobox_named_id.map((combobox) => {
-        clientrawCode += `
-            combovalue_${combobox.named_id} = "";`;
-      })
-      clientrawCode += `}
-        }`;
     }
     clientrawCode += `
-    });\n`;
-
-
+    });`;
     if (this.tags_input_named_id.length > 0) {
       this.tags_input_named_id.map((tag) => {
         clientrawCode += `
@@ -1202,6 +1242,27 @@ export const actions: Actions = {
         </div>
       {/each}
     </div>
+  </div>`
+      }
+      else if (input.category === 'location-input') {
+        clientrawCode += `
+  <div class="min-w-full">
+    <Label for="${input.named_id}">Location</Label>
+    <LocationSelector
+      bind:selectedCountry={selectedCountry_${input.named_id}}
+      bind:selectedState={selectedState_${input.named_id}}
+      onCountryChange={(country) => {
+        $form.${input.named_id}.country = country?.name ?? "";
+      }}
+      onStateChange={(state) => {
+        $form.${input.named_id}.state = state?.name ?? "";
+      }}
+    />
+    <p class="text-sm text-muted-foreground">
+      ${input.description}
+    </p>
+    <input type="hidden" name="country" bind:value={$form.${input.named_id}.country} />
+    <input type="hidden" name="state" bind:value={$form.${input.named_id}.state} />
   </div>`
       }
     });

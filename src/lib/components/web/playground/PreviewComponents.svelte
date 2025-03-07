@@ -169,7 +169,12 @@
   import { Trash2, X } from "lucide-svelte";
   import { onDestroy } from "svelte";
   import { SvelteDate } from "svelte/reactivity";
-  import { fade, fly, scale, slide } from "svelte/transition";
+  import { fly, slide } from "svelte/transition";
+  import LocationSelector from "$lib/components/templates/comps/location-input/LocationSelector.svelte";
+  import type {
+    CountryProps,
+    StateProps,
+  } from "$lib/components/templates/comps/location-input/types";
   const onUpload: FileDropZoneProps["onUpload"] = async (files) => {
     await Promise.allSettled(files.map((file) => uploadFile(file)));
   };
@@ -217,6 +222,9 @@
       clearInterval(interval);
     };
   });
+
+  let selectedCountry: CountryProps | null = $state(null);
+  let selectedState: StateProps | null = $state(null);
 </script>
 
 {#if form_generator.selected_inputs.length === 0}
@@ -229,6 +237,7 @@
     use:enhance={() => {
       return async ({ result, update }) => {
         if (result.status === 200) {
+          console.log(result);
           toast.success(`${JSON.stringify(result.data.form, null, 2)}`);
         }
       };
@@ -670,6 +679,25 @@
                 <p class="text-xs text-muted-foreground">
                   {comp.description}
                 </p>
+              </div>
+            {/if}
+            {#if comp.type === "location-input"}
+              <div class="min-w-full">
+                <Label for="location">Location</Label>
+                <LocationSelector bind:selectedCountry bind:selectedState />
+                <p class="text-sm text-muted-foreground">
+                  Please select state after selecting your country
+                </p>
+                <input
+                  type="hidden"
+                  name="country"
+                  value={selectedCountry?.name || ""}
+                />
+                <input
+                  type="hidden"
+                  name="state"
+                  value={selectedState?.name || ""}
+                />
               </div>
             {/if}
           </div>
