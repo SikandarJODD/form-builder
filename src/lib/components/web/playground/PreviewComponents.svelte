@@ -683,10 +683,12 @@
             {/if}
             {#if comp.type === "location-input"}
               <div class="min-w-full">
-                <Label for="location">Location</Label>
+                <Label for="location">
+                  {comp.label}
+                </Label>
                 <LocationSelector bind:selectedCountry bind:selectedState />
                 <p class="text-sm text-muted-foreground">
-                  Please select state after selecting your country
+                  {comp.description}
                 </p>
                 <input
                   type="hidden"

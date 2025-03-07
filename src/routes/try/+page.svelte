@@ -37,6 +37,7 @@
   {#if $message}
     <p class="text-emerald-400 mb-2">{$message}</p>
   {/if}
+  <!-- Location Input Component : https://svelte-form-builder.vercel.app/docs/components/location-input -->
   <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
     <div>
       <Label for="text" class={$errors.text && "text-destructive"}
@@ -74,8 +75,10 @@
       </p>
       <input type="hidden" name="country" bind:value={$form.loc.country} />
       <input type="hidden" name="state" bind:value={$form.loc.state} />
+      {#if $errors.loc?.country}
+        <p class="text-sm text-destructive">{$errors.loc.country}</p>
+      {/if}
     </div>
-
     <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>

@@ -359,8 +359,8 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
 
       if (input.type === 'location-input') {
         fieldSchema = `z.object({
-    country: z.string().nonempty(),
-    state: z.string().nonempty(),
+    country: z.string().nonempty('Please enter a country name.'),
+    state: z.string().optional().default(''),
   })`
       }
 
@@ -645,7 +645,7 @@ export const actions: Actions = {
       }
       else if (input === 'location-input') {
         clientrawCode += `
-        import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
+    import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
         `;
       }
     });
@@ -710,9 +710,9 @@ export const actions: Actions = {
     if (this.location_input_named_id.length > 0) {
       this.location_input_named_id.map((location) => {
         clientrawCode += `
-        // Location Input
-        let selectedCountry_${location.named_id} = $state(null);
-        let selectedState_${location.named_id} = $state(null);
+    // Location Input
+    let selectedCountry_${location.named_id} = $state(null);
+    let selectedState_${location.named_id} = $state(null);
         `
       })
     }
@@ -736,25 +736,25 @@ export const actions: Actions = {
     if (this.tags_input_named_id.length > 0 || this.combobox_named_id.length > 0 || this.location_input_named_id.length > 0) {
 
       clientrawCode += `,
-        onUpdated(event) {
-          if (event.form.valid) {`
+      onUpdated(event) {
+        if (event.form.valid) {`
       if (this.tags_input_named_id.length > 0) {
         this.tags_input_named_id.map((tag) => {
           clientrawCode += `
-                ${tag.named_id}_value = [];`;
+        ${tag.named_id}_value = [];`;
         })
       }
       if (this.combobox_named_id.length > 0) {
         this.combobox_named_id.map((combobox) => {
           clientrawCode += `
-                combovalue_${combobox.named_id} = "";`;
+        combovalue_${combobox.named_id} = "";`;
         })
       }
       if (this.location_input_named_id.length > 0) {
         this.location_input_named_id.map((location) => {
           clientrawCode += `
-                selectedCountry_${location.named_id} = null;
-                selectedState_${location.named_id} = null;`;
+        selectedCountry_${location.named_id} = null;
+        selectedState_${location.named_id} = null;`;
         })
       }
       clientrawCode += `
@@ -1246,6 +1246,7 @@ export const actions: Actions = {
       }
       else if (input.category === 'location-input') {
         clientrawCode += `
+  <!-- Location Input Component : https://svelte-form-builder.vercel.app/docs/components/location-input -->
   <div class="min-w-full">
     <Label for="${input.named_id}">Location</Label>
     <LocationSelector
@@ -1263,6 +1264,9 @@ export const actions: Actions = {
     </p>
     <input type="hidden" name="country" bind:value={$form.${input.named_id}.country} />
     <input type="hidden" name="state" bind:value={$form.${input.named_id}.state} />
+    {#if $errors.${input.named_id}?.country}
+        <p class="text-sm text-destructive">{$errors.${input.named_id}.country}</p>
+    {/if}
   </div>`
       }
     });
@@ -1407,6 +1411,11 @@ export const actions: Actions = {
     toast.error(\`\${file.name} failed to upload!\`, { description: reason });
   };`
       }
+      else if (input === 'location-input') {
+        formsnapCode += `
+  import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
+        `;
+      }
     });
 
     if (this.date_picker_named_id.length > 0) {
@@ -1466,8 +1475,15 @@ export const actions: Actions = {
       });
     }
 
-
-
+    if (this.location_input_named_id.length > 0) {
+      this.location_input_named_id.map((location) => {
+        formsnapCode += `
+  // Location Input
+  let selectedCountry_${location.named_id} = $state(null);
+  let selectedState_${location.named_id} = $state(null);
+        `
+      })
+    }
     formsnapCode += `
 	let {
 		data
@@ -1477,7 +1493,11 @@ export const actions: Actions = {
 
   let form = superForm(data.form, {
       validators: ${this.adapter}(schema)`
-    if (this.tags_input_named_id.length > 0 || this.combobox_named_id.length > 0) {
+    if (this.location_input_named_id.length > 0) {
+      formsnapCode += `,
+        dataType: "json"`;
+    }
+    if (this.tags_input_named_id.length > 0 || this.combobox_named_id.length > 0 || this.location_input_named_id.length > 0) {
       formsnapCode += `,
         onUpdated(event) {
           if (event.form.valid) {`;
@@ -1491,6 +1511,13 @@ export const actions: Actions = {
         this.combobox_named_id.map((combobox) => {
           formsnapCode += `
               combovalue_${combobox.named_id} = "";`;
+        })
+      }
+      if (this.location_input_named_id.length > 0) {
+        this.location_input_named_id.map((location) => {
+          formsnapCode += `
+                selectedCountry_${location.named_id} = null;
+                selectedState_${location.named_id} = null;`;
         })
       }
       formsnapCode += `
@@ -2040,6 +2067,39 @@ let { form: formData, enhance, message } = form;`;
     </Field>
   </div>`;
       }
+      else if(input.type==='location-input'){
+        formsnapCode+=`
+  <!-- Location Input Component : https://svelte-form-builder.vercel.app/docs/components/location-input -->
+  <div>
+    <Field {form} name="${input.named_id}">
+      <Control>
+        {#snippet children({ props })}
+          <Label>
+            ${input.label}
+          </Label>
+          <LocationSelector
+            {...props}
+            bind:selectedCountry={selectedCountry_${input.named_id}}
+            bind:selectedState={selectedState_${input.named_id}}
+            onCountryChange={(country) => {
+              $formData.${input.named_id}.country = (country?.name as string) || "";
+            }}
+            onStateChange={(state) => {
+              $formData.${input.named_id}.state = (state?.name as string) || "";
+            }}
+          />
+        {/snippet}
+      </Control>
+      <Description class="text-xs text-muted-foreground">
+        ${input.description}
+      </Description>
+      <FieldErrors />
+    </Field>
+    <Field {form} name="${input.named_id}.country">
+      <FieldErrors class="text-sm text-destructive" />
+    </Field>
+  </div>`
+      }
     });
     formsnapCode += `
 
@@ -2099,8 +2159,6 @@ let { form: formData, enhance, message } = form;`;
     });
     return installCommand;
   });
-
-
 }
 
 export let form_generator = new FormGenerator();
