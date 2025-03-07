@@ -243,8 +243,8 @@
       };
     }}
   >
-    <div class="flex flex-col space-y-4 p-2 max-w-md mx-auto mt-4">
-      <div class="space-y-2">
+    <div class="flex flex-col space-y-2 p-2 max-w-md mx-auto mt-4">
+      <div class="space-y-1">
         {#each form_generator.selected_inputs as comp (comp.id)}
           <div animate:flip={{ duration: 300 }}>
             <div class="space-y-1">

@@ -22,8 +22,8 @@
   };
 </script>
 
-<div class="col-span-1 sm:col-span-3">
-  <Tabs value="preview" class="h-full flex  items-center flex-col">
+<div class="col-span-1 lg:col-span-3 ">
+  <Tabs value="preview" class="h-full flex items-start lg:items-center flex-col">
     <TabsList
       class="h-auto -space-x-px bg-background p-0 shadow-sm shadow-black/5 rtl:space-x-reverse"
     >

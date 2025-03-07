@@ -12,15 +12,63 @@
   }
 </script>
 
+<svelte:head>
+  <title>Location Input - Form Builder</title>
+  <meta
+    name="description"
+    content="A dropdown component that includes a comprehensive list of countries along with their respective states."
+  />
+  <meta
+    name="keywords"
+    content="location input, location input svelte, svelte, sveltekit, form-builder, location input, country, state"
+  />
+
+  <meta property="og:title" content="Location Input - Form Builder" />
+  <meta
+    property="og:description"
+    content="A dropdown component that includes a comprehensive list of countries along with their respective states."
+  />
+  <meta
+    property="og:image"
+    content="https://i.pinimg.com/736x/0d/22/63/0d2263fb3a30077c8e8f0def7187095f.jpg"
+  />
+  <meta property="og:image:width" content="600" />
+  <meta property="og:image:height" content="315" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Svelte Form Builder" />
+
+  <!-- Twitter -->
+  <meta property="og:url" content="https://svelte-form-builder.vercel.app" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Svelte Form Builder" />
+  <meta
+    name="twitter:description"
+    content="Build forms with ease using Svelte Form Builder."
+  />
+  <meta
+    name="twitter:image"
+    content="https://i.pinimg.com/736x/0d/22/63/0d2263fb3a30077c8e8f0def7187095f.jpg"
+  />
+  <meta name="twitter:site" content="@Sikandar_Bhide" />
+</svelte:head>
+
 <h2 class="text-2xl font-semibold">Location Input</h2>
 
 <p class="text-muted-foreground">
-  A dropdown components which contains all countries and their states.
+  A dropdown component that includes a comprehensive list of countries along
+  with their respective states.
+</p>
+<p class="text-muted-foreground">
+  You can download the State and Country JSON file from <a
+    class="text-primary"
+    href="https://github.com/SikandarJODD/form-builder/tree/master/src/lib/data"
+    target="_blank">Github</a
+  >
 </p>
 
 {@render CodeSnippet("LocationSelector.svelte", rawcode)}
 {@render CodeSnippet("types.ts", LocationTypesCode)}
-<h3 class="text-xl font-semibold mt-6">Preview</h3>
+<h3 class="text-xl font-semibold mt-4">Preview</h3>
 <div
   class="mt-2 border border-dashed border-muted-foreground/50 p-4 w-full min-h-64 flex justify-center items-center"
 >
