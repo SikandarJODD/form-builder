@@ -81,7 +81,7 @@
 </script>
 
 <div
-  class="border-b border-accent pt-4 px-4 xl:w-56 xl:shrink-0 xl:border-b-0 xl:border-r sm:min-h-[90vh]"
+  class="border-b border-accent pt-2 pb-5 px-4 xl:w-56 xl:shrink-0 xl:border-b-0 xl:border-r sm:min-h-[90vh]"
 >
   <div class="space-y-2 flex flex-wrap sm:flex-col items-start">
     <div class="block w-full">
@@ -139,7 +139,7 @@
         </Label>
       </div> -->
     </div>
-    <div class="flex flex-wrap items-center gap-2">
+    <div class="flex flex-wrap items-center gap-2 sm:h-[74vh] overflow-scroll scrollbar">
       {#each form_generator.inputs as item, index}
         <div class="flex items-center w-fit sm:w-full space-x-2">
           <Button
