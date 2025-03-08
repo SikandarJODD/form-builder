@@ -135,6 +135,7 @@
           <Button
             onclick={() => form_generator.add_input(item)}
             class="rounded-full font-normal"
+            data-umami-event={item.category}
             size="sm"
             variant="outline"
           >

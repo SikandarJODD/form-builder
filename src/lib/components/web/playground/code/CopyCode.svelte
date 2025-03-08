@@ -35,12 +35,12 @@
 
 <div
   class={[
-    "relative border w-full px-4 py-2 rounded-lg overflow-scroll scrollbar text-balance bg-zinc-900 dark:bg-transparent",
+    "relative border pl-4 pr-2 py-2 w-full rounded-lg overflow-auto scrollbar bg-zinc-900 dark:bg-transparent",
     _class,
   ]}
 >
-  <div class="absolute top-2 right-2 z-40">
-    <Button variant="outline" size="icon" class='z-50' onclick={handleCopy}>
+  <div class="sticky flex justify-end  top-0 z-40">
+    <Button variant="outline" size="icon" class="z-50" onclick={handleCopy}>
       <div
         class={[
           "transition-all",
@@ -81,7 +81,7 @@
       </div>
     </Button>
   </div>
-  <div class="relative overflow-scroll scrollbar">
+  <div class="-mt-6">
     <span class={codeclass}>{@html htmlCode}</span>
   </div>
 </div>

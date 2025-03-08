@@ -17,7 +17,13 @@
 <Popover.Root bind:open>
   <Popover.Trigger>
     {#snippet child({ props })}
-      <Button variant="secondary" class="z-50" size="icon" {...props}>
+      <Button
+        variant="secondary"
+        data-umami-event="Install Command Button"
+        class="z-50"
+        size="icon"
+        {...props}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -36,22 +42,22 @@
       </Button>
     {/snippet}
   </Popover.Trigger>
-  <Popover.Content align="end" class="relative w-[550px]">
-    <div class="mb-2 text-muted-foreground">
+  <Popover.Content side='left' align='start' sideOffset={6} class="relative w-[550px] rounded-xl">
+    <h3 class='text-xl font-medium'>
+      Installation Command
+    </h3>
+    <p class="mb-2 text-muted-foreground text-sm">
       Visit <a
         href="https://next.shadcn-svelte.com"
-        class="underline text-primary underline-offset-2"
+        class="underline text-primary/80 underline-offset-2"
         target="_blank">Shadcn Svelte</a
       >,
       <a
         href="https://www.shadcn-svelte-extras.com"
-        class="underline text-primary underline-offset-2"
+        class="underline text-primary/80 underline-offset-2"
         target="_blank">Shadcn Extra</a
       > for more details.
-    </div>
-    <CopyCode
-      code={form_generator.command}
-      lang="shellscript"
-    />
+    </p>
+    <CopyCode code={form_generator.command} lang="shellscript" />
   </Popover.Content>
 </Popover.Root>

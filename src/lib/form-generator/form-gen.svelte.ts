@@ -506,42 +506,42 @@ export const actions: Actions = {
 
   clientCode = $derived.by(() => {
     let clientrawCode = `<script lang="ts">
-	import { superForm${this.file_input_named_id.length > 0 ? ', filesProxy' : ''} } from 'sveltekit-superforms';
+  import { superForm${this.file_input_named_id.length > 0 ? ', filesProxy' : ''} } from 'sveltekit-superforms';
     // add your own path
-	import type { PageData } from './$types';
-	import Label from '$lib/components/ui/label/label.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';`;
+  import type { PageData } from './$types';
+  import Label from '$lib/components/ui/label/label.svelte';
+  import Button from '$lib/components/ui/button/button.svelte';`;
 
     this.unique_imports.map((input) => {
       if (input === "text") {
         clientrawCode += `
-    import Input from '$lib/components/ui/input/input.svelte';`;
+  import Input from '$lib/components/ui/input/input.svelte';`;
       }
       else if (input === 'email') {
         if (!this.unique_imports.includes('text')) {
           clientrawCode += `
-    import Input from '$lib/components/ui/input/input.svelte';`;
+  import Input from '$lib/components/ui/input/input.svelte';`;
         }
       }
       else if (input === "password") {
         clientrawCode += `
-    import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
+  import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
       } else if (input === "switch") {
         clientrawCode += `
-    import Switch from "$lib/components/ui/switch/switch.svelte";`;
+  import Switch from "$lib/components/ui/switch/switch.svelte";`;
       } else if (input === "checkbox") {
         clientrawCode += `
-    import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
+  import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
       } else if (input === "textarea") {
         clientrawCode += `
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
       } else if (input === "select") {
         clientrawCode += `
-    import * as Select from "$lib/components/ui/select/index";`;
+  import * as Select from "$lib/components/ui/select/index";`;
       } else if (input === "input-otp") {
         clientrawCode += `
-    import * as InputOTP from "$lib/components/ui/input-otp/index";
-    import { REGEXP_ONLY_DIGITS } from "bits-ui";`;
+  import * as InputOTP from "$lib/components/ui/input-otp/index";
+  import { REGEXP_ONLY_DIGITS } from "bits-ui";`;
       } else if (input === "date-picker") {
         clientrawCode += `import { CalendarIcon } from "lucide-svelte";
   import * as Popover from "$lib/components/ui/popover";
@@ -587,18 +587,18 @@ export const actions: Actions = {
 `;
       } else if (input === "tags-input") {
         clientrawCode += `
-    import { TagsInput } from "$lib/components/ui/tags-input";`;
+  import { TagsInput } from "$lib/components/ui/tags-input";`;
       } else if (input === "phone") {
         clientrawCode += `
-    import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
+  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
       } else if (input === "combobox") {
         clientrawCode += `
-    import Check from "lucide-svelte/icons/check";
-    import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-    import * as Popover from "$lib/components/ui/popover/index";
-    import * as Command from "$lib/components/ui/command/index";
-    import { tick } from "svelte";
-    import { cn } from "$lib/utils";
+  import Check from "lucide-svelte/icons/check";
+  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import * as Popover from "$lib/components/ui/popover/index";
+  import * as Command from "$lib/components/ui/command/index";
+  import { tick } from "svelte";
+  import { cn } from "$lib/utils";
     // Combobox
     let frameworks = [
       {
@@ -645,7 +645,7 @@ export const actions: Actions = {
       }
       else if (input === 'location-input') {
         clientrawCode += `
-    import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
+  import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
         `;
       }
     });
@@ -718,7 +718,7 @@ export const actions: Actions = {
     }
     clientrawCode += `
   // Form Validation & Schema
-  import { ${this.adapter} } from 'sveltekit-superforms/adapters';
+  import { ${this.adapter}Client } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 
 	let {
@@ -728,7 +728,7 @@ export const actions: Actions = {
 	} = $props();
 
   let { form, message, errors, enhance } = superForm(data.form, {
-      validators: ${this.adapter}(schema)`
+      validators: ${this.adapter}Client(schema)`
     if (this.location_input_named_id.length > 0) {
       clientrawCode += `,
       dataType: "json"`;
@@ -762,7 +762,7 @@ export const actions: Actions = {
       }`;
     }
     clientrawCode += `
-    });`;
+  });`;
     if (this.tags_input_named_id.length > 0) {
       this.tags_input_named_id.map((tag) => {
         clientrawCode += `
@@ -901,8 +901,7 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
         <p class="text-xs text-destructive">{$errors.${input.named_id}}</p>
       {/if}
-    </div>
-        `;
+    </div>`;
       } else if (input.category === "select") {
         clientrawCode += `
     <div>
@@ -927,8 +926,7 @@ export const actions: Actions = {
       {#if $errors.${input.named_id}}
           <p class="text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
-    </div>
-      `;
+    </div>`;
       } else if (input.category === "input-otp") {
         clientrawCode += `
     <div>
@@ -1271,7 +1269,6 @@ export const actions: Actions = {
       }
     });
     clientrawCode += `
-
     <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>
@@ -1282,7 +1279,7 @@ export const actions: Actions = {
   formsnapCode = $derived.by(() => {
     let formsnapCode = `<script lang="ts">
   import { superForm${this.file_input_named_id.length > 0 ? ', filesProxy' : ''} } from "sveltekit-superforms";
-  import {  ${this.adapter} } from "sveltekit-superforms/adapters";
+  import {  ${this.adapter}Client } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
   import { schema } from "./schema";
   // FormSnap
@@ -1492,7 +1489,7 @@ export const actions: Actions = {
 	} = $props();
 
   let form = superForm(data.form, {
-      validators: ${this.adapter}(schema)`
+      validators: ${this.adapter}Client(schema)`
     if (this.location_input_named_id.length > 0) {
       formsnapCode += `,
         dataType: "json"`;
@@ -1525,9 +1522,9 @@ export const actions: Actions = {
       }`;
     }
     formsnapCode += `
-    });\n`;
+  });\n`;
     formsnapCode += `
-let { form: formData, enhance, message } = form;`;
+  let { form: formData, enhance, message } = form;`;
     if (this.tags_input_named_id.length > 0) {
       this.tags_input_named_id.map((tag) => {
         formsnapCode += `
@@ -1558,9 +1555,8 @@ let { form: formData, enhance, message } = form;`;
   };`
       })
     }
-
     formsnapCode += `
-  </script> \n\n`; // close script tag
+</script> \n\n`; // close script tag
     formsnapCode += `<div class="flex min-h-[80vh] flex-col items-center justify-center">
   {#if $message}
     <span class="text-emerald-400 mb-2">

@@ -44,6 +44,7 @@
           <EditSelectedInputs {item} />
           <!-- Delete Button -->
           <Button
+            data-umami-event="Delete Input Button"
             onclick={() => delete_selected_input(item.id)}
             variant="ghost"
             size="icon"

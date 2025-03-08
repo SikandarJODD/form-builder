@@ -212,7 +212,7 @@
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.8, ease }}
   >
-    <Button variant="secondary" href="/playground" class="rounded-full sm:rounded-lg w-full sm:w-fit"
+    <Button data-umami-event="Hero Playground" variant="secondary" href="/playground" class="rounded-full sm:rounded-lg w-full sm:w-fit"
       >Go to Playground</Button
     >
   </Motion.div>

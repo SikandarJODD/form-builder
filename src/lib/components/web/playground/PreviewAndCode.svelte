@@ -28,6 +28,7 @@
       class="h-auto -space-x-px bg-background p-0 shadow-sm shadow-black/5 rtl:space-x-reverse"
     >
       <TabsTrigger
+      data-umami-event="Preview Tab"
         value="preview"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
       >
@@ -40,6 +41,7 @@
         Preview
       </TabsTrigger>
       <TabsTrigger
+        data-umami-event="Formsnap Tab"
         onclick={isFormsnap}
         value="formsnap"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
@@ -58,6 +60,7 @@
         >
       </TabsTrigger>
       <TabsTrigger
+        data-umami-event="Code Tab"
         onclick={isNormalCode}
         value="code"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
@@ -71,6 +74,7 @@
         Code
       </TabsTrigger>
       <TabsTrigger
+        data-umami-event="Schema Tab"
         value="schema"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
       >
