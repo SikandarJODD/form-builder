@@ -56,7 +56,7 @@
             {/each}
           </div>
           <div>
-            <Button class="font-normal rounded-full" href="/playground"
+            <Button data-umami-event="Navbar Playground" class="font-normal rounded-full" href="/playground"
               >Playground</Button
             >
           </div>

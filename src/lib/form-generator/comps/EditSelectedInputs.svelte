@@ -27,6 +27,7 @@
 <Dialog.Root bind:open={isOpen}>
   <Dialog.Trigger>
     <Button
+      data-umami-event="Edit Field Button"
       onclick={() => (isOpen = true)}
       variant="ghost"
       size="icon"
@@ -70,13 +71,15 @@
           <Input
             type="text"
             id="name"
-            bind:value={() => item.named_id,
-            (v) => {
-              return (item.named_id = v
-                ?.toString()
-                .replace(" ", "_")
-                .toLowerCase());
-            }}
+            bind:value={
+              () => item.named_id,
+              (v) => {
+                return (item.named_id = v
+                  ?.toString()
+                  .replace(" ", "_")
+                  .toLowerCase());
+              }
+            }
           />
         </div>
       {/if}

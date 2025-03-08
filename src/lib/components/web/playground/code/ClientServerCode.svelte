@@ -5,6 +5,7 @@
   import { codeToHtml } from "shiki";
   import { onMount } from "svelte";
   import InstallationCode from "../InstallationCode.svelte";
+  import ZoomCode from "../zoom-code/ZoomCode.svelte";
 
   type CodeType = "client" | "server";
   let codeType: CodeType = $state("client");
@@ -52,7 +53,6 @@
     setTimeout(() => (copied = false), 1500);
   }
   let blurbg = $state(false);
-
 </script>
 
 <div class="relative border rounded-lg bg-zinc-900 dark:bg-transparent">
@@ -130,11 +130,19 @@
           >
         </div>
       </Button>
-      <InstallationCode bind:blurbg/>
+      <InstallationCode bind:blurbg />
+      <ZoomCode
+        title="Normal Code using Shadcn Components"
+        description="Client Code without using Formsnap"
+        code={clientCodeContent}
+      />
     </div>
   </div>
   <div
-    class={["overflow-scroll scrollbar max-h-[420px] p-4 duration-300", blurbg && "blur-sm"]}
+    class={[
+      "overflow-scroll scrollbar max-h-[420px] p-4 duration-300",
+      blurbg && "blur-sm",
+    ]}
   >
     {#if codeType === "client"}
       <div>

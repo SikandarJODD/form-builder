@@ -6,6 +6,7 @@
   import { codeToHtml } from "shiki";
   import { onMount } from "svelte";
   import InstallationCode from "../InstallationCode.svelte";
+  import ZoomCode from "../zoom-code/ZoomCode.svelte";
 
   type CodeType = "client" | "server";
   let codeType: CodeType = $state("client");
@@ -131,10 +132,11 @@
         </div>
       </Button>
       <InstallationCode bind:blurbg />
+      <ZoomCode  code={clientCodeContent} />
     </div>
   </div>
   <div
-    class={["overflow-scroll scrollbar max-h-[420px] p-4 ", blurbg && "blur-sm"]}
+    class={["overflow-scroll scrollbar max-h-[420px] p-4 text-sm", blurbg && "blur-[8px]"]}
   >
     {#if codeType === "client"}
       <div>
