@@ -3,6 +3,7 @@
     buttonVariants,
   } from "$lib/components/ui/button/button.svelte";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
+  import * as RadioGroup from "$lib/components/ui/radio-group/index";
   import Input from "$lib/components/ui/input/input.svelte";
   import Label from "$lib/components/ui/label/label.svelte";
   import Switch from "$lib/components/ui/switch/switch.svelte";
@@ -700,6 +701,24 @@
                   name="state"
                   value={selectedState?.name || ""}
                 />
+              </div>
+            {/if}
+            {#if comp.type === "radio"}
+              <div class="space-y-3">
+                <Label class="text-sm font-medium">Gender</Label>
+                <RadioGroup.Root value='male' name="radio">
+                  {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
+                    <div class="flex items-center space-x-2">
+                      <RadioGroup.Item value={gender[0]} id={gender[0]} />
+                      <Label for={gender[0]}>{gender[1]}</Label>
+                    </div>
+                  {/each}
+                </RadioGroup.Root>
+                <div>
+                  <p class="text-xs text-muted-foreground">
+                    Select your Gender
+                  </p>
+                </div>
               </div>
             {/if}
           </div>

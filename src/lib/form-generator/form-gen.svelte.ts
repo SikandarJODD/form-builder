@@ -109,12 +109,22 @@ let dummyInput: InputType[] = [
     max: 0,
   },
   {
+    name: "Radio Group",
+    type: "radio",
+    category: "radio",
+    label: "Gender",
+    description: "Select your gender",
+    placeholder: "",
+    min: 0,
+    max: 0,
+    isNew: true,
+  },
+  {
     name: "File Input",
     type: "file",
     category: "file",
     label: "Upload File*",
-    description:
-      "Select File to upload.",
+    description: "Select File to upload.",
     placeholder: "Placeholder",
     min: 0,
     max: 0,
@@ -193,7 +203,14 @@ let dummyInput: InputType[] = [
   },
 ];
 
-let min_max_types = ["number", "password", "text", "textarea", "tags-input", 'url'];
+let min_max_types = [
+  "number",
+  "password",
+  "text",
+  "textarea",
+  "tags-input",
+  "url",
+];
 let non_empty_types = ["date-picker", "email"];
 
 class FormGenerator {
@@ -209,10 +226,12 @@ class FormGenerator {
   });
   unique_inputs_imports = $derived.by(() => {
     let all_imports = this.selected_inputs.map((input) => input.category);
-    all_imports = all_imports.map(el => ['email', 'password', 'number'].includes(el) ? 'text' : el);
+    all_imports = all_imports.map((el) =>
+      ["email", "password", "number"].includes(el) ? "text" : el
+    );
     let unique_imports = [...new Set(all_imports)];
     return unique_imports;
-  })
+  });
   date_picker_named_id = $derived.by(() => {
     // did : date named_id (id) of date-picker
     let did = this.selected_inputs.filter(
@@ -235,9 +254,7 @@ class FormGenerator {
   });
 
   file_input_named_id = $derived.by(() => {
-    let fileid = this.selected_inputs.filter(
-      (input) => input.type === "file"
-    );
+    let fileid = this.selected_inputs.filter((input) => input.type === "file");
     return fileid;
   });
 
@@ -250,13 +267,18 @@ class FormGenerator {
 
   add_input = (item: InputType, unshift?: boolean) => {
     let id = crypto.randomUUID().slice(0, 5);
-    let random_id = '';
+    let random_id = "";
     // here i am using loc for location-input and rest of the input type will be used as it is
-    if (item.type === 'location-input') {
-      random_id = this.unique_imports.includes(item.category) ? `loc_${crypto.randomUUID().slice(0, 2)}` : 'loc';
-    }
-    else {
-      random_id = this.unique_imports.includes(item.category) ? `${item.category.split("-").join("")}_${crypto.randomUUID().slice(0, 2)}` : item.category.split("-").join("");
+    if (item.type === "location-input") {
+      random_id = this.unique_imports.includes(item.category)
+        ? `loc_${crypto.randomUUID().slice(0, 2)}`
+        : "loc";
+    } else {
+      random_id = this.unique_imports.includes(item.category)
+        ? `${item.category.split("-").join("")}_${crypto
+            .randomUUID()
+            .slice(0, 2)}`
+        : item.category.split("-").join("");
     }
     let new_input: InputType = {
       id: id,
@@ -294,8 +316,12 @@ class FormGenerator {
 
   generateZodSchemaString(inputs: InputType[]): string {
     let schemaString = `import { z } from 'zod';
-${this.file_input_named_id.length > 0 ? `export const KILOBYTE = 1024;
-export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n`;
+${
+  this.file_input_named_id.length > 0
+    ? `export const KILOBYTE = 1024;
+export const MEGABYTE = 1024 * KILOBYTE;\n`
+    : ""
+}export let schema = z.object({\n`;
 
     inputs.forEach((input) => {
       let fieldSchema = `z.string()`;
@@ -306,7 +332,7 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         fieldSchema = `z.boolean().default(false)`;
       } else if (input.type === "email") {
         fieldSchema = `z.string().email()`;
-      } else if (input.type === 'url') {
+      } else if (input.type === "url") {
         fieldSchema = `z.string().url()`;
       } else if (input.type === "input-otp") {
         fieldSchema = `z.string().min(6, {
@@ -316,12 +342,16 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         fieldSchema = `z.string().refine((v) => v,\n { message: "A date of birth is required." })`;
       } else if (input.type === "tags-input") {
         fieldSchema = `z.string().array()`;
-      } else if (input.type === 'file') {
+      } else if (input.type === "file") {
         fieldSchema = `z.array(z.instanceof(File, {
         message: "Please select an image file.",
       }).refine((file) => file.size <= (MEGABYTE*2) , {
         message:"The image is too large.",
       }))`;
+      } else if (input.type === "radio") {
+        fieldSchema = `z.enum(['male', 'female', 'other'], {
+    required_error: 'Please select a radio option',
+  })`;
       }
 
       // Add `min` and `max` constraints if available for number, password, and text fields
@@ -348,7 +378,8 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         !non_empty_types.includes(input.type) &&
         input.min === 0 &&
         input.type !== "boolean" &&
-        input.type !== "input-otp" && input.type !== "file"
+        input.type !== "input-otp" &&
+        input.type !== "file" && input.type !== "radio"
       ) {
         if (input.type === "tags-input") {
           fieldSchema += `\n   .min(1, { message: 'Please enter at least one tag' })`;
@@ -357,32 +388,36 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`: ''}export let schema = z.object({\n
         }
       }
 
-      if (input.type === 'location-input') {
+      if (input.type === "location-input") {
         fieldSchema = `z.object({
     country: z.string().nonempty('Please enter a country name.'),
     state: z.string().optional().default(''),
-  })`
+  })`;
       }
 
-      if (input.type === 'title' || input.type === 'desc') {
-        fieldSchema = '';
+      if (input.type === "title" || input.type === "desc") {
+        fieldSchema = "";
       }
-      if (input.type !== 'title' && input.type !== 'desc') {
-        schemaString += `  ${input.named_id?.toLowerCase() || "name"
-          }: ${fieldSchema},\n`;
+      if (input.type !== "title" && input.type !== "desc") {
+        schemaString += `  ${
+          input.named_id?.toLowerCase() || "name"
+        }: ${fieldSchema},\n`;
       }
     });
 
     schemaString += `})`;
-
 
     return schemaString;
   }
 
   generateValibotSchemaString(inputs: InputType[]): string {
     let schemaString = `import * as v from 'valibot';
-${this.file_input_named_id.length > 0 ? `export const KILOBYTE = 1024;
-export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
+${
+  this.file_input_named_id.length > 0
+    ? `export const KILOBYTE = 1024;
+export const MEGABYTE = 1024 * KILOBYTE; \n`
+    : ""
+}`;
     schemaString += `export const schema = v.object({\n`;
 
     inputs.forEach((input) => {
@@ -392,24 +427,27 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
         input.type === "text" ||
         input.type === "textarea" ||
         input.type === "password" ||
-        input.type === "select" || input.type === "phone" || input.type === "combobox" || input.type === "url"
+        input.type === "select" ||
+        input.type === "phone" ||
+        input.type === "combobox" ||
+        input.type === "url"
       ) {
         if (!input.required) {
           fieldSchema += `    v.optional(`;
           fieldSchema += `v.string()`;
           fieldSchema += `)`;
-        }
-        else {
+        } else {
           fieldSchema += `    v.string()`;
         }
-        if (input.type === 'url') {
-          fieldSchema += `,\n    v.url()`
+        if (input.type === "url") {
+          fieldSchema += `,\n    v.url()`;
         }
         if (input.type === "password" && input.required && input.min === 0) {
           fieldSchema += `,\n    v.nonEmpty('Please enter your password.')`;
         } else if (input.required && input.min === 0) {
-          fieldSchema += `,\n    v.nonEmpty('Please enter your ${input.label?.toLowerCase() || "name"
-            }.')`;
+          fieldSchema += `,\n    v.nonEmpty('Please enter your ${
+            input.label?.toLowerCase() || "name"
+          }.')`;
         }
       } else if (input.type === "email") {
         fieldSchema += `    v.string(), v.email('Please enter a valid email address.')`;
@@ -423,11 +461,15 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
         fieldSchema += `    v.date('A date of birth is required.')`;
       } else if (input.type === "tags-input") {
         fieldSchema += `    v.array(v.string(), 'Please enter your tags.')`;
+      } else if (input.type === "file") {
+        fieldSchema += `    v.array(v.pipe(v.file(), v.maxSize(MEGABYTE * 2)))`;
+      } else if (input.type === "radio") {
+        fieldSchema += `    v.enum({
+      male: "male",
+      female: "female",
+      other: "other",
+    })`;
       }
-      else if (input.type === 'file') {
-        fieldSchema += `    v.array(v.pipe(v.file(), v.maxSize(MEGABYTE * 2)))`
-      }
-
 
       // Add `min` and `max` constraints if available for number, password, and text fields
       if (min_max_types.includes(input.type) && input.required) {
@@ -444,17 +486,17 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
           fieldSchema += `,\n    v.maxLength(${input.max}, 'The string must not exceed ${input.max} characters.')`;
         }
       }
-      if (input.type === 'location-input') {
+      if (input.type === "location-input") {
         fieldSchema = `v.object({
           country: v.string().nonEmpty(),
           state: v.optional(v.string()),
-        })`
+        })`;
       }
       fieldSchema += `\n  )`;
-      if (input.type !== 'title' && input.type !== 'desc') {
-
-        schemaString += `  ${input.named_id?.toLowerCase() || "name"
-          }: ${fieldSchema},\n`;
+      if (input.type !== "title" && input.type !== "desc") {
+        schemaString += `  ${
+          input.named_id?.toLowerCase() || "name"
+        }: ${fieldSchema},\n`;
       }
     });
 
@@ -480,21 +522,24 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`: ''}`;
 import type { PageServerLoad } from './$types';
 
 import { fail, message, superValidate } from 'sveltekit-superforms';
-import { ${this.adapter === "zod" ? "zod" : "valibot"
-      } } from 'sveltekit-superforms/adapters';
+import { ${
+      this.adapter === "zod" ? "zod" : "valibot"
+    } } from 'sveltekit-superforms/adapters';
 
 // add your own schema path here
 import { schema } from './schema';
 
 export const load: PageServerLoad = async ({ request }) => {
-    return { form: await superValidate(${this.adapter === "zod" ? "zod" : "valibot"
-      }(schema)) }
+    return { form: await superValidate(${
+      this.adapter === "zod" ? "zod" : "valibot"
+    }(schema)) }
 };
 
 export const actions: Actions = {
     default: async ({ request }) => {
-        let form = await superValidate(request, ${this.adapter === "zod" ? "zod" : "valibot"
-      }(schema));
+        let form = await superValidate(request, ${
+          this.adapter === "zod" ? "zod" : "valibot"
+        }(schema));
         console.log(form,'form');
         if (!form.valid) {
             return fail(400, { form });
@@ -506,7 +551,9 @@ export const actions: Actions = {
 
   clientCode = $derived.by(() => {
     let clientrawCode = `<script lang="ts">
-  import { superForm${this.file_input_named_id.length > 0 ? ', filesProxy' : ''} } from 'sveltekit-superforms';
+  import { superForm${
+    this.file_input_named_id.length > 0 ? ", filesProxy" : ""
+  } } from 'sveltekit-superforms';
     // add your own path
   import type { PageData } from './$types';
   import Label from '$lib/components/ui/label/label.svelte';
@@ -516,14 +563,12 @@ export const actions: Actions = {
       if (input === "text") {
         clientrawCode += `
   import Input from '$lib/components/ui/input/input.svelte';`;
-      }
-      else if (input === 'email') {
-        if (!this.unique_imports.includes('text')) {
+      } else if (input === "email") {
+        if (!this.unique_imports.includes("text")) {
           clientrawCode += `
   import Input from '$lib/components/ui/input/input.svelte';`;
         }
-      }
-      else if (input === "password") {
+      } else if (input === "password") {
         clientrawCode += `
   import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
       } else if (input === "switch") {
@@ -622,8 +667,7 @@ export const actions: Actions = {
         label: "Astro",
       },
     ];`;
-      }
-      else if (input === 'file') {
+      } else if (input === "file") {
         clientrawCode += `
       // File Upload
   import { toast } from "svelte-sonner";
@@ -641,11 +685,14 @@ export const actions: Actions = {
   }) => {
     toast.error(\`\${ file.name } failed to upload!\`, { description: reason });
   };
-  `
-      }
-      else if (input === 'location-input') {
+  `;
+      } else if (input === "location-input") {
         clientrawCode += `
   import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
+        `;
+      } else if (input === "radio") {
+        clientrawCode += `
+  import * as RadioGroup from "$lib/components/ui/radio-group/index";
         `;
       }
     });
@@ -673,7 +720,7 @@ export const actions: Actions = {
       triggerRef_${combobox.named_id}.focus();
     });
   }`;
-      })
+      });
     }
     if (this.date_picker_named_id.length > 0) {
       this.date_picker_named_id.map((date) => {
@@ -703,8 +750,8 @@ export const actions: Actions = {
   const monthLabel_${date.named_id} = $derived(
     monthOptions.find((m) => m.value === defaultMonth_${date.named_id}?.value)?.label ??
       "Select a month"
-  );`
-      })
+  );`;
+      });
     }
 
     if (this.location_input_named_id.length > 0) {
@@ -713,8 +760,8 @@ export const actions: Actions = {
     // Location Input
     let selectedCountry_${location.named_id} = $state(null);
     let selectedState_${location.named_id} = $state(null);
-        `
-      })
+        `;
+      });
     }
     clientrawCode += `
   // Form Validation & Schema
@@ -728,34 +775,37 @@ export const actions: Actions = {
 	} = $props();
 
   let { form, message, errors, enhance } = superForm(data.form, {
-      validators: ${this.adapter}Client(schema)`
+      validators: ${this.adapter}Client(schema)`;
     if (this.location_input_named_id.length > 0) {
       clientrawCode += `,
       dataType: "json"`;
     }
-    if (this.tags_input_named_id.length > 0 || this.combobox_named_id.length > 0 || this.location_input_named_id.length > 0) {
-
+    if (
+      this.tags_input_named_id.length > 0 ||
+      this.combobox_named_id.length > 0 ||
+      this.location_input_named_id.length > 0
+    ) {
       clientrawCode += `,
       onUpdated(event) {
-        if (event.form.valid) {`
+        if (event.form.valid) {`;
       if (this.tags_input_named_id.length > 0) {
         this.tags_input_named_id.map((tag) => {
           clientrawCode += `
         ${tag.named_id}_value = [];`;
-        })
+        });
       }
       if (this.combobox_named_id.length > 0) {
         this.combobox_named_id.map((combobox) => {
           clientrawCode += `
         combovalue_${combobox.named_id} = "";`;
-        })
+        });
       }
       if (this.location_input_named_id.length > 0) {
         this.location_input_named_id.map((location) => {
           clientrawCode += `
         selectedCountry_${location.named_id} = null;
         selectedState_${location.named_id} = null;`;
-        })
+        });
       }
       clientrawCode += `
         }
@@ -767,13 +817,12 @@ export const actions: Actions = {
       this.tags_input_named_id.map((tag) => {
         clientrawCode += `
     let ${tag.named_id}_value = $state([]);`;
-      })
+      });
       clientrawCode += `\n$effect(() => {`;
       this.tags_input_named_id.map((tag) => {
         clientrawCode += `
     $form.${tag.named_id} = ${tag.named_id}_value;`;
-      }
-      )
+      });
       clientrawCode += `\n  });`;
     }
     if (this.file_input_named_id.length > 0) {
@@ -785,15 +834,15 @@ export const actions: Actions = {
       });
     }
   });
-      `
+      `;
       this.file_input_named_id.map((file) => {
         clientrawCode += `
   let files_${file.named_id} = filesProxy(form, "${file.named_id}");
   let onUpload_${file.named_id}: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
     // we use set instead of an assignment since it accepts a File[]
     files_${file.named_id}.set([...Array.from($files_${file.named_id}), ...uploadedFiles]);
-  };`
-      })
+  };`;
+      });
     }
 
     clientrawCode += `\n</script>
@@ -801,19 +850,21 @@ export const actions: Actions = {
 	{#if $message}
 		<p class="text-emerald-400 mb-2">{$message}</p>
 	{/if}
-  <form method="post" ${this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+  <form method="post" ${
+    this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ""
+  } use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
-      if (input.type === 'title') {
+      if (input.type === "title") {
         clientrawCode += `
         <h2 class="text-2xl font-semibold leading-none tracking-tight">
           ${input.label}
-        </h2>`
+        </h2>`;
       }
-      if (input.type === 'desc') {
+      if (input.type === "desc") {
         clientrawCode += `
         <p class="text-sm text-muted-foreground">
           ${input.label}
-        </p>`
+        </p>`;
       }
       if (
         input.type === "text" ||
@@ -1082,17 +1133,25 @@ export const actions: Actions = {
       } else if (input.category === "tags-input") {
         clientrawCode += `
     <div>
-      <Label for="${input.named_id}" class={$errors.${input.named_id} && "text-destructive"}>${input.label}</Label>
+      <Label for="${input.named_id}" class={$errors.${
+          input.named_id
+        } && "text-destructive"}>${input.label}</Label>
        <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
-      <TagsInput bind:value={${input.named_id + '_value'}} placeholder="Add Tech Stack" />
+      <TagsInput bind:value={${
+        input.named_id + "_value"
+      }} placeholder="Add Tech Stack" />
       {#each $form.${input.named_id} as item, i}
-        <input type="hidden" bind:value={$form.${input.named_id}[i]} name="${input.named_id}" id="${input.named_id}" />
+        <input type="hidden" bind:value={$form.${input.named_id}[i]} name="${
+          input.named_id
+        }" id="${input.named_id}" />
       {/each}
       <p class="text-xs text-muted-foreground">
         ${input.description}
       </p>
       {#if $errors.${input.named_id}}
-        <p class="text-sm text-destructive">{$errors.${input.named_id}?._errors}</p>
+        <p class="text-sm text-destructive">{$errors.${
+          input.named_id
+        }?._errors}</p>
       {/if}
     </div>`;
       } else if (input.category === "phone") {
@@ -1174,8 +1233,7 @@ export const actions: Actions = {
           </p>
       </div>
         `;
-      }
-      else if (input.category === 'file') {
+      } else if (input.category === "file") {
         clientrawCode += `
   <div>
     <Label for="${input.named_id}">
@@ -1240,9 +1298,8 @@ export const actions: Actions = {
         </div>
       {/each}
     </div>
-  </div>`
-      }
-      else if (input.category === 'location-input') {
+  </div>`;
+      } else if (input.category === "location-input") {
         clientrawCode += `
   <!-- Location Input Component : https://svelte-form-builder.vercel.app/docs/components/location-input -->
   <div class="min-w-full">
@@ -1265,7 +1322,30 @@ export const actions: Actions = {
     {#if $errors.${input.named_id}?.country}
         <p class="text-sm text-destructive">{$errors.${input.named_id}.country}</p>
     {/if}
-  </div>`
+  </div>`;
+      } else if (input.category === "radio") {
+        clientrawCode += `
+  <div class="space-y-3">
+    <Label class="text-sm font-medium">${input.label}</Label>
+    <RadioGroup.Root bind:value={$form.${input.named_id}} name="${input.named_id}">
+      {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item value={gender[0]} id="${input.named_id}_{gender[0]}" />
+          <Label for="${input.named_id}_{gender[0]}">{gender[1]}</Label>
+        </div>
+      {/each}
+    </RadioGroup.Root>
+    <div>
+      <p class="text-xs text-muted-foreground">
+        ${input.description}
+      </p>
+      <div>
+        {#if $errors.${input.named_id}}
+          <p class="text-red-500 text-xs">{$errors.${input.named_id}}</p>
+        {/if}
+      </div>
+    </div>
+  </div>`;
       }
     });
     clientrawCode += `
@@ -1278,7 +1358,9 @@ export const actions: Actions = {
 
   formsnapCode = $derived.by(() => {
     let formsnapCode = `<script lang="ts">
-  import { superForm${this.file_input_named_id.length > 0 ? ', filesProxy' : ''} } from "sveltekit-superforms";
+  import { superForm${
+    this.file_input_named_id.length > 0 ? ", filesProxy" : ""
+  } } from "sveltekit-superforms";
   import {  ${this.adapter}Client } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
   import { schema } from "./schema";
@@ -1290,8 +1372,7 @@ export const actions: Actions = {
       if (input === "text") {
         formsnapCode += `
   import Input from "$lib/components/ui/input/input.svelte";`;
-      }
-      else if (input === "textarea") {
+      } else if (input === "textarea") {
         formsnapCode += `
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
       } else if (input === "switch") {
@@ -1388,8 +1469,7 @@ export const actions: Actions = {
       label: "Astro",
     },
   ];`;
-      }
-      else if (input === 'file') {
+      } else if (input === "file") {
         formsnapCode += `// File Upload
   import { toast } from "svelte-sonner";
   import {
@@ -1406,12 +1486,14 @@ export const actions: Actions = {
     file,
   }) => {
     toast.error(\`\${file.name} failed to upload!\`, { description: reason });
-  };`
-      }
-      else if (input === 'location-input') {
+  };`;
+      } else if (input === "location-input") {
         formsnapCode += `
   import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
         `;
+      } else if (input === "radio") {
+        formsnapCode += `
+  import * as RadioGroup from "$lib/components/ui/radio-group/index";`;
       }
     });
 
@@ -1442,8 +1524,8 @@ export const actions: Actions = {
   let monthLabel_${date.named_id} = $derived(
     monthOptions.find((m) => m.value === defaultMonth_${date.named_id}?.value)?.label ??
       "Select a month"
-  );`
-      })
+  );`;
+      });
     }
 
     if (this.combobox_named_id.length > 0) {
@@ -1478,8 +1560,8 @@ export const actions: Actions = {
   // Location Input
   let selectedCountry_${location.named_id} = $state(null);
   let selectedState_${location.named_id} = $state(null);
-        `
-      })
+        `;
+      });
     }
     formsnapCode += `
 	let {
@@ -1489,12 +1571,16 @@ export const actions: Actions = {
 	} = $props();
 
   let form = superForm(data.form, {
-      validators: ${this.adapter}Client(schema)`
+      validators: ${this.adapter}Client(schema)`;
     if (this.location_input_named_id.length > 0) {
       formsnapCode += `,
         dataType: "json"`;
     }
-    if (this.tags_input_named_id.length > 0 || this.combobox_named_id.length > 0 || this.location_input_named_id.length > 0) {
+    if (
+      this.tags_input_named_id.length > 0 ||
+      this.combobox_named_id.length > 0 ||
+      this.location_input_named_id.length > 0
+    ) {
       formsnapCode += `,
         onUpdated(event) {
           if (event.form.valid) {`;
@@ -1502,20 +1588,20 @@ export const actions: Actions = {
         this.tags_input_named_id.map((tag) => {
           formsnapCode += `
               ${tag.named_id}_value = [];`;
-        })
+        });
       }
       if (this.combobox_named_id.length > 0) {
         this.combobox_named_id.map((combobox) => {
           formsnapCode += `
               combovalue_${combobox.named_id} = "";`;
-        })
+        });
       }
       if (this.location_input_named_id.length > 0) {
         this.location_input_named_id.map((location) => {
           formsnapCode += `
                 selectedCountry_${location.named_id} = null;
                 selectedState_${location.named_id} = null;`;
-        })
+        });
       }
       formsnapCode += `
         }
@@ -1528,14 +1614,14 @@ export const actions: Actions = {
     if (this.tags_input_named_id.length > 0) {
       this.tags_input_named_id.map((tag) => {
         formsnapCode += `
-    let ${tag.named_id + '_value'} = $state([]);`;
-      })
+    let ${tag.named_id + "_value"} = $state([]);`;
+      });
       this.tags_input_named_id.map((tag) => {
         formsnapCode += `
     $effect(() => {
-      $formData.${tag.named_id} = ${tag.named_id + '_value'};
-    });`
-      })
+      $formData.${tag.named_id} = ${tag.named_id + "_value"};
+    });`;
+      });
     }
     if (this.file_input_named_id.length > 0) {
       formsnapCode += `
@@ -1545,15 +1631,15 @@ export const actions: Actions = {
           description: "Your attachments were uploaded.",
         });
       }
-  });`
+  });`;
       this.file_input_named_id.map((file) => {
         formsnapCode += `
   let files_${file.named_id} = filesProxy(form, "${file.named_id}");
   let onUpload_${file.named_id}: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
     // we use set instead of an assignment since it accepts a File[]
     files_${file.named_id}.set([...Array.from($files_${file.named_id}), ...uploadedFiles]);
-  };`
-      })
+  };`;
+      });
     }
     formsnapCode += `
 </script> \n\n`; // close script tag
@@ -1563,19 +1649,21 @@ export const actions: Actions = {
       {$message}
     </span>
   {/if}
-  <form method="post" ${this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ''} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+  <form method="post" ${
+    this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ""
+  } use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
     this.selected_inputs.map((input) => {
-      if (input.type === 'title') {
+      if (input.type === "title") {
         formsnapCode += `
         <h2 class="text-2xl font-semibold leading-none tracking-tight">
           ${input.label}
-        </h2>`
+        </h2>`;
       }
-      if (input.type === 'desc') {
+      if (input.type === "desc") {
         formsnapCode += `
         <p class="text-sm text-muted-foreground">
           ${input.label}
-        </p>`
+        </p>`;
       }
       if (
         input.type === "text" ||
@@ -1880,7 +1968,9 @@ export const actions: Actions = {
         <Control>
           {#snippet children({ props })}
             <Label>${input.label}</Label>
-            <TagsInput bind:value={${input.named_id + '_value'}} placeholder="${input.placeholder}" />
+            <TagsInput bind:value={${input.named_id + "_value"}} placeholder="${
+          input.placeholder
+        }" />
             {#each $formData.${input.named_id} as item, i}
               <input
                 {...props}
@@ -1891,7 +1981,9 @@ export const actions: Actions = {
             {/each}
           {/snippet}
         </Control>
-        <Description class="text-sm text-muted-foreground">${input.description}</Description
+        <Description class="text-sm text-muted-foreground">${
+          input.description
+        }</Description
         >
         <FieldErrors class="text-sm text-destructive" />
       </Field>
@@ -1987,8 +2079,7 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      }
-      else if (input.type === 'file') {
+      } else if (input.type === "file") {
         formsnapCode += `
   <div>
     <Field {form} name="${input.named_id}">
@@ -2062,9 +2153,8 @@ export const actions: Actions = {
       </div>
     </Field>
   </div>`;
-      }
-      else if(input.type==='location-input'){
-        formsnapCode+=`
+      } else if (input.type === "location-input") {
+        formsnapCode += `
   <!-- Location Input Component : https://svelte-form-builder.vercel.app/docs/components/location-input -->
   <div>
     <Field {form} name="${input.named_id}">
@@ -2094,11 +2184,37 @@ export const actions: Actions = {
     <Field {form} name="${input.named_id}.country">
       <FieldErrors class="text-sm text-destructive" />
     </Field>
-  </div>`
+  </div>`;
+      } else if (input.type === "radio") {
+        formsnapCode += `
+  <div class="space-y-2">
+    <Field {form} name="${input.named_id}">
+      <legend>Gender</legend>
+      <RadioGroup.Root
+        bind:value={$formData.${input.named_id}}
+        name="${input.named_id}"
+        class="gap-0"
+      >
+        {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
+          <div class="flex items-center space-x-2">
+            <Control>
+              {#snippet children({ props })}
+                <RadioGroup.Item value={gender[0]} {...props} />
+                <Label class="font-normal">{gender[1]}</Label>
+              {/snippet}
+            </Control>
+          </div>
+        {/each}
+      </RadioGroup.Root>
+      <Description class="text-sm text-muted-foreground">
+        ${input.description}
+      </Description>
+      <FieldErrors class="text-sm text-destructive" />
+    </Field>
+  </div>`;
       }
     });
     formsnapCode += `
-
     <div>
       <Button size="sm" type="submit">Submit</Button>
     </div>
@@ -2108,49 +2224,45 @@ export const actions: Actions = {
   });
 
   command = $derived.by(() => {
-    let installCommand: string = '';
+    let installCommand: string = "";
 
     installCommand += `npm install sveltekit-superforms ${this.adapter} ${this.formsnap}\n`;
     installCommand += `npx shadcn-svelte@next add button label \n`;
     installCommand += `npx shadcn-svelte@next add`;
     this.unique_inputs_imports.map((input) => {
-      if (input === 'text' || input === 'number' || input === 'email' || input === 'password') {
-        if (!installCommand.includes('input')) {
+      if (
+        input === "text" ||
+        input === "number" ||
+        input === "email" ||
+        input === "password"
+      ) {
+        if (!installCommand.includes("input")) {
           installCommand += ` input`;
         }
-      }
-      else if (input === 'textarea') {
+      } else if (input === "textarea") {
         installCommand += ` textarea`;
-      }
-      else if (input === 'switch') {
+      } else if (input === "switch") {
         installCommand += ` switch`;
-      }
-      else if (input === 'checkbox') {
+      } else if (input === "checkbox") {
         installCommand += ` checkbox`;
-      }
-      else if (input === 'select') {
+      } else if (input === "select") {
         installCommand += ` select`;
-      }
-      else if (input === 'input-otp') {
+      } else if (input === "input-otp") {
         installCommand += ` input-otp`;
-      }
-      else if (input === 'date-picker') {
+      } else if (input === "date-picker") {
         installCommand += ` popover calendar range-calendar`;
-      }
-      else if (input === 'combobox') {
+      } else if (input === "combobox") {
         installCommand += ` popover command lucide-svelte`;
       }
-    })
+    });
 
     this.unique_imports.map((input) => {
-      if (input === 'file') {
-        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/file-drop-zone`
-      }
-      else if (input === 'tags-input') {
-        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/tags-input`
-      }
-      else if (input === 'phone') {
-        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/phone-input`
+      if (input === "file") {
+        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/file-drop-zone`;
+      } else if (input === "tags-input") {
+        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/tags-input`;
+      } else if (input === "phone") {
+        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/phone-input`;
       }
     });
     return installCommand;

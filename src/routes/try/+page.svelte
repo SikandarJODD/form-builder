@@ -1,50 +1,82 @@
 <script lang="ts">
-  import * as RadioGroup from "$lib/components/ui/radio-group/index";
-  import { Label } from "$lib/components/ui/label/index";
-
-  import { zodClient } from "sveltekit-superforms/adapters";
-  import { schema } from "./schema";
-  import type { PageData } from "./$types";
   import { superForm } from "sveltekit-superforms";
+  import { zodClient } from "sveltekit-superforms/adapters";
+  import type { PageData } from "./$types";
+  import { schema } from "./schema";
+  // FormSnap
+  import { Field, Control, Label, Description, FieldErrors } from "formsnap";
+  // Components
   import Button from "$lib/components/ui/button/button.svelte";
-
+  import * as RadioGroup from "$lib/components/ui/radio-group/index";
   let {
     data,
   }: {
     data: PageData;
   } = $props();
 
-  let { form, enhance, errors } = superForm(data.form, {
+  let form = superForm(data.form, {
     validators: zodClient(schema),
   });
+
+  let { form: formData, enhance, message } = form;
 </script>
 
-<div class="flex justify-center items-center min-h-screen">
-  <form method="POST" use:enhance class="space-y-2 min-w-96">
-    <div class="space-y-3">
-      <Label class="text-sm font-medium">Gender</Label>
-      <RadioGroup.Root bind:value={$form.radio} name="radio">
-        <div class="flex items-center space-x-2">
-          <RadioGroup.Item value="male" id="r1" />
-          <Label for="r1">Male</Label>
-        </div>
-        <div class="flex items-center space-x-2">
-          <RadioGroup.Item value="female" id="r2" />
-          <Label for="r2">Female</Label>
-        </div>
-        <div class="flex items-center space-x-2">
-          <RadioGroup.Item value="other" id="r3" />
-          <Label for="r3">Other</Label>
-        </div>
-      </RadioGroup.Root>
-      <div>
-        <p class="text-xs text-muted-foreground">Select your Gender</p>
-        <div>
-          {#if $errors.radio}
-            <p class="text-red-500 text-xs">{$errors.radio}</p>
-          {/if}
-        </div>
-      </div>
+<div class="flex min-h-[80vh] flex-col items-center justify-center">
+  {#if $message}
+    <span class="text-emerald-400 mb-2">
+      {$message}
+    </span>
+  {/if}
+  <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
+    <div class="space-y-2">
+      <Field {form} name="radio">
+        <legend>Gender</legend>
+        <RadioGroup.Root
+          bind:value={$formData.radio}
+          name="radio"
+          class="gap-0"
+        >
+          {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
+            <div class="flex items-center space-x-2">
+              <Control>
+                {#snippet children({ props })}
+                  <RadioGroup.Item value={gender[0]} {...props} />
+                  <Label class="font-normal">{gender[1]}</Label>
+                {/snippet}
+              </Control>
+            </div>
+          {/each}
+        </RadioGroup.Root>
+        <Description class="text-sm text-muted-foreground">
+          Select your gender
+        </Description>
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>
+    <div class="space-y-2">
+      <Field {form} name="radio_f8">
+        <legend>Gender</legend>
+        <RadioGroup.Root
+          bind:value={$formData.radio_f8}
+          name="radio_f8"
+          class="gap-0"
+        >
+          {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
+            <div class="flex items-center space-x-2">
+              <Control>
+                {#snippet children({ props })}
+                  <RadioGroup.Item value={gender[0]} {...props} />
+                  <Label class="font-normal">{gender[1]}</Label>
+                {/snippet}
+              </Control>
+            </div>
+          {/each}
+        </RadioGroup.Root>
+        <Description class="text-sm text-muted-foreground">
+          Select your gender
+        </Description>
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
     </div>
     <div>
       <Button size="sm" type="submit">Submit</Button>

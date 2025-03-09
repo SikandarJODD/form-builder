@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { slide } from "svelte/transition";
   let navs = [
     { name: "Home", url: "/" },
@@ -17,6 +17,8 @@
   let isMobileMenu = $state(false);
   // Dark & Light Mode
   import { toggleMode, mode } from "mode-watcher";
+
+
 </script>
 
 <nav class="bg-background/70 backdrop-blur-sm border-b sticky top-0 z-50">
@@ -56,13 +58,18 @@
             {/each}
           </div>
           <div>
-            <Button data-umami-event="Navbar Playground" class="font-normal rounded-full" href="/playground"
-              >Playground</Button
+            <Button
+              data-umami-event="Navbar Playground"
+              class="font-normal rounded-full"
+              href="/playground"
+              variant="secondary"
             >
+              Playground
+            </Button>
           </div>
         </div>
       </div>
-      <div class="hidden sm:ml-4 sm:block">
+      <div class="hidden sm:ml-2 sm:block">
         {@render socials()}
       </div>
       <div class="-mr-2 flex sm:hidden">
