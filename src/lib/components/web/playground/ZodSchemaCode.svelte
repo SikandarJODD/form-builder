@@ -4,7 +4,6 @@
   import { codeToHtml } from "shiki";
   import { onMount } from "svelte";
   import { watch } from "runed";
-  import InstallationCode from "./InstallationCode.svelte";
 
   let codeContent = $derived(form_generator.zodSchema); // input code
   let valibotContent = $derived(form_generator.valibotSchema); // input code
@@ -50,12 +49,12 @@
     }
     setTimeout(() => (copied = false), 1500);
   }
-
 </script>
 
-<div class="relative border w-full p-4 rounded-lg bg-zinc-900 dark:bg-transparent">
-  <span>{@html htmlCode}</span>
-  <div class="absolute top-2 right-2 flex items-center space-x-2">
+<div
+  class="relative overflow-scroll scrollbar border w-full pl-4 pr-1 rounded-lg bg-zinc-900 dark:bg-transparent"
+>
+  <div class="sticky top-2 flex justify-end left-0">
     <Button variant="outline" size="icon" onclick={handleCopy}>
       <div
         class={[
@@ -98,6 +97,9 @@
         >
       </div>
     </Button>
+  </div>
+  <div class="-mt-5 text-sm">
+    <span>{@html htmlCode}</span>
   </div>
 </div>
 

@@ -1,84 +1,85 @@
 <script lang="ts">
   import { superForm } from "sveltekit-superforms";
-  // add your own path
+  import { zodClient } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
-  import Label from "$lib/components/ui/label/label.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import Input from "$lib/components/ui/input/input.svelte";
-
-  // Location Input
-  let selectedCountry_loc = $state(null);
-  let selectedState_loc = $state(null);
-
-  // Form Validation & Schema
-  import { zod } from "sveltekit-superforms/adapters";
   import { schema } from "./schema";
-  import LocationSelector from "$lib/components/templates/comps/location-input/LocationSelector.svelte";
-
+  // FormSnap
+  import { Field, Control, Label, Description, FieldErrors } from "formsnap";
+  // Components
+  import Button from "$lib/components/ui/button/button.svelte";
+  import * as RadioGroup from "$lib/components/ui/radio-group/index";
   let {
     data,
   }: {
     data: PageData;
   } = $props();
 
-  let { form, message, errors, enhance } = superForm(data.form, {
-    validators: zod(schema),
-    dataType: "json",
-    onUpdated(event) {
-      if (event.form.valid) {
-        selectedCountry_loc = null;
-        selectedState_loc = null;
-      }
-    },
+  let form = superForm(data.form, {
+    validators: zodClient(schema),
   });
+
+  let { form: formData, enhance, message } = form;
 </script>
 
 <div class="flex min-h-[80vh] flex-col items-center justify-center">
   {#if $message}
-    <p class="text-emerald-400 mb-2">{$message}</p>
+    <span class="text-emerald-400 mb-2">
+      {$message}
+    </span>
   {/if}
-  <!-- Location Input Component : https://svelte-form-builder.vercel.app/docs/components/location-input -->
   <form method="post" use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">
+    <div class="space-y-2">
+      <Field {form} name="radio">
+        <legend>Gender</legend>
+        <RadioGroup.Root
+          bind:value={$formData.radio}
+          name="radio"
+          class="gap-0"
+        >
+          {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
+            <div class="flex items-center space-x-2">
+              <Control>
+                {#snippet children({ props })}
+                  <RadioGroup.Item value={gender[0]} {...props} />
+                  <Label class="font-normal">{gender[1]}</Label>
+                {/snippet}
+              </Control>
+            </div>
+          {/each}
+        </RadioGroup.Root>
+        <Description class="text-sm text-muted-foreground">
+          Select your gender
+        </Description>
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>
+    <div class="space-y-2">
+      <Field {form} name="radio_f8">
+        <legend>Gender</legend>
+        <RadioGroup.Root
+          bind:value={$formData.radio_f8}
+          name="radio_f8"
+          class="gap-0"
+        >
+          {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
+            <div class="flex items-center space-x-2">
+              <Control>
+                {#snippet children({ props })}
+                  <RadioGroup.Item value={gender[0]} {...props} />
+                  <Label class="font-normal">{gender[1]}</Label>
+                {/snippet}
+              </Control>
+            </div>
+          {/each}
+        </RadioGroup.Root>
+        <Description class="text-sm text-muted-foreground">
+          Select your gender
+        </Description>
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>
     <div>
-      <Label for="text" class={$errors.text && "text-destructive"}
-        >Username</Label
-      >
-      <Input
-        type="text"
-        id="text"
-        name="text"
-        placeholder="Enter your username"
-        bind:value={$form.text}
-      />
-      {#if $errors.text}
-        <p class="text-sm text-destructive">{$errors.text}</p>
-      {/if}
-      <p class="text-xs text-muted-foreground">
-        This is your public display name
-      </p>
+      <Button size="sm" type="submit">Submit</Button>
     </div>
-
-    <div class="min-w-full">
-      <Label for="loc">Location</Label>
-      <LocationSelector
-        bind:selectedCountry={selectedCountry_loc}
-        bind:selectedState={selectedState_loc}
-        onCountryChange={(country) => {
-          $form.loc.country = country?.name ?? "";
-        }}
-        onStateChange={(state) => {
-          $form.loc.state = state?.name ?? "";
-        }}
-      />
-      <p class="text-sm text-muted-foreground">
-        Select your country and state from the dropdown.
-      </p>
-      <input type="hidden" name="country" bind:value={$form.loc.country} />
-      <input type="hidden" name="state" bind:value={$form.loc.state} />
-      {#if $errors.loc?.country}
-        <p class="text-sm text-destructive">{$errors.loc.country}</p>
-      {/if}
-    </div>
-    <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>
