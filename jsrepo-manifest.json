@@ -1,0 +1,301 @@
+{
+	"categories": [
+		{
+			"name": "ui",
+			"blocks": [
+				{
+					"name": "button",
+					"directory": "src/lib/components/ui/button",
+					"category": "ui",
+					"tests": false,
+					"subdirectory": true,
+					"list": false,
+					"files": [
+						"button.svelte",
+						"index.ts"
+					],
+					"localDependencies": [
+						"lib/utils"
+					],
+					"dependencies": [],
+					"devDependencies": [
+						"bits-ui@^1.3.6",
+						"tailwind-variants@^0.3.1"
+					],
+					"_imports_": {
+						"$lib/utils.js": "{{lib/utils}}.js"
+					}
+				},
+				{
+					"name": "command",
+					"directory": "src/lib/components/ui/command",
+					"category": "ui",
+					"tests": false,
+					"subdirectory": true,
+					"list": false,
+					"files": [
+						"command-dialog.svelte",
+						"command-empty.svelte",
+						"command-group.svelte",
+						"command-input.svelte",
+						"command-item.svelte",
+						"command-link-item.svelte",
+						"command-list.svelte",
+						"command-separator.svelte",
+						"command-shortcut.svelte",
+						"command.svelte",
+						"index.ts"
+					],
+					"localDependencies": [
+						"ui/dialog",
+						"ui/utils"
+					],
+					"dependencies": [],
+					"devDependencies": [
+						"bits-ui@^1.3.6",
+						"lucide-svelte@^0.474.0"
+					],
+					"_imports_": {
+						"../dialog/index.js": "{{ui/dialog}}/index.js",
+						"../utils.js": "{{ui/utils}}.js"
+					}
+				},
+				{
+					"name": "dialog",
+					"directory": "src/lib/components/ui/dialog",
+					"category": "ui",
+					"tests": false,
+					"subdirectory": true,
+					"list": false,
+					"files": [
+						"dialog-content.svelte",
+						"dialog-description.svelte",
+						"dialog-footer.svelte",
+						"dialog-header.svelte",
+						"dialog-overlay.svelte",
+						"dialog-title.svelte",
+						"index.ts"
+					],
+					"localDependencies": [
+						"lib/utils"
+					],
+					"dependencies": [],
+					"devDependencies": [
+						"bits-ui@^1.3.6",
+						"lucide-svelte@^0.474.0"
+					],
+					"_imports_": {
+						"$lib/utils.js": "{{lib/utils}}.js"
+					}
+				},
+				{
+					"name": "input",
+					"directory": "src/lib/components/ui/input",
+					"category": "ui",
+					"tests": false,
+					"subdirectory": true,
+					"list": false,
+					"files": [
+						"index.ts",
+						"input.svelte"
+					],
+					"localDependencies": [
+						"lib/utils"
+					],
+					"dependencies": [],
+					"devDependencies": [
+						"bits-ui@^1.3.6"
+					],
+					"_imports_": {
+						"$lib/utils.js": "{{lib/utils}}.js"
+					}
+				},
+				{
+					"name": "label",
+					"directory": "src/lib/components/ui/label",
+					"category": "ui",
+					"tests": false,
+					"subdirectory": true,
+					"list": false,
+					"files": [
+						"index.ts",
+						"label.svelte"
+					],
+					"localDependencies": [
+						"lib/utils"
+					],
+					"dependencies": [],
+					"devDependencies": [
+						"bits-ui@^1.3.6"
+					],
+					"_imports_": {
+						"$lib/utils.js": "{{lib/utils}}.js"
+					}
+				},
+				{
+					"name": "popover",
+					"directory": "src/lib/components/ui/popover",
+					"category": "ui",
+					"tests": false,
+					"subdirectory": true,
+					"list": false,
+					"files": [
+						"index.ts",
+						"popover-content.svelte"
+					],
+					"localDependencies": [
+						"lib/utils"
+					],
+					"dependencies": [],
+					"devDependencies": [
+						"bits-ui@^1.3.6"
+					],
+					"_imports_": {
+						"$lib/utils.js": "{{lib/utils}}.js"
+					}
+				},
+				{
+					"name": "scroll-area",
+					"directory": "src/lib/components/ui/scroll-area",
+					"category": "ui",
+					"tests": false,
+					"subdirectory": true,
+					"list": false,
+					"files": [
+						"index.ts",
+						"scroll-area-scrollbar.svelte",
+						"scroll-area.svelte"
+					],
+					"localDependencies": [
+						"ui/utils"
+					],
+					"dependencies": [],
+					"devDependencies": [
+						"bits-ui@^1.3.6"
+					],
+					"_imports_": {
+						"../utils.js": "{{ui/utils}}.js"
+					}
+				},
+				{
+					"name": "utils",
+					"directory": "src/lib/components/ui",
+					"category": "ui",
+					"tests": false,
+					"subdirectory": false,
+					"list": false,
+					"files": [
+						"utils.ts"
+					],
+					"localDependencies": [],
+					"_imports_": {},
+					"dependencies": [],
+					"devDependencies": [
+						"clsx@^2.1.1",
+						"tailwind-merge@^2.6.0"
+					]
+				}
+			]
+		},
+		{
+			"name": "comps",
+			"blocks": [
+				{
+					"name": "location-input",
+					"directory": "src/lib/components/templates/comps/location-input",
+					"category": "comps",
+					"tests": false,
+					"subdirectory": true,
+					"list": true,
+					"files": [
+						"LocationSelector.svelte",
+						"types.ts"
+					],
+					"localDependencies": [
+						"lib/utils",
+						"ui/button",
+						"ui/popover",
+						"ui/command",
+						"ui/scroll-area",
+						"lib/data"
+					],
+					"dependencies": [],
+					"devDependencies": [
+						"lucide-svelte@^0.474.0"
+					],
+					"_imports_": {
+						"$lib/utils": "{{lib/utils}}",
+						"$lib/components/ui/button/button.svelte": "{{ui/button}}/button.svelte",
+						"$lib/components/ui/popover/index": "{{ui/popover}}/index",
+						"$lib/components/ui/command/index": "{{ui/command}}/index",
+						"$lib/components/ui/scroll-area/index": "{{ui/scroll-area}}/index",
+						"$lib/data/countries.json": "{{lib/data}}/countries.json",
+						"$lib/data/states.json": "{{lib/data}}/states.json"
+					}
+				},
+				{
+					"name": "PasswordInput",
+					"directory": "src/lib/components/templates/comps",
+					"category": "comps",
+					"tests": false,
+					"subdirectory": false,
+					"list": true,
+					"files": [
+						"PasswordInput.svelte"
+					],
+					"localDependencies": [
+						"ui/input",
+						"ui/label"
+					],
+					"_imports_": {
+						"$lib/components/ui/input/input.svelte": "{{ui/input}}/input.svelte",
+						"$lib/components/ui/label/label.svelte": "{{ui/label}}/label.svelte"
+					},
+					"dependencies": [],
+					"devDependencies": [
+						"lucide-svelte@^0.474.0"
+					]
+				}
+			]
+		},
+		{
+			"name": "lib",
+			"blocks": [
+				{
+					"name": "data",
+					"directory": "src/lib/data",
+					"category": "lib",
+					"tests": false,
+					"subdirectory": true,
+					"list": false,
+					"files": [
+						"countries.json",
+						"states.json"
+					],
+					"localDependencies": [],
+					"dependencies": [],
+					"devDependencies": [],
+					"_imports_": {}
+				},
+				{
+					"name": "utils",
+					"directory": "src/lib",
+					"category": "lib",
+					"tests": false,
+					"subdirectory": false,
+					"list": false,
+					"files": [
+						"utils.ts"
+					],
+					"localDependencies": [],
+					"_imports_": {},
+					"dependencies": [],
+					"devDependencies": [
+						"clsx@^2.1.1",
+						"tailwind-merge@^2.6.0"
+					]
+				}
+			]
+		}
+	]
+}
