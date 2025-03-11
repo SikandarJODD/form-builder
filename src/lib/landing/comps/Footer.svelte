@@ -34,7 +34,7 @@
       <div class="flex items-start gap-10 max-sm:flex-col sm:gap-36">
         <div class="space-y-4">
           <div class="flex flex-col gap-4 text-sm">
-            <h1 class="font-medium text-primary">Explore</h1>
+            <h3 class="font-medium text-primary">Explore</h3>
             {#each NAVIGATE as { name, slug }, idx}
               <a
                 href={slug}
@@ -47,7 +47,7 @@
         </div>
         <div class="space-y-4">
           <div class="flex flex-col gap-4 text-sm">
-            <h1 class="font-medium text-primary">Connect</h1>
+            <h3 class="font-medium text-primary">Connect</h3>
             <a
               href="https://github.com/SikandarJODD/form-builder"
               target="_blank"

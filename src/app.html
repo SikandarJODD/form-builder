@@ -1,39 +1,81 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="canonical" href="https://svelte-form-builder.vercel.app" />
+    <link rel="icon" href="https://fav.farm/🔥" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Svelte Form Builder</title>
+    <meta
+      name="description"
+      content="Svelte Form Builder - A powerful, easy-to-use form builder for Svelte with built-in support for Zod and Valibot validation. Easily create dynamic, validated forms in SvelteKit with sveltekit-superforms."
+    />
+    <meta property="og:title" content="Svelte Form Builder" />
+    <meta
+      property="og:description"
+      content="A powerful form builder for Svelte with Zod and Valibot validation. Create validated forms effortlessly in SvelteKit."
+    />
+    <meta
+      property="og:image"
+      content="https://i.pinimg.com/736x/0d/22/63/0d2263fb3a30077c8e8f0def7187095f.jpg"
+    />
+    <meta property="og:image:width" content="600" />
+    <meta property="og:image:height" content="315" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Svelte Form Builder" />
+    <meta
+      name="keywords"
+      content="Svelte Form Builder, Svelte forms, Zod validation, Valibot validation, sveltekit-superforms, form validation, SvelteKit, form library, svelte, form, builder, sveltekit, sveltekit form builder, svelte form builder, svelte form, sveltekit form, form validation, sveltekit superform builder, superform zod form builder, sveltekit zod form builder, svelte-form builder, svelte valibot validation, formsnap builder, valibot forms builder"
+    />
+    <!-- Twitter -->
+    <meta property="og:url" content="https://svelte-form-builder.vercel.app" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Svelte Form Builder" />
+    <meta
+      name="twitter:description"
+      content="Easily build dynamic, validated forms in SvelteKit with Zod and Valibot."
+    />
+    <meta
+      name="twitter:image"
+      content="https://i.pinimg.com/736x/0d/22/63/0d2263fb3a30077c8e8f0def7187095f.jpg"
+    />
+    <meta name="twitter:site" content="@Sikandar_Bhide" />
 
-<head>
-	<meta charset="utf-8" />
-	<link rel="icon" href="https://fav.farm/🔥" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Svelte Form Builder</title>
-	<meta name="description" content="Build forms with ease using Svelte Form Builder.">
-	<meta property="og:title" content="Svelte Form Builder">
-	<meta property="og:description" content="Build forms with ease using Svelte Form Builder.">
-	<meta property="og:image" content="https://i.pinimg.com/736x/0d/22/63/0d2263fb3a30077c8e8f0def7187095f.jpg">
-	<meta property="og:image:width" content="600">
-	<meta property="og:image:height" content="315">
-	<meta property="og:type" content="website">
-	<meta property="og:site_name" content="Svelte Form Builder">
-	<meta name="keywords"
-		content="svelte, form, builder, sveltekit, sveltekit form builder, svelte form builder, svelte form, sveltekit form, form validation, sveltekit superform builder, superform zod form builder, sveltekit zod form builder, svelte-form builder, svelte valibot validation, formsnap builder, valibot forms builder">
-	<!-- Twitter -->
-	<meta property="og:url" content="https://svelte-form-builder.vercel.app">
-	<meta name="twitter:card" content="summary_large_image">
-	<meta name="twitter:title" content="Svelte Form Builder">
-	<meta name="twitter:description" content="Build forms with ease using Svelte Form Builder.">
-	<meta name="twitter:image" content="https://i.pinimg.com/736x/0d/22/63/0d2263fb3a30077c8e8f0def7187095f.jpg">
-	<meta name="twitter:site" content="@Sikandar_Bhide">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Website",
+        "name": "Svelte Form Builder",
+        "url": "https://svelte-form-builder.vercel.app",
+        "potentialAction": [
+          {
+            "@type": "ViewAction",
+            "target": "https://svelte-form-builder.vercel.app/playground",
+            "name": "Playground"
+          },
+          {
+            "@type": "ViewAction",
+            "target": "https://svelte-form-builder.vercel.app/templates",
+            "name": "Templates"
+          },
+          {
+            "@type": "ViewAction",
+            "target": "https://svelte-form-builder.vercel.app/docs",
+            "name": "Docs"
+          }
+        ]
+      }
+    </script>
 
-	<!-- Inter Font -->
-	<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <!-- Inter Font -->
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 
-	<!-- Umami Analytics  -->
-	<script defer src="https://cloud.umami.is/script.js" data-website-id="32ad5539-5a85-49d7-9b35-a24513d71bbf"></script>
-	%sveltekit.head%
-</head>
+    <!-- Umami Analytics  -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="32ad5539-5a85-49d7-9b35-a24513d71bbf"></script>
+    %sveltekit.head%
+  </head>
 
-<body data-sveltekit-preload-data="hover">
-	<div style="display: contents">%sveltekit.body%</div>
-</body>
-
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
 </html>

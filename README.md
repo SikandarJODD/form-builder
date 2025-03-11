@@ -34,7 +34,12 @@ You can sponsor me on [Github](https://github.com/sponsors/SikandarJODD)
 
 ## License
 
-This project is licensed under the MIT License.
+Published under the [MIT](https://github.com/SikandarJODD/form-builder/blob/master/LICENSE) license.
+Built by [@sikandarjodd](https://github.com/SikandarJODD), [Aidan Bleser](https://github.com/ieedan), [Cliff Njoroge](https://github.com/cliffordkleinsr) and [community](https://github.com/SikandarJODD/form-builder/graphs/contributors) 💛
+<br><br>
+<a href="https://github.com/sikandarjodd/form-builder/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=SikandarJODD/form-builder" />
+</a>
 
 ## Acknowledgements
 

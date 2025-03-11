@@ -379,7 +379,8 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`
         input.min === 0 &&
         input.type !== "boolean" &&
         input.type !== "input-otp" &&
-        input.type !== "file" && input.type !== "radio"
+        input.type !== "file" &&
+        input.type !== "radio"
       ) {
         if (input.type === "tags-input") {
           fieldSchema += `\n   .min(1, { message: 'Please enter at least one tag' })`;
@@ -1134,8 +1135,8 @@ export const actions: Actions = {
         clientrawCode += `
     <div>
       <Label for="${input.named_id}" class={$errors.${
-          input.named_id
-        } && "text-destructive"}>${input.label}</Label>
+        input.named_id
+      } && "text-destructive"}>${input.label}</Label>
        <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
       <TagsInput bind:value={${
         input.named_id + "_value"
@@ -1969,8 +1970,8 @@ export const actions: Actions = {
           {#snippet children({ props })}
             <Label>${input.label}</Label>
             <TagsInput bind:value={${input.named_id + "_value"}} placeholder="${
-          input.placeholder
-        }" />
+              input.placeholder
+            }" />
             {#each $formData.${input.named_id} as item, i}
               <input
                 {...props}
@@ -2263,6 +2264,10 @@ export const actions: Actions = {
         installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/tags-input`;
       } else if (input === "phone") {
         installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/phone-input`;
+      } else if (input === "location-input") {
+        installCommand += `\njsrepo add github/sikandarjodd/form-builder/comps/location-input`;
+      } else if (input === "password") {
+        installCommand += `\njsrepo add github/sikandarjodd/form-builder/comps/PasswordInput`;
       }
     });
     return installCommand;
