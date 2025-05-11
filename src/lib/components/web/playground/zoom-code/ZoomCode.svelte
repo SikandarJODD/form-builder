@@ -35,7 +35,7 @@
       /></svg
     >
   </Dialog.Trigger>
-  <Dialog.Content class="sm:max-w-[825px] sm:h-[650px]">
+  <Dialog.Content class="sm:max-w-[920px] sm:h-[650px]">
     <Dialog.Header>
       <Dialog.Title>
         {title}
