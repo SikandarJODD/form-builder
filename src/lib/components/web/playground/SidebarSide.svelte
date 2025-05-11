@@ -1,5 +1,4 @@
 <script>
-  import Badge from "$lib/components/ui/badge/badge.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
 
@@ -46,7 +45,6 @@
   ];
 
   let titlecheck = $state(false);
-  let desccheck = $state(false);
   let addTitle = () => {
     if (titlecheck) {
       form_generator.add_input(headerfeauture[1], true);

@@ -21,6 +21,7 @@
     "url",
     "tags-input",
     "textarea",
+    "slider",
   ];
 </script>
 

@@ -1,5 +1,4 @@
 <script>
-  import { motion } from "motion-start";
   import SubSoln1 from "./SubSoln1.svelte";
   import SubSoln2 from "./SubSoln2.svelte";
   import SubSoln3 from "./SubSoln3.svelte";

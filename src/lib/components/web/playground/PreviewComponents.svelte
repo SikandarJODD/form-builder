@@ -176,6 +176,7 @@
     CountryProps,
     StateProps,
   } from "$lib/components/templates/comps/location-input/types";
+  import Slider from "$lib/components/ui/slider/slider.svelte";
   const onUpload: FileDropZoneProps["onUpload"] = async (files) => {
     await Promise.allSettled(files.map((file) => uploadFile(file)));
   };
@@ -226,6 +227,8 @@
 
   let selectedCountry: CountryProps | null = $state(null);
   let selectedState: StateProps | null = $state(null);
+
+  let slidervalue = $state(0);
 </script>
 
 {#if form_generator.selected_inputs.length === 0}
@@ -706,7 +709,7 @@
             {#if comp.type === "radio"}
               <div class="space-y-3">
                 <Label class="text-sm font-medium">Gender</Label>
-                <RadioGroup.Root value='male' name="radio">
+                <RadioGroup.Root value="male" name="radio">
                   {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
                     <div class="flex items-center space-x-2">
                       <RadioGroup.Item value={gender[0]} id={gender[0]} />
@@ -719,6 +722,29 @@
                     Select your Gender
                   </p>
                 </div>
+              </div>
+            {/if}
+            {#if comp.type === "slider"}
+              <div class="space-y-3">
+                <Label class="text-sm font-medium" for="pricing"
+                  >{comp.label} : {slidervalue}</Label
+                >
+                <Slider
+                  type="single"
+                  max={comp.max || 100}
+                  min={comp.min || 0}
+                  bind:value={slidervalue}
+                  step={1}
+                />
+                <input
+                  type="hidden"
+                  name="slider"
+                  bind:value={slidervalue}
+                  id="slider"
+                />
+                <p class="text-muted-foreground text-sm">
+                  {comp.description}
+                </p>
               </div>
             {/if}
           </div>

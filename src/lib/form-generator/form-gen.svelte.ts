@@ -98,6 +98,18 @@ let dummyInput: InputType[] = [
     max: 0,
   },
   {
+    name: "Slider",
+    type: "slider",
+    category: "slider",
+    label: "Set Price Range *",
+    description:
+      "Adjust the price by sliding. Selected value is 5, minimun valus is 0, maximim values is 100, step size is 1",
+    placeholder: "No Placeholder",
+    min: 0,
+    max: 100,
+    isNew: true,
+  },
+  {
     name: "Checkbox",
     type: "boolean",
     category: "checkbox",
@@ -117,7 +129,6 @@ let dummyInput: InputType[] = [
     placeholder: "",
     min: 0,
     max: 0,
-    isNew: true,
   },
   {
     name: "File Input",
@@ -169,7 +180,6 @@ let dummyInput: InputType[] = [
     placeholder: "Select your country...",
     min: 0,
     max: 0,
-    isNew: true,
   },
   {
     name: "Tags Input",
@@ -211,7 +221,7 @@ let min_max_types = [
   "tags-input",
   "url",
 ];
-let non_empty_types = ["date-picker", "email"];
+let non_empty_types = ["date-picker", "email", "slider"];
 
 class FormGenerator {
   inputs: InputType[] = dummyInput;
@@ -352,6 +362,8 @@ export const MEGABYTE = 1024 * KILOBYTE;\n`
         fieldSchema = `z.enum(['male', 'female', 'other'], {
     required_error: 'Please select a radio option',
   })`;
+      } else if (input.type === "slider") {
+        fieldSchema = `z.number().min(${input.min || 0}).max(${input.max || 100})`;
       }
 
       // Add `min` and `max` constraints if available for number, password, and text fields
@@ -470,6 +482,8 @@ export const MEGABYTE = 1024 * KILOBYTE; \n`
       female: "female",
       other: "other",
     })`;
+      } else if (input.type === "slider") {
+        fieldSchema += `    v.number(), v.minValue(${input.min || 0}), v.maxValue(${input.max || 100})`;
       }
 
       // Add `min` and `max` constraints if available for number, password, and text fields
@@ -695,6 +709,9 @@ export const actions: Actions = {
         clientrawCode += `
   import * as RadioGroup from "$lib/components/ui/radio-group/index";
         `;
+      } else if (input === "slider") {
+        clientrawCode += `
+  import Slider from "$lib/components/ui/slider/slider.svelte";`;
       }
     });
 
@@ -1327,7 +1344,7 @@ export const actions: Actions = {
       } else if (input.category === "radio") {
         clientrawCode += `
   <div class="space-y-3">
-    <Label class="text-sm font-medium">${input.label}</Label>
+    <Label class="text-sm font-medium" for="${input.named_id}">${input.label}</Label>
     <RadioGroup.Root bind:value={$form.${input.named_id}} name="${input.named_id}">
       {#each [["male", "Male"], ["female", "Female"], ["other", "Other"]] as gender}
         <div class="flex items-center space-x-2">
@@ -1347,6 +1364,30 @@ export const actions: Actions = {
       </div>
     </div>
   </div>`;
+      } else if (input.category === "slider") {
+        clientrawCode += `
+    <div class="space-y-3">
+      <Label class="text-sm font-medium" for="${input.named_id}"
+        >${input.label}</Label
+      >
+      <Slider type="single" bind:value={$form.${input.named_id}} max={${input.max || 100}} min={${input.min || 0}} step={1} />
+      <input
+        type="hidden"
+        name="${input.named_id}"
+        id="${input.named_id}"
+        bind:value={$form.${input.named_id}}
+      />
+      <div>
+        <p class="text-xs text-muted-foreground">
+          ${input.description}
+        </p>
+        <div>
+          {#if $errors.${input.named_id}}
+            <p class="text-red-500 text-xs">{$errors.${input.named_id}}</p>
+          {/if}
+        </div>
+      </div>
+    </div>`;
       }
     });
     clientrawCode += `
@@ -1495,6 +1536,9 @@ export const actions: Actions = {
       } else if (input === "radio") {
         formsnapCode += `
   import * as RadioGroup from "$lib/components/ui/radio-group/index";`;
+      } else if (input === "slider") {
+        formsnapCode += `
+  import Slider from "$lib/components/ui/slider/slider.svelte";`;
       }
     });
 
@@ -2213,6 +2257,35 @@ export const actions: Actions = {
       <FieldErrors class="text-sm text-destructive" />
     </Field>
   </div>`;
+      } else if (input.type === "slider") {
+        formsnapCode += `
+    <div class="space-y-2">
+      <Field {form} name="${input.named_id}">
+        <Control>
+          {#snippet children({ props })}
+            <Label class="text-sm font-medium">Set Price Range *</Label>
+            <input
+              {...props}
+              type="hidden"
+              name="${input.named_id}"
+              id="slider"
+              bind:value={$formData.${input.named_id}}
+            />
+            <Slider
+              type="single"
+              bind:value={$formData.${input.named_id}}
+              max={${input.max || 100}}
+              min={${input.min || 0}}
+              step={1}
+            />
+          {/snippet}
+        </Control>
+        <Description class="text-muted-foreground text-sm">
+          ${input.description}
+        </Description>
+        <FieldErrors class="text-sm text-destructive" />
+      </Field>
+    </div>`;
       }
     });
     formsnapCode += `
@@ -2254,6 +2327,8 @@ export const actions: Actions = {
         installCommand += ` popover calendar range-calendar`;
       } else if (input === "combobox") {
         installCommand += ` popover command lucide-svelte`;
+      } else if (input === "slider") {
+        installCommand += ` slider`;
       }
     });
 
