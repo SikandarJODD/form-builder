@@ -6,6 +6,12 @@
   import CopyCode from "$lib/components/web/playground/code/CopyCode.svelte";
   import * as Tabs from "$lib/components/ui/tabs/index";
   import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
+  import { onMount } from "svelte";
+  import { trackTemplateViewed } from "$lib/analytics";
+
+  onMount(() => {
+    trackTemplateViewed("login");
+  });
   let spl_comps = [
     {
       name: "Password Input",

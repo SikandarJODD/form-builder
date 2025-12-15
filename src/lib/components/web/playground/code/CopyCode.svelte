@@ -1,7 +1,6 @@
 <script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
   import { codeToHtml } from "shiki";
-  import { onMount } from "svelte";
 
   interface Props {
     code: string;
@@ -16,19 +15,24 @@
     codeclass = "",
   }: Props = $props();
 
-  let codeContent = code; // input code
   let htmlCode = $state(""); // highlighted html code
-  onMount(async () => {
-    htmlCode = await codeToHtml(code, {
-      lang: lang,
+  let copied = $state(false);
+
+  // Re-highlight code whenever the code prop changes
+  $effect(() => {
+    const currentCode = code;
+    const currentLang = lang;
+    codeToHtml(currentCode, {
+      lang: currentLang,
       theme: "vesper",
+    }).then((html) => {
+      htmlCode = html;
     });
   });
-  let copied = $state(false);
 
   function handleCopy() {
     copied = true;
-    navigator.clipboard.writeText(codeContent);
+    navigator.clipboard.writeText(code);
     setTimeout(() => (copied = false), 1500);
   }
 </script>
@@ -39,7 +43,7 @@
     _class,
   ]}
 >
-  <div class="sticky flex justify-end  top-0 z-40">
+  <div class="sticky flex justify-end top-0 z-40">
     <Button variant="outline" size="icon" class="z-50" onclick={handleCopy}>
       <div
         class={[

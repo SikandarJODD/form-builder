@@ -4,13 +4,26 @@
   import { dragHandleZone, dragHandle } from "svelte-dnd-action";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
   import EditSelectedInputs from "$lib/form-generator/comps/EditSelectedInputs.svelte";
-  import { fade, fly, scale } from "svelte/transition";
+  import { fly } from "svelte/transition";
   import GripVertical from "lucide-svelte/icons/grip-vertical";
+  import { trackFieldRemoved, trackFieldReordered } from "$lib/analytics";
+
   let flipDurationMs = 300;
-  let delete_selected_input = (id: string | undefined) => {
+
+  let delete_selected_input = (
+    id: string | undefined,
+    type: string,
+    name: string
+  ) => {
     if (id) {
       form_generator.remove_input(id);
+      trackFieldRemoved(type, name);
     }
+  };
+
+  let handleDndFinalize = (e: CustomEvent) => {
+    form_generator.handleDndFinalize(e);
+    trackFieldReordered(form_generator.selected_inputs.length);
   };
 </script>
 
@@ -21,7 +34,7 @@
     flipDurationMs,
   }}
   onconsider={form_generator.handleDndConsider}
-  onfinalize={form_generator.handleDndConsider}
+  onfinalize={handleDndFinalize}
 >
   {#each form_generator.selected_inputs as item (item.id)}
     <div
@@ -44,8 +57,7 @@
           <EditSelectedInputs {item} />
           <!-- Delete Button -->
           <Button
-            data-umami-event="Delete Input Button"
-            onclick={() => delete_selected_input(item.id)}
+            onclick={() => delete_selected_input(item.id, item.type, item.name)}
             variant="ghost"
             size="icon"
             class=" rounded-full"

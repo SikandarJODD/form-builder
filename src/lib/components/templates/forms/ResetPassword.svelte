@@ -3,19 +3,25 @@
   import { Button } from "$lib/components/ui/button";
 
   import { superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4Client } from "sveltekit-superforms/adapters";
   // schema and PageData will be according to your file location
   import { schema } from "../../../../routes/templates/authentication/reset-password/schema";
   import type { PageData } from "../../../../routes/templates/authentication/reset-password/$types";
   import PasswordInput from "../comps/PasswordInput.svelte";
+  import { untrack } from "svelte";
+
   let {
     data,
   }: {
     data: PageData;
   } = $props();
-  let { form, message, errors, enhance } = superForm(data.form, {
-    validators: zod(schema),
-  });
+
+  let { form, message, errors, enhance } = superForm(
+    untrack(() => data.form),
+    {
+      validators: zod4Client(schema),
+    }
+  );
 </script>
 
 <Card.Root class="h-fit w-full md:w-96">

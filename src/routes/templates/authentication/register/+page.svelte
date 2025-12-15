@@ -8,6 +8,12 @@
   import Register from "$lib/components/templates/forms/Register.svelte";
   import RegisterCode from "$lib/components/templates/forms/Register.svelte?raw";
   import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
+  import { onMount } from "svelte";
+  import { trackTemplateViewed } from "$lib/analytics";
+
+  onMount(() => {
+    trackTemplateViewed("register");
+  });
 
   let {
     data,
@@ -72,7 +78,9 @@ export const actions: Actions = {
   <p class="text-muted-foreground">
     This form includes special component,add the component in your directory.
   </p>
-  <div class="flex sm:flex-row gap-2 sm:items-center flex-col w-full justify-between mt-2 mb-4">
+  <div
+    class="flex sm:flex-row gap-2 sm:items-center flex-col w-full justify-between mt-2 mb-4"
+  >
     <div>
       <ul>
         {#each spl_comps as item, index}

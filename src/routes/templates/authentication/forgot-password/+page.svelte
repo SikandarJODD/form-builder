@@ -6,6 +6,12 @@
   import ForgotPasswordCode from "$lib/components/templates/forms/ForgotPassword.svelte?raw";
   import { pageServerCode } from "../../serverCopyCode";
   import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
+  import { onMount } from "svelte";
+  import { trackTemplateViewed } from "$lib/analytics";
+
+  onMount(() => {
+    trackTemplateViewed("forgot-password");
+  });
 
   let tab_value = $state("preview");
   let {
@@ -26,8 +32,10 @@ export let schema = z.object({
   <p class="text-muted-foreground">
     This form includes special component,add the component in your directory.
   </p>
-  <div class="flex sm:flex-row gap-2 sm:items-center flex-col w-full justify-end mt-1">
-      <TemplatesTabs bind:tab_value />
+  <div
+    class="flex sm:flex-row gap-2 sm:items-center flex-col w-full justify-end mt-1"
+  >
+    <TemplatesTabs bind:tab_value />
   </div>
 </div>
 {#if tab_value === "preview"}

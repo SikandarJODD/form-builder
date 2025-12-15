@@ -6,6 +6,12 @@
   import ResetPasswordCode from "$lib/components/templates/forms/ResetPassword.svelte?raw";
   import { pageServerCode } from "../../serverCopyCode";
   import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
+  import { onMount } from "svelte";
+  import { trackTemplateViewed } from "$lib/analytics";
+
+  onMount(() => {
+    trackTemplateViewed("reset-password");
+  });
   let spl_comps = [
     {
       name: "Password Input",
@@ -38,7 +44,9 @@ export let schema = z.object({
   <p class="text-muted-foreground">
     This form includes special component,add the component in your directory.
   </p>
-  <div class="flex sm:flex-row gap-2 sm:items-center flex-col w-full justify-between mt-1">
+  <div
+    class="flex sm:flex-row gap-2 sm:items-center flex-col w-full justify-between mt-1"
+  >
     <div>
       <ul>
         {#each spl_comps as item, index}

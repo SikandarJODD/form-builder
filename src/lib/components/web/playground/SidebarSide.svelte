@@ -5,12 +5,12 @@
   import * as Select from "$lib/components/ui/select/index";
   import Label from "$lib/components/ui/label/label.svelte";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
+  import { trackFieldAdded, trackSchemaSelected } from "$lib/analytics";
+
   let all_schema = [
-    { value: "zod", label: "ZOD" },
-    {
-      value: "valibot",
-      label: "Valibot",
-    },
+    { value: "zod", label: "Zod" },
+    { value: "valibot", label: "Valibot" },
+    { value: "arktype", label: "ArkType" },
   ];
   let value = $state("zod");
 
@@ -19,6 +19,7 @@
   );
   let updateAdapter = () => {
     form_generator.adapter = value;
+    trackSchemaSelected(value);
   };
   // Title and Description
   let headerfeauture = [
@@ -128,12 +129,14 @@
     <div
       class="flex flex-wrap w-full flex-row sm:flex-nowrap sm:flex-col gap-2 sm:gap-0 sm:space-y-2 items-center lg:h-[74vh] overflow-scroll scrollbar"
     >
-      {#each form_generator.inputs as item, index}
+      {#each form_generator.inputs as item}
         <div class="flex items-center w-fit sm:w-full space-x-2">
           <Button
-            onclick={() => form_generator.add_input(item)}
+            onclick={() => {
+              form_generator.add_input(item);
+              trackFieldAdded(item.type, item.name);
+            }}
             class="rounded-full font-normal"
-            data-umami-event={item.category}
             size="sm"
             variant="outline"
           >

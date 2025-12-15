@@ -1,10 +1,22 @@
-<script>
-  import { form_generator } from "$lib/form-generator/form-gen.svelte";
+<script lang="ts">
+  import { pm_command } from "$lib/pm-command.svelte";
   import CopyCode from "./code/CopyCode.svelte";
   import * as Popover from "$lib/components/ui/popover/index";
+  import * as Select from "$lib/components/ui/select/index";
   import Button from "$lib/components/ui/button/button.svelte";
+  import type { Agent } from "package-manager-detector";
+
   let { blurbg = $bindable() } = $props();
   let open = $state(false);
+
+  const agents: Agent[] = ["pnpm", "npm", "yarn", "bun"];
+
+  function setAgent(value: string | undefined) {
+    if (value) {
+      pm_command.agent = value as Agent;
+    }
+  }
+
   $effect(() => {
     if (open) {
       blurbg = true;
@@ -42,10 +54,29 @@
       </Button>
     {/snippet}
   </Popover.Trigger>
-  <Popover.Content side='left' align='start' sideOffset={6} class="relative w-[550px] rounded-xl">
-    <h3 class='text-xl font-medium'>
-      Installation Command
-    </h3>
+  <Popover.Content
+    side="left"
+    align="start"
+    sideOffset={6}
+    class="relative w-[550px] rounded-xl"
+  >
+    <div class="flex items-center justify-between mb-1">
+      <h3 class="text-xl font-medium">Installation Command</h3>
+      <Select.Root
+        type="single"
+        value={pm_command.agent}
+        onValueChange={setAgent}
+      >
+        <Select.Trigger class="w-24 h-8 text-xs font-mono">
+          {pm_command.agent}
+        </Select.Trigger>
+        <Select.Content>
+          {#each agents as pm (pm)}
+            <Select.Item value={pm} class="font-mono">{pm}</Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
+    </div>
     <p class="mb-2 text-muted-foreground text-sm">
       Visit <a
         href="https://next.shadcn-svelte.com"
@@ -58,6 +89,6 @@
         target="_blank">Shadcn Extra</a
       > for more details.
     </p>
-    <CopyCode code={form_generator.command} lang="shellscript" />
+    <CopyCode code={pm_command.installCommand} lang="shellscript" />
   </Popover.Content>
 </Popover.Root>
