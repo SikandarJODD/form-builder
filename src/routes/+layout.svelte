@@ -3,12 +3,19 @@
   import "../app.css";
   import Navbar from "$lib/components/web/layouts/Navbar.svelte";
   import { Toaster } from "svelte-sonner";
+  import { initAnalytics } from "$lib/analytics";
+  import { onMount } from "svelte";
+
   let { children } = $props();
+
+  onMount(() => {
+    initAnalytics();
+  });
 </script>
-<Toaster  />
 
+<Toaster />
 
-<ModeWatcher defaultMode='dark' />
+<ModeWatcher defaultMode="dark" />
 
 <Navbar />
 {@render children()}

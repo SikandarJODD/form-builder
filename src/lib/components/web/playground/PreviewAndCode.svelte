@@ -14,21 +14,33 @@
   import CodeXML from "lucide-svelte/icons/code-xml";
   import Zap from "lucide-svelte/icons/zap";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
+  import { trackTabViewed, trackFormsnapToggled } from "$lib/analytics";
+
+  let handleTabClick = (tabName: string) => {
+    trackTabViewed(tabName);
+  };
+
   let isFormsnap = () => {
     form_generator.formsnap = "formsnap";
+    trackFormsnapToggled(true);
   };
+
   let isNormalCode = () => {
     form_generator.formsnap = "";
+    trackFormsnapToggled(false);
   };
 </script>
 
-<div class="col-span-1 lg:col-span-3 ">
-  <Tabs value="preview" class="h-full flex items-start lg:items-center flex-col">
+<div class="col-span-1 lg:col-span-3">
+  <Tabs
+    value="preview"
+    class="h-full flex items-start lg:items-center flex-col"
+  >
     <TabsList
       class="h-auto -space-x-px bg-background p-0 shadow-sm shadow-black/5 rtl:space-x-reverse"
     >
       <TabsTrigger
-      data-umami-event="Preview Tab"
+        onclick={() => handleTabClick("preview")}
         value="preview"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
       >
@@ -41,8 +53,10 @@
         Preview
       </TabsTrigger>
       <TabsTrigger
-        data-umami-event="Formsnap Tab"
-        onclick={isFormsnap}
+        onclick={() => {
+          handleTabClick("formsnap");
+          isFormsnap();
+        }}
         value="formsnap"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
       >
@@ -60,8 +74,10 @@
         >
       </TabsTrigger>
       <TabsTrigger
-        data-umami-event="Code Tab"
-        onclick={isNormalCode}
+        onclick={() => {
+          handleTabClick("code");
+          isNormalCode();
+        }}
         value="code"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
       >
@@ -74,7 +90,7 @@
         Code
       </TabsTrigger>
       <TabsTrigger
-        data-umami-event="Schema Tab"
+        onclick={() => handleTabClick("schema")}
         value="schema"
         class="relative overflow-hidden rounded-none border border-border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e data-[state=active]:bg-muted data-[state=active]:after:bg-primary text-xs sm:text-sm"
       >

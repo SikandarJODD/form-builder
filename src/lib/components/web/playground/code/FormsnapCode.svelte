@@ -1,15 +1,20 @@
 <script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
-  import Copy from "lucide-svelte/icons/copy";
   import { watch } from "runed";
   import { codeToHtml } from "shiki";
   import { onMount } from "svelte";
   import InstallationCode from "../InstallationCode.svelte";
   import ZoomCode from "../zoom-code/ZoomCode.svelte";
+  import { trackCodeCopied, trackCodeTabSwitched } from "$lib/analytics";
 
   type CodeType = "client" | "server";
   let codeType: CodeType = $state("client");
+
+  let handleTabSwitch = (tab: CodeType) => {
+    codeType = tab;
+    trackCodeTabSwitched(tab, true);
+  };
   let serverCodeContent = $derived(form_generator.serverCode);
   let clientCodeContent = $derived(form_generator.formsnapCode);
 
@@ -51,6 +56,7 @@
     } else {
       navigator.clipboard.writeText(serverCodeContent);
     }
+    trackCodeCopied(codeType, form_generator.adapter, true);
     setTimeout(() => (copied = false), 1500);
   }
   let blurbg = $state(false);
@@ -62,7 +68,7 @@
       <Button
         size="sm"
         variant="outline"
-        onclick={() => (codeType = "client")}
+        onclick={() => handleTabSwitch("client")}
         class={[
           "rounded-s-lg rounded-r-none border-r-0 z-50",
           codeType === "client"
@@ -73,7 +79,7 @@
       <Button
         size="sm"
         variant="outline"
-        onclick={() => (codeType = "server")}
+        onclick={() => handleTabSwitch("server")}
         class={[
           "rounded-e-lg rounded-l-none z-50",
           codeType === "server"
@@ -132,11 +138,14 @@
         </div>
       </Button>
       <InstallationCode bind:blurbg />
-      <ZoomCode  code={clientCodeContent} />
+      <ZoomCode code={clientCodeContent} />
     </div>
   </div>
   <div
-    class={["overflow-scroll scrollbar max-h-[420px] p-4 text-sm", blurbg && "blur-[8px]"]}
+    class={[
+      "overflow-scroll scrollbar max-h-[420px] p-4 text-sm",
+      blurbg && "blur-[8px]",
+    ]}
   >
     {#if codeType === "client"}
       <div>

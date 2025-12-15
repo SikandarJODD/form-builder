@@ -6,6 +6,8 @@
   import Label from "$lib/components/ui/label/label.svelte";
   import * as Select from "$lib/components/ui/select/index";
   import { type InputType } from "../form-gen.svelte";
+  import { trackFieldEdited } from "$lib/analytics";
+
   let {
     item,
   }: {
@@ -23,6 +25,12 @@
     "textarea",
     "slider",
   ];
+
+  // Track field edits on save
+  let handleSave = () => {
+    trackFieldEdited(item.type, "all");
+    isOpen = false;
+  };
 </script>
 
 <Dialog.Root bind:open={isOpen}>
@@ -127,13 +135,7 @@
       {/if}
     </div>
     <div>
-      <Button
-        onclick={() => {
-          isOpen = false;
-        }}
-      >
-        Save
-      </Button>
+      <Button onclick={handleSave}>Save</Button>
     </div>
   </Dialog.Content>
 </Dialog.Root>

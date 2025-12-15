@@ -5,18 +5,24 @@
   import Label from "$lib/components/ui/label/label.svelte";
 
   import { superForm } from "sveltekit-superforms";
-  import { zod } from "sveltekit-superforms/adapters";
+  import { zod4Client } from "sveltekit-superforms/adapters";
   // schema and PageData will be according to your file location
   import { schema } from "../../../../routes/templates/authentication/forgot-password/schema";
   import type { PageData } from "../../../../routes/templates/authentication/forgot-password/$types";
+  import { untrack } from "svelte";
+
   let {
     data,
   }: {
     data: PageData;
   } = $props();
-  let { form, message, errors, enhance } = superForm(data.form, {
-    validators: zod(schema),
-  });
+
+  let { form, message, errors, enhance } = superForm(
+    untrack(() => data.form),
+    {
+      validators: zod4Client(schema),
+    }
+  );
 </script>
 
 <Card.Root class="h-fit w-full md:w-96">

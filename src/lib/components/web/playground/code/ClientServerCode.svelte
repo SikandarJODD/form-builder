@@ -6,9 +6,15 @@
   import { onMount } from "svelte";
   import InstallationCode from "../InstallationCode.svelte";
   import ZoomCode from "../zoom-code/ZoomCode.svelte";
+  import { trackCodeCopied, trackCodeTabSwitched } from "$lib/analytics";
 
   type CodeType = "client" | "server";
   let codeType: CodeType = $state("client");
+
+  let handleTabSwitch = (tab: CodeType) => {
+    codeType = tab;
+    trackCodeTabSwitched(tab, false);
+  };
   let serverCodeContent = $derived(form_generator.serverCode);
   let clientCodeContent = $derived(form_generator.clientCode);
 
@@ -50,6 +56,7 @@
     } else {
       navigator.clipboard.writeText(serverCodeContent);
     }
+    trackCodeCopied(codeType, form_generator.adapter, false);
     setTimeout(() => (copied = false), 1500);
   }
   let blurbg = $state(false);
@@ -67,7 +74,7 @@
             : "text-muted-foreground",
         ]}
         variant="outline"
-        onclick={() => (codeType = "client")}>Client</Button
+        onclick={() => handleTabSwitch("client")}>Client</Button
       >
       <Button
         size="sm"
@@ -78,7 +85,7 @@
             : "text-muted-foreground",
         ]}
         variant="outline"
-        onclick={() => (codeType = "server")}>Server</Button
+        onclick={() => handleTabSwitch("server")}>Server</Button
       >
     </div>
     <div class="flex flex-col gap-1.5">

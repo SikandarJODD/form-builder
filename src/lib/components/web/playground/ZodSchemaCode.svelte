@@ -5,9 +5,11 @@
   import { codeToHtml } from "shiki";
   import { onMount } from "svelte";
   import { watch } from "runed";
+  import { trackCodeCopied, trackSchemaSelected } from "$lib/analytics";
 
   let codeContent = $derived(form_generator.zodSchema); // input code
   let valibotContent = $derived(form_generator.valibotSchema); // input code
+  let arkTypeContent = $derived(form_generator.arkTypeSchema); // input code
   let htmlCode = $state(""); // highlighted html code
 
   let value = $derived(form_generator.adapter);
@@ -19,6 +21,11 @@
       });
     } else if (value === "valibot") {
       htmlCode = await codeToHtml(form_generator.valibotSchema, {
+        lang: "typescript",
+        theme: "vesper",
+      });
+    } else if (value === "arktype") {
+      htmlCode = await codeToHtml(form_generator.arkTypeSchema, {
         lang: "typescript",
         theme: "vesper",
       });
@@ -45,18 +52,19 @@
     copied = true;
     if (value === "zod") {
       navigator.clipboard.writeText(codeContent);
-    } else {
+    } else if (value === "valibot") {
       navigator.clipboard.writeText(valibotContent);
+    } else if (value === "arktype") {
+      navigator.clipboard.writeText(arkTypeContent);
     }
+    trackCodeCopied("schema", value, false);
     setTimeout(() => (copied = false), 1500);
   }
 
   let all_schema = [
-    { value: "zod", label: "ZOD" },
-    {
-      value: "valibot",
-      label: "Valibot",
-    },
+    { value: "zod", label: "Zod" },
+    { value: "valibot", label: "Valibot" },
+    { value: "arktype", label: "ArkType" },
   ];
   let schemavalue = $state("zod");
 
@@ -65,6 +73,7 @@
   );
   let updateAdapter = () => {
     form_generator.adapter = schemavalue;
+    trackSchemaSelected(schemavalue);
   };
 </script>
 
@@ -85,7 +94,11 @@
         <Select.Content>
           <Select.Group>
             {#each all_schema as schema}
-              <Select.Item class='text-xs' value={schema.value} label={schema.label} />
+              <Select.Item
+                class="text-xs"
+                value={schema.value}
+                label={schema.label}
+              />
             {/each}
           </Select.Group>
         </Select.Content>

@@ -1,4 +1,4 @@
 import { z } from 'zod';
 export let schema = z.object({
-  email: z.string().email(),
+  email: z.email({ error: "Please enter a valid email address." }),
 })
