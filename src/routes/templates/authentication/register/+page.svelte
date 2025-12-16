@@ -20,9 +20,6 @@
   }: {
     data: PageData;
   } = $props();
-  let { form, message, errors, enhance } = superForm(data.form, {
-    validators: zod(schema),
-  });
 
   let spl_comps = [
     {
