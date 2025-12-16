@@ -67,7 +67,7 @@
       width={30}
       height={30}
       strokeDashArray="4 2"
-      class="[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]"
+      class="mask-[radial-gradient(300px_circle_at_center,white,transparent)]"
     />
     <div class="mx-auto md:max-w-2xl py-24 sm:py-48 lg:py-32">
       <div class="mb-4 sm:mb-8 sm:flex sm:justify-center">
@@ -106,7 +106,7 @@
             class="group"
           >
             <Button
-              class="h-9 sm:h-10 w-[9.5rem] flex justify-start rounded-full border-2 border-white dark:border-gray-800 shadow"
+              class="h-9 sm:h-10 w-38 flex justify-start rounded-full border-2 border-white dark:border-gray-800 shadow-xs"
             >
               <HeartIcon />
               Sponsor
@@ -115,7 +115,7 @@
           <a
             href="https://github.com/SikandarJODD/form-builder"
             target="_blank"
-            class="h-9 sm:h-10 cursor-pointer flex w-auto items-center space-x-1 rounded-full bg-muted px-3 group border-2 border-white whitespace-pre shadow hover:shadow-lg"
+            class="h-9 sm:h-10 cursor-pointer flex w-auto items-center space-x-1 rounded-full bg-muted px-3 group border-2 border-white whitespace-pre shadow-xs hover:shadow-lg"
           >
             <p class="hidden md:flex font-medium text-primary text-sm">
               Star Project on GitHub

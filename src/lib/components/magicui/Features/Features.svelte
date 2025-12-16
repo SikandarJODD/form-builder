@@ -71,7 +71,7 @@
         class="mx-auto my-0 md:my-12 grid h-full items-center gap-6 md:gap-10 lg:grid-cols-2"
       >
         <div
-          class="order-1 hidden lg:order-none lg:flex {ltr
+          class="order-1 hidden lg:order-0 lg:flex {ltr
             ? 'lg:order-2 lg:justify-end'
             : 'justify-start'} "
         >
@@ -161,7 +161,7 @@
         </div>
 
         <div
-          class="relative md:hidden pb-0.5 [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)]"
+          class="relative md:hidden pb-0.5 [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] mask-[linear-gradient(90deg,transparent,black_20%,white_80%,transparent)]"
         >
           {#each data as _, index}
             <div
@@ -181,7 +181,7 @@
         </div>
         <ul
           bind:this={carouselRef}
-          class="relative flex h-full snap-x snap-mandatory flex-nowrap overflow-x-auto [-ms-overflow-style:none] [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
+          class="relative flex h-full snap-x snap-mandatory flex-nowrap overflow-x-auto [-ms-overflow-style:none] [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] mask-[linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
         >
           {#each data as item, index}
             <!-- svelte-ignore a11y-click-events-have-key-events -->

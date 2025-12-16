@@ -15,7 +15,7 @@
 	{cell}
 	bind:ref
 	class={cn(
-		"border-input relative flex h-9 w-9 items-center justify-center border-y border-r text-sm shadow-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
+		"border-input relative flex h-9 w-9 items-center justify-center border-y border-r text-sm shadow-2xs transition-all first:rounded-l-md first:border-l last:rounded-r-md",
 		cell.isActive && "ring-ring z-10 ring-1",
 		className
 	)}

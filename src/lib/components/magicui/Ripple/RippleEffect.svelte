@@ -9,7 +9,7 @@
 
 <div
   class={[
-    "absolute inset-0 flex items-center justify-center bg-white/5 [mask-image:linear-gradient(to_bottom,white,transparent)]",
+    "absolute inset-0 flex items-center justify-center bg-white/5 mask-[linear-gradient(to_bottom,white,transparent)]",
     _class,
   ]}
 >

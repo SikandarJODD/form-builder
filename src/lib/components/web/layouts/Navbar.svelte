@@ -21,7 +21,7 @@
 
 </script>
 
-<nav class="bg-background/70 backdrop-blur-sm border-b sticky top-0 z-50">
+<nav class="bg-background/70 backdrop-blur-xs border-b sticky top-0 z-50">
   <div class="mx-auto max-w-5xl px-4 sm:px-4 lg:px-6 xl:px-0">
     <div class="flex h-16 sm:h-14 items-center justify-between">
       <div class="flex items-center w-full">
