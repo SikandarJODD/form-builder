@@ -7,12 +7,7 @@
   import * as Tabs from "$lib/components/ui/tabs/index";
   import { pageServerCode } from "../../serverCopyCode";
   import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
-  import { onMount } from "svelte";
-  import { trackTemplateViewed } from "$lib/analytics";
 
-  onMount(() => {
-    trackTemplateViewed("contact");
-  });
   let spl_comps = [
     {
       name: "Password Input",
