@@ -6,12 +6,6 @@
   import ForgotPasswordCode from "$lib/components/templates/forms/ForgotPassword.svelte?raw";
   import { pageServerCode } from "../../serverCopyCode";
   import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
-  import { onMount } from "svelte";
-  import { trackTemplateViewed } from "$lib/analytics";
-
-  onMount(() => {
-    trackTemplateViewed("forgot-password");
-  });
 
   let tab_value = $state("preview");
   let {

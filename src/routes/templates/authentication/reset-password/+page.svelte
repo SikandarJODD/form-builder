@@ -6,12 +6,7 @@
   import ResetPasswordCode from "$lib/components/templates/forms/ResetPassword.svelte?raw";
   import { pageServerCode } from "../../serverCopyCode";
   import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
-  import { onMount } from "svelte";
-  import { trackTemplateViewed } from "$lib/analytics";
 
-  onMount(() => {
-    trackTemplateViewed("reset-password");
-  });
   let spl_comps = [
     {
       name: "Password Input",

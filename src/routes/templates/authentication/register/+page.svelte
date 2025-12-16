@@ -8,12 +8,6 @@
   import Register from "$lib/components/templates/forms/Register.svelte";
   import RegisterCode from "$lib/components/templates/forms/Register.svelte?raw";
   import TemplatesTabs from "$lib/components/templates/comps/TemplatesTabs.svelte";
-  import { onMount } from "svelte";
-  import { trackTemplateViewed } from "$lib/analytics";
-
-  onMount(() => {
-    trackTemplateViewed("register");
-  });
 
   let {
     data,
