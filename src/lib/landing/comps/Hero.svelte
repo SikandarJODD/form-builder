@@ -161,7 +161,6 @@
     >
       {#each ["Svelte", "Form", "Builder"] as text, index}
         <Motion.span
-          key={index}
           class="inline-block"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

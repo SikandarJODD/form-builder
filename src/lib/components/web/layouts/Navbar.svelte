@@ -17,8 +17,6 @@
   let isMobileMenu = $state(false);
   // Dark & Light Mode
   import { toggleMode, mode } from "mode-watcher";
-
-
 </script>
 
 <nav class="bg-background/70 backdrop-blur-xs border-b sticky top-0 z-50">
@@ -152,7 +150,7 @@
     size="icon"
   >
     <!-- Sun Icon -->
-    {#if $mode === "light"}
+    {#if mode.current === "light"}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
