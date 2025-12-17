@@ -16,6 +16,8 @@
     type GeneratedCode,
   } from "../utils/code-generator";
   import { codeToHtml } from "shiki";
+  import { watch } from "runed";
+  import { onMount } from "svelte";
   import Copy from "@lucide/svelte/icons/copy";
   import Check from "@lucide/svelte/icons/check";
   import X from "@lucide/svelte/icons/x";
@@ -66,32 +68,73 @@
   const escapeHtml = (code: string) =>
     `<pre class="shiki"><code>${code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`;
 
-  // Generate code when modal opens
-  $effect(() => {
+  // Generate code on mount when modal opens
+  onMount(() => {
     if (open) {
       generateCode();
     }
   });
 
+  // Watch for changes in open state
+  watch(
+    () => open,
+    () => {
+      if (open) {
+        generateCode();
+      }
+    }
+  );
+
+  // Watch for changes in schema
+  watch(
+    () => schema,
+    () => {
+      if (open) {
+        generateCode();
+      }
+    }
+  );
+
+  // Watch for changes in mode
+  watch(
+    () => mode,
+    () => {
+      if (open) {
+        generateCode();
+      }
+    }
+  );
+
+  // Watch for changes in form rows (fields added/removed)
+  watch(
+    () => formV2.rows.length,
+    () => {
+      if (open) {
+        generateCode();
+      }
+    }
+  );
+
   const generateCode = () => {
     isGenerating = true;
 
     // Generate raw code immediately
-    generatedCode = generateAllCode(formV2.allFields, schema, mode);
+    const code = generateAllCode(formV2.allFields, schema, mode);
+    generatedCode = code;
 
     // Show escaped code immediately as fallback
     highlightedCode = {
-      client: escapeHtml(generatedCode.client),
-      server: escapeHtml(generatedCode.server),
-      schema: escapeHtml(generatedCode.schema),
-      json: escapeHtml(generatedCode.json),
-      install: escapeHtml(generatedCode.install),
+      client: escapeHtml(code.client),
+      server: escapeHtml(code.server),
+      schema: escapeHtml(code.schema),
+      json: escapeHtml(code.json),
+      install: escapeHtml(code.install),
     };
 
     isGenerating = false;
 
     // Then highlight in background (non-blocking)
-    highlightInBackground(generatedCode);
+    highlightInBackground(code);
   };
 
   // Highlight code in background without blocking UI

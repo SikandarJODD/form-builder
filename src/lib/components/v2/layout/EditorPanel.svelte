@@ -3,12 +3,18 @@
   import { ScrollArea } from "$lib/components/ui/scroll-area";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Accordion from "$lib/components/ui/accordion";
+  import * as Popover from "$lib/components/ui/popover";
   import Input from "$lib/components/ui/input/input.svelte";
   import Label from "$lib/components/ui/label/label.svelte";
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
+  import { flip } from "svelte/animate";
+  import { dragHandleZone, dragHandle } from "svelte-dnd-action";
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import Plus from "@lucide/svelte/icons/plus";
   import GripVertical from "@lucide/svelte/icons/grip-vertical";
+  import Ungroup from "@lucide/svelte/icons/ungroup";
+  import ArrowLeftRight from "@lucide/svelte/icons/arrow-left-right";
+  import type { InputType } from "$lib/form-generator/form-gen.svelte";
   // Field Icons
   import TextCursorInput from "@lucide/svelte/icons/text-cursor-input";
   import Mail from "@lucide/svelte/icons/mail";
@@ -79,9 +85,19 @@
     formV2.updateField(fieldId, { [key]: value });
   };
 
-  const handleAddSideBySide = (rowId: string) => {
-    formV2.addFieldToRow(rowId);
+  const handleAddSideBySide = (rowId: string, field: InputType) => {
+    formV2.addFieldToRow(rowId, field);
   };
+
+  const handleUngroup = (rowId: string) => {
+    formV2.ungroupRow(rowId);
+  };
+
+  // Drag and drop configuration
+  const flipDurationMs = 200;
+
+  // Track which row's popover is open
+  let openPopoverId = $state<string | null>(null);
 </script>
 
 <div class="flex h-full flex-col">
@@ -107,18 +123,67 @@
         </p>
       </div>
     {:else}
-      <!-- Field Rows -->
-      <div class="p-3 space-y-2">
+      <!-- Field Rows - Drag & Drop Zone -->
+      <div
+        class="p-3 space-y-2"
+        use:dragHandleZone={{
+          items: formV2.rows,
+          flipDurationMs,
+          dropTargetStyle: {},
+          type: "field-rows",
+        }}
+        onconsider={formV2.handleDndConsider}
+        onfinalize={formV2.handleDndFinalize}
+      >
         {#each formV2.rows as row (row.id)}
           <!-- Row Container - supports side-by-side fields -->
           <div
             class={[
-              "border rounded-lg bg-card",
+              "border rounded-lg bg-card transition-shadow",
               row.fields.length > 1 && "p-2",
             ]}
+            animate:flip={{ duration: flipDurationMs }}
           >
+            {#if row.fields.length > 1}
+              <!-- Row Header with Ungroup & Drag Handle -->
+              <div class="flex items-center justify-between pb-2 mb-2 border-b">
+                <div class="flex items-center gap-2">
+                  <button
+                    use:dragHandle
+                    aria-label="drag-handle for row {row.id}"
+                    class="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+                  >
+                    <GripVertical class="h-4 w-4" />
+                  </button>
+                  <span class="text-xs text-muted-foreground"
+                    >Side-by-side fields</span
+                  >
+                </div>
+                <div class="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="h-6 text-xs"
+                    onclick={() => formV2.swapFieldsInRow(row.id)}
+                    title="Swap field positions"
+                  >
+                    <ArrowLeftRight class="h-3 w-3 mr-1" />
+                    Swap
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="h-6 text-xs"
+                    onclick={() => handleUngroup(row.id)}
+                  >
+                    <Ungroup class="h-3 w-3 mr-1" />
+                    Ungroup
+                  </Button>
+                </div>
+              </div>
+            {/if}
             <div class={["gap-2", row.fields.length > 1 && "grid grid-cols-2"]}>
-              {#each row.fields as field, fieldIndex (field.id)}
+              {#each row.fields as field (field.id)}
                 {@const FieldIcon = getFieldIcon(field.category)}
                 <div
                   class={[
@@ -128,11 +193,16 @@
                 >
                   <!-- Field Header -->
                   <div class="flex items-center gap-2 p-3 border-b">
-                    <button
-                      class="cursor-grab text-muted-foreground hover:text-foreground"
-                    >
-                      <GripVertical class="h-4 w-4" />
-                    </button>
+                    {#if row.fields.length === 1}
+                      <!-- Drag handle for single field rows -->
+                      <button
+                        use:dragHandle
+                        aria-label="drag-handle for {field.name}"
+                        class="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+                      >
+                        <GripVertical class="h-4 w-4" />
+                      </button>
+                    {/if}
                     <FieldIcon class="h-4 w-4 text-muted-foreground" />
                     <span class="flex-1 text-sm font-medium truncate">
                       {field.label || field.name}
@@ -147,21 +217,67 @@
                         <Trash2 class="h-3.5 w-3.5" />
                       </Button>
                       {#if row.fields.length < 2}
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          class="h-7 w-7"
-                          title="Add side-by-side field"
-                          onclick={() => handleAddSideBySide(row.id)}
+                        <!-- Popover for adding side-by-side field -->
+                        <Popover.Root
+                          bind:open={
+                            () => openPopoverId === row.id,
+                            (v) => (openPopoverId = v ? row.id : null)
+                          }
                         >
-                          <Plus class="h-3.5 w-3.5" />
-                        </Button>
+                          <Popover.Trigger>
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              class="h-7 w-7"
+                              title="Add side-by-side field"
+                            >
+                              <Plus class="h-3.5 w-3.5" />
+                            </Button>
+                          </Popover.Trigger>
+                          <Popover.Content
+                            class="w-56 p-2"
+                            align="end"
+                            side="bottom"
+                          >
+                            <div class="space-y-2">
+                              <p
+                                class="text-xs font-medium text-muted-foreground px-1"
+                              >
+                                Select field to add
+                              </p>
+                              <ScrollArea class="h-48">
+                                <div class="space-y-0.5">
+                                  {#each formV2.availableFields as fieldOption}
+                                    {@const FieldOptionIcon = getFieldIcon(
+                                      fieldOption.category
+                                    )}
+                                    <button
+                                      class="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs hover:bg-accent transition-colors text-left"
+                                      onclick={() => {
+                                        handleAddSideBySide(
+                                          row.id,
+                                          fieldOption
+                                        );
+                                        openPopoverId = null;
+                                      }}
+                                    >
+                                      <FieldOptionIcon
+                                        class="h-3.5 w-3.5 text-muted-foreground"
+                                      />
+                                      <span>{fieldOption.name}</span>
+                                    </button>
+                                  {/each}
+                                </div>
+                              </ScrollArea>
+                            </div>
+                          </Popover.Content>
+                        </Popover.Root>
                       {/if}
                     </div>
                   </div>
 
                   <!-- Field Customization (Accordion) -->
-                  <Accordion.Root type="single" collapsible class="w-full">
+                  <Accordion.Root type="single" class="w-full">
                     <Accordion.Item value="customize">
                       <Accordion.Trigger
                         class="px-3 py-2 text-xs hover:no-underline"
@@ -274,3 +390,17 @@
     {/if}
   </ScrollArea>
 </div>
+
+<style>
+  /* Drag and drop visual feedback */
+  :global([data-is-dragging="true"]) {
+    opacity: 0.8;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 50;
+  }
+
+  :global(.dnd-shadow-item) {
+    border: 2px dashed hsl(var(--muted-foreground) / 0.3) !important;
+    background: hsl(var(--muted) / 0.5) !important;
+  }
+</style>

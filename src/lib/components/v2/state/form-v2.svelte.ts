@@ -137,6 +137,33 @@ class FormGeneratorV2 {
     }).filter(row => row.fields.length > 0);
   };
 
+  // Ungroup side-by-side fields into separate rows
+  ungroupRow = (rowId: string) => {
+    const targetRow = this.rows.find(r => r.id === rowId);
+    if (!targetRow || targetRow.fields.length < 2) return;
+
+    const rowIndex = this.rows.findIndex(r => r.id === rowId);
+    const [fieldA, fieldB] = targetRow.fields;
+
+    // Create two separate rows
+    const newRowA: FieldRow = {
+      id: this.generateId(),
+      fields: [{ ...fieldA, position: 'full', rowId: undefined }],
+    };
+    const newRowB: FieldRow = {
+      id: this.generateId(),
+      fields: [{ ...fieldB, position: 'full', rowId: undefined }],
+    };
+
+    // Replace the original row with two new rows
+    this.rows = [
+      ...this.rows.slice(0, rowIndex),
+      newRowA,
+      newRowB,
+      ...this.rows.slice(rowIndex + 1),
+    ];
+  };
+
   // Toggle field expansion (for accordion)
   toggleFieldExpanded = (fieldId: string) => {
     this.rows = this.rows.map(row => ({
@@ -157,6 +184,24 @@ class FormGeneratorV2 {
     }));
   };
 
+  // Swap fields within a row (for side-by-side reordering)
+  swapFieldsInRow = (rowId: string) => {
+    this.rows = this.rows.map(row => {
+      if (row.id !== rowId || row.fields.length !== 2) return row;
+
+      // Swap the fields and their positions - create new objects for reactivity
+      const [first, second] = row.fields;
+
+      return {
+        ...row,
+        fields: [
+          { ...second, position: 'left' as const },
+          { ...first, position: 'right' as const }
+        ]
+      };
+    });
+  };
+
   // Reset all fields
   reset = () => {
     this.rows = [];
@@ -166,6 +211,27 @@ class FormGeneratorV2 {
   get allFields(): InputTypeV2[] {
     return this.rows.flatMap(r => r.fields);
   }
+
+  // Drag and Drop handlers for svelte-dnd-action
+  handleDndConsider = (e: CustomEvent<{ items: FieldRow[] }>) => {
+    this.rows = e.detail.items;
+  };
+
+  handleDndFinalize = (e: CustomEvent<{ items: FieldRow[] }>) => {
+    this.rows = e.detail.items;
+  };
+
+  // Move a row from one index to another
+  moveRow = (fromIndex: number, toIndex: number) => {
+    if (fromIndex < 0 || fromIndex >= this.rows.length) return;
+    if (toIndex < 0 || toIndex >= this.rows.length) return;
+    if (fromIndex === toIndex) return;
+
+    const newRows = [...this.rows];
+    const [removed] = newRows.splice(fromIndex, 1);
+    newRows.splice(toIndex, 0, removed);
+    this.rows = newRows;
+  };
 }
 
 // Export singleton instance
