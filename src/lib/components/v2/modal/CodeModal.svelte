@@ -14,18 +14,19 @@
     generateAllCode,
     type CodeTab,
     type GeneratedCode,
+    type PackageManager,
   } from "../utils/code-generator";
   import { codeToHtml } from "shiki";
   import { watch } from "runed";
   import { onMount } from "svelte";
   import Copy from "@lucide/svelte/icons/copy";
   import Check from "@lucide/svelte/icons/check";
-  import X from "@lucide/svelte/icons/x";
   import FileCode from "@lucide/svelte/icons/file-code";
   import Server from "@lucide/svelte/icons/server";
   import FileJson from "@lucide/svelte/icons/file-json";
   import Terminal from "@lucide/svelte/icons/terminal";
   import Braces from "@lucide/svelte/icons/braces";
+  import FolderTree from "@lucide/svelte/icons/folder-tree";
 
   interface Props {
     open: boolean;
@@ -34,9 +35,10 @@
 
   let { open = $bindable(), onOpenChange }: Props = $props();
 
-  let activeTab: CodeTab = $state("client");
+  let activeTab: CodeTab = $state("structure");
   let schema: SchemaType = $state(formV2.schema);
   let mode: ModeType = $state(formV2.mode);
+  let packageManager: PackageManager = $state("npm");
   let generatedCode: GeneratedCode | null = $state(null);
   let copiedTab: CodeTab | null = $state(null);
   let isGenerating = $state(false);
@@ -48,6 +50,7 @@
     schema: "",
     json: "",
     install: "",
+    structure: "",
   });
 
   const schemas: { value: SchemaType; label: string }[] = [
@@ -56,7 +59,15 @@
     { value: "arktype", label: "ArkType" },
   ];
 
+  const packageManagers: { value: PackageManager; label: string }[] = [
+    { value: "npm", label: "npm" },
+    { value: "pnpm", label: "pnpm" },
+    { value: "yarn", label: "yarn" },
+    { value: "bun", label: "bun" },
+  ];
+
   const tabs: { id: CodeTab; label: string; icon: typeof FileCode }[] = [
+    { id: "structure", label: "File Structure", icon: FolderTree },
     { id: "client", label: "Client", icon: FileCode },
     { id: "server", label: "Server", icon: Server },
     { id: "schema", label: "Schema", icon: Braces },
@@ -115,11 +126,26 @@
     }
   );
 
+  // Watch for changes in package manager
+  watch(
+    () => packageManager,
+    () => {
+      if (open) {
+        generateCode();
+      }
+    }
+  );
+
   const generateCode = () => {
     isGenerating = true;
 
     // Generate raw code immediately
-    const code = generateAllCode(formV2.allFields, schema, mode);
+    const code = generateAllCode(
+      formV2.allFields,
+      schema,
+      mode,
+      packageManager
+    );
     generatedCode = code;
 
     // Show escaped code immediately as fallback
@@ -129,6 +155,7 @@
       schema: escapeHtml(code.schema),
       json: escapeHtml(code.json),
       install: escapeHtml(code.install),
+      structure: escapeHtml(code.structure),
     };
 
     isGenerating = false;
@@ -181,6 +208,11 @@
     generateCode();
   };
 
+  const handlePackageManagerChange = (value: string) => {
+    packageManager = value as PackageManager;
+    generateCode();
+  };
+
   const copyToClipboard = async (tab: CodeTab) => {
     if (!generatedCode) return;
 
@@ -190,6 +222,7 @@
       schema: generatedCode.schema,
       json: generatedCode.json,
       install: generatedCode.install,
+      structure: generatedCode.structure,
     };
 
     await navigator.clipboard.writeText(codeMap[tab]);
@@ -197,6 +230,26 @@
     setTimeout(() => {
       copiedTab = null;
     }, 2000);
+  };
+
+  // Get filename for each tab
+  const getTabFilename = (tabId: CodeTab): string => {
+    switch (tabId) {
+      case "structure":
+        return "File Structure";
+      case "client":
+        return "+page.svelte";
+      case "server":
+        return mode === "remote" ? "data.remote.ts" : "+page.server.ts";
+      case "schema":
+        return "schema.ts";
+      case "json":
+        return "form.json";
+      case "install":
+        return "Terminal";
+      default:
+        return "";
+    }
   };
 </script>
 
@@ -276,17 +329,28 @@
             <div
               class="flex items-center justify-between px-3 py-2 border-b bg-muted/50"
             >
-              <span class="text-sm font-medium">
-                {tab.id === "client"
-                  ? "+page.svelte"
-                  : tab.id === "server"
-                    ? "+page.server.ts"
-                    : tab.id === "schema"
-                      ? "schema.ts"
-                      : tab.id === "json"
-                        ? "form.json"
-                        : "Terminal"}
-              </span>
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium">
+                  {getTabFilename(tab.id)}
+                </span>
+                {#if tab.id === "install"}
+                  <Select.Root
+                    type="single"
+                    value={packageManager}
+                    onValueChange={handlePackageManagerChange}
+                  >
+                    <Select.Trigger class="w-20 h-7 text-xs">
+                      {packageManagers.find((p) => p.value === packageManager)
+                        ?.label ?? "npm"}
+                    </Select.Trigger>
+                    <Select.Content>
+                      {#each packageManagers as pm}
+                        <Select.Item value={pm.value} label={pm.label} />
+                      {/each}
+                    </Select.Content>
+                  </Select.Root>
+                {/if}
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
