@@ -74,6 +74,24 @@ function getUniqueImports(fields: InputTypeV2[]): Set<string> {
       case 'slider':
         imports.add('Slider');
         break;
+      case 'input-otp':
+        imports.add('InputOTP');
+        break;
+      case 'combobox':
+        imports.add('Combobox');
+        break;
+      case 'file':
+        imports.add('FileDropZone');
+        break;
+      case 'phone':
+        imports.add('PhoneInput');
+        break;
+      case 'location-input':
+        imports.add('LocationInput');
+        break;
+      case 'tags-input':
+        imports.add('TagsInput');
+        break;
     }
   });
 
@@ -92,15 +110,30 @@ function generateZodSchema(fields: InputTypeV2[]): string {
     const label = field.label?.toLowerCase() || 'value';
     let fieldSchema = `z.string({ error: "Please enter your ${label}." })`;
 
-    if (field.type === 'number') {
+    if (field.type === 'number' || field.type === 'slider') {
       fieldSchema = `z.number({ error: "Please enter a valid number." })`;
     } else if (field.type === 'boolean') {
       fieldSchema = `z.boolean().default(false)`;
     } else if (field.type === 'email') {
       fieldSchema = `z.email({ error: "Please enter a valid email." })`;
+    } else if (field.type === 'date-picker') {
+      fieldSchema = `z.string({ error: "Please select a date." })`;
+    } else if (field.type === 'input-otp') {
+      fieldSchema = `z.string({ error: "Please enter the OTP." }).length(6, { error: "OTP must be 6 digits." })`;
+    } else if (field.type === 'phone') {
+      fieldSchema = `z.string({ error: "Please enter a valid phone number." })`;
+    } else if (field.type === 'tags-input') {
+      fieldSchema = `z.array(z.string()).min(1, { error: "Please add at least one tag." })`;
+    } else if (field.type === 'file') {
+      fieldSchema = `z.array(z.any()).optional()`;
+    } else if (field.type === 'location-input') {
+      // Location input generates country and state fields
+      schema += `  country: z.string({ error: "Please select a country." }),\n`;
+      schema += `  state: z.string().optional(),\n`;
+      return; // Skip the normal field addition
     }
 
-    if (field.required && field.type !== 'boolean') {
+    if (field.required && field.type !== 'boolean' && field.type !== 'tags-input' && field.type !== 'file') {
       fieldSchema += `.min(1, { error: "This field is required." })`;
     }
 
@@ -123,12 +156,26 @@ function generateValibotSchema(fields: InputTypeV2[]): string {
     const label = field.label?.toLowerCase() || 'value';
     let fieldSchema = `v.pipe(v.string(), v.nonEmpty('Please enter your ${label}.'))`;
 
-    if (field.type === 'number') {
+    if (field.type === 'number' || field.type === 'slider') {
       fieldSchema = `v.pipe(v.number(), v.integer())`;
     } else if (field.type === 'boolean') {
       fieldSchema = `v.optional(v.boolean(), false)`;
     } else if (field.type === 'email') {
       fieldSchema = `v.pipe(v.string(), v.email('Please enter a valid email.'))`;
+    } else if (field.type === 'date-picker') {
+      fieldSchema = `v.pipe(v.string(), v.nonEmpty('Please select a date.'))`;
+    } else if (field.type === 'input-otp') {
+      fieldSchema = `v.pipe(v.string(), v.length(6, 'OTP must be 6 digits.'))`;
+    } else if (field.type === 'phone') {
+      fieldSchema = `v.pipe(v.string(), v.nonEmpty('Please enter a valid phone number.'))`;
+    } else if (field.type === 'tags-input') {
+      fieldSchema = `v.pipe(v.array(v.string()), v.minLength(1, 'Please add at least one tag.'))`;
+    } else if (field.type === 'file') {
+      fieldSchema = `v.optional(v.array(v.any()))`;
+    } else if (field.type === 'location-input') {
+      schema += `  country: v.pipe(v.string(), v.nonEmpty('Please select a country.')),\n`;
+      schema += `  state: v.optional(v.string()),\n`;
+      return;
     }
 
     schema += `  ${field.named_id || 'field'}: ${fieldSchema},\n`;
@@ -149,12 +196,26 @@ function generateArkTypeSchema(fields: InputTypeV2[]): string {
 
     let fieldSchema = `"string >= 1"`;
 
-    if (field.type === 'number') {
+    if (field.type === 'number' || field.type === 'slider') {
       fieldSchema = `"number"`;
     } else if (field.type === 'boolean') {
       fieldSchema = `"boolean"`;
     } else if (field.type === 'email') {
       fieldSchema = `"string.email"`;
+    } else if (field.type === 'date-picker') {
+      fieldSchema = `"string >= 1"`;
+    } else if (field.type === 'input-otp') {
+      fieldSchema = `"string == 6"`;
+    } else if (field.type === 'phone') {
+      fieldSchema = `"string >= 1"`;
+    } else if (field.type === 'tags-input') {
+      fieldSchema = `"string[] >= 1"`;
+    } else if (field.type === 'file') {
+      fieldSchema = `"unknown[]?"`;
+    } else if (field.type === 'location-input') {
+      schema += `  country: "string >= 1",\n`;
+      schema += `  state: "string?",\n`;
+      return;
     }
 
     if (!field.required && field.type !== 'boolean') {
@@ -243,6 +304,42 @@ export function generateSuperformsClient(fields: InputTypeV2[], schemaType: Sche
   }
   if (uniqueImports.has('Slider')) {
     code += `\n  import { Slider } from '$lib/components/ui/slider';`;
+  }
+  if (uniqueImports.has('DatePicker')) {
+    code += `\n  import * as Popover from '$lib/components/ui/popover';`;
+    code += `\n  import { Calendar as CalendarPrimitive } from 'bits-ui';`;
+    code += `\n  import * as Calendar from '$lib/components/ui/calendar';`;
+    code += `\n  import * as Select from '$lib/components/ui/select';`;
+    code += `\n  import CalendarIcon from '@lucide/svelte/icons/calendar';`;
+    code += `\n  import { buttonVariants } from '$lib/components/ui/button';`;
+    code += `\n  import { CalendarDate, type DateValue, getLocalTimeZone, today, DateFormatter } from '@internationalized/date';`;
+  }
+  if (uniqueImports.has('InputOTP')) {
+    code += `\n  import * as InputOTP from '$lib/components/ui/input-otp';`;
+    code += `\n  import { REGEXP_ONLY_DIGITS } from 'bits-ui';`;
+  }
+  if (uniqueImports.has('Combobox')) {
+    code += `\n  import * as Popover from '$lib/components/ui/popover';`;
+    code += `\n  import * as Command from '$lib/components/ui/command';`;
+    code += `\n  import Check from '@lucide/svelte/icons/check';`;
+    code += `\n  import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';`;
+    code += `\n  import { cn } from '$lib/utils';`;
+    code += `\n  import { tick } from 'svelte';`;
+  }
+  if (uniqueImports.has('FileDropZone')) {
+    code += `\n  import { toast } from 'svelte-sonner';`;
+    code += `\n  import { displaySize, FileDropZone, MEGABYTE, type FileDropZoneProps } from '$lib/components/ui/file-drop-zone';`;
+    code += `\n  import { fly, slide } from 'svelte/transition';`;
+    code += `\n  import Trash2 from '@lucide/svelte/icons/trash-2';`;
+  }
+  if (uniqueImports.has('PhoneInput')) {
+    code += `\n  import PhoneInput from '$lib/components/ui/phone-input/phone-input.svelte';`;
+  }
+  if (uniqueImports.has('LocationInput')) {
+    code += `\n  import LocationSelector from '$lib/components/templates/comps/location-input/LocationSelector.svelte';`;
+  }
+  if (uniqueImports.has('TagsInput')) {
+    code += `\n  import TagsInput from '$lib/components/ui/tags-input/tags-input.svelte';`;
   }
 
   code += `
@@ -428,6 +525,220 @@ function generateFieldCode(field: InputTypeV2): string {
 `;
   }
 
+  // Date Picker
+  if (type === 'date-picker') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <Popover.Root>
+        <Popover.Trigger
+          class={[buttonVariants({ variant: 'outline' }), 'w-full justify-start pl-4 text-left font-normal', !$formData.${named_id} && 'text-muted-foreground']}
+        >
+          {$formData.${named_id} || '${placeholder || 'Pick a date'}'}
+          <CalendarIcon class="ml-auto h-4 w-4 opacity-50" />
+        </Popover.Trigger>
+        <Popover.Content class="w-auto p-0" side="bottom">
+          <CalendarPrimitive.Root
+            type="single"
+            bind:value={dateValue}
+            onValueChange={(v) => { $formData.${named_id} = v?.toString() || ''; }}
+            class="rounded-md border p-3"
+          >
+            {#snippet children({ months, weekdays })}
+              <Calendar.Header>
+                <Calendar.Heading />
+                <Calendar.PrevButton />
+                <Calendar.NextButton />
+              </Calendar.Header>
+              <Calendar.Months>
+                {#each months as month}
+                  <Calendar.Grid>
+                    <Calendar.GridHead>
+                      <Calendar.GridRow>
+                        {#each weekdays as day}
+                          <Calendar.HeadCell>{day}</Calendar.HeadCell>
+                        {/each}
+                      </Calendar.GridRow>
+                    </Calendar.GridHead>
+                    <Calendar.GridBody>
+                      {#each month.weeks as week}
+                        <Calendar.GridRow>
+                          {#each week as day}
+                            <Calendar.Cell {day} month={month.value}>
+                              <Calendar.Day />
+                            </Calendar.Cell>
+                          {/each}
+                        </Calendar.GridRow>
+                      {/each}
+                    </Calendar.GridBody>
+                  </Calendar.Grid>
+                {/each}
+              </Calendar.Months>
+            {/snippet}
+          </CalendarPrimitive.Root>
+        </Popover.Content>
+      </Popover.Root>
+      <input type="hidden" name="${named_id}" bind:value={$formData.${named_id}} />
+      {#if $errors.${named_id}}
+        <Field.Error>{$errors.${named_id}}</Field.Error>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Input OTP
+  if (type === 'input-otp') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <InputOTP.Root
+        maxlength={6}
+        name="${named_id}"
+        bind:value={$formData.${named_id}}
+        pattern={REGEXP_ONLY_DIGITS}
+      >
+        {#snippet children({ cells })}
+          <InputOTP.Group>
+            {#each cells.slice(0, 3) as cell}
+              <InputOTP.Slot {cell} />
+            {/each}
+          </InputOTP.Group>
+          <InputOTP.Separator />
+          <InputOTP.Group>
+            {#each cells.slice(3, 6) as cell}
+              <InputOTP.Slot {cell} />
+            {/each}
+          </InputOTP.Group>
+        {/snippet}
+      </InputOTP.Root>
+      {#if $errors.${named_id}}
+        <Field.Error>{$errors.${named_id}}</Field.Error>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Combobox
+  if (type === 'combobox') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <Popover.Root bind:open={comboOpen}>
+        <Popover.Trigger bind:ref={triggerRef}>
+          {#snippet child({ props })}
+            <Button variant="outline" class="w-full justify-between" {...props} role="combobox">
+              {$formData.${named_id} || '${placeholder || 'Select...'}'}
+              <ChevronsUpDown class="opacity-50" />
+            </Button>
+          {/snippet}
+        </Popover.Trigger>
+        <Popover.Content align="start" class="w-full p-0">
+          <Command.Root>
+            <Command.Input placeholder="${placeholder || 'Search...'}" class="h-9" />
+            <Command.List class="w-full">
+              <Command.Empty>No results found.</Command.Empty>
+              <Command.Group>
+                {#each options as option}
+                  <Command.Item
+                    value={option.value}
+                    onSelect={() => { $formData.${named_id} = option.value; comboOpen = false; }}
+                  >
+                    <Check class={cn($formData.${named_id} !== option.value && 'text-transparent')} />
+                    {option.label}
+                  </Command.Item>
+                {/each}
+              </Command.Group>
+            </Command.List>
+          </Command.Root>
+        </Popover.Content>
+      </Popover.Root>
+      <input type="hidden" name="${named_id}" bind:value={$formData.${named_id}} />
+      {#if $errors.${named_id}}
+        <Field.Error>{$errors.${named_id}}</Field.Error>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // File Input
+  if (type === 'file') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <FileDropZone
+        onUpload={handleFileUpload}
+        onFileRejected={handleFileRejected}
+        maxFileSize={10 * MEGABYTE}
+        accept="image/*"
+        maxFiles={4}
+        class="mt-1"
+      />
+      {#if uploadedFiles.length > 0}
+        <div class="mt-2 space-y-2">
+          {#each uploadedFiles as file, i}
+            <div class="flex items-center justify-between p-2 border rounded" transition:slide>
+              <span class="text-sm truncate">{file.name} ({displaySize(file.size)})</span>
+              <Button variant="ghost" size="sm" onclick={() => removeFile(i)}>
+                <Trash2 class="h-4 w-4" />
+              </Button>
+            </div>
+          {/each}
+        </div>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Phone Input
+  if (type === 'phone') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <PhoneInput
+        country="IN"
+        name="${named_id}"
+        placeholder="${placeholder || 'Enter phone number'}"
+        bind:value={$formData.${named_id}}
+      />
+      {#if $errors.${named_id}}
+        <Field.Error>{$errors.${named_id}}</Field.Error>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Location Input
+  if (type === 'location-input') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <LocationSelector bind:selectedCountry bind:selectedState />
+      <input type="hidden" name="country" value={selectedCountry?.name || ''} />
+      <input type="hidden" name="state" value={selectedState?.name || ''} />
+      {#if $errors.country}
+        <Field.Error>{$errors.country}</Field.Error>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Tags Input
+  if (type === 'tags-input') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <TagsInput
+        placeholder="${placeholder || 'Add tag...'}"
+        bind:value={$formData.${named_id}}
+      />
+      <input type="hidden" name="${named_id}" value={JSON.stringify($formData.${named_id})} />
+      {#if $errors.${named_id}}
+        <Field.Error>{$errors.${named_id}}</Field.Error>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
   // Default fallback for unsupported types
   return `    <!-- ${type} field: ${label} - Add custom implementation -->
     <Field.Field>
@@ -489,6 +800,41 @@ export function generateRemoteClient(fields: InputTypeV2[]): string {
   }
   if (uniqueImports.has('Slider')) {
     code += `\n  import { Slider } from '$lib/components/ui/slider';`;
+  }
+  if (uniqueImports.has('DatePicker')) {
+    code += `\n  import * as Popover from '$lib/components/ui/popover';`;
+    code += `\n  import { Calendar as CalendarPrimitive } from 'bits-ui';`;
+    code += `\n  import * as Calendar from '$lib/components/ui/calendar';`;
+    code += `\n  import CalendarIcon from '@lucide/svelte/icons/calendar';`;
+    code += `\n  import { buttonVariants } from '$lib/components/ui/button';`;
+    code += `\n  import { CalendarDate, type DateValue, getLocalTimeZone, today, DateFormatter } from '@internationalized/date';`;
+  }
+  if (uniqueImports.has('InputOTP')) {
+    code += `\n  import * as InputOTP from '$lib/components/ui/input-otp';`;
+    code += `\n  import { REGEXP_ONLY_DIGITS } from 'bits-ui';`;
+  }
+  if (uniqueImports.has('Combobox')) {
+    code += `\n  import * as Popover from '$lib/components/ui/popover';`;
+    code += `\n  import * as Command from '$lib/components/ui/command';`;
+    code += `\n  import Check from '@lucide/svelte/icons/check';`;
+    code += `\n  import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';`;
+    code += `\n  import { cn } from '$lib/utils';`;
+    code += `\n  import { tick } from 'svelte';`;
+  }
+  if (uniqueImports.has('FileDropZone')) {
+    code += `\n  import { toast } from 'svelte-sonner';`;
+    code += `\n  import { displaySize, FileDropZone, MEGABYTE, type FileDropZoneProps } from '$lib/components/ui/file-drop-zone';`;
+    code += `\n  import { fly, slide } from 'svelte/transition';`;
+    code += `\n  import Trash2 from '@lucide/svelte/icons/trash-2';`;
+  }
+  if (uniqueImports.has('PhoneInput')) {
+    code += `\n  import PhoneInput from '$lib/components/ui/phone-input/phone-input.svelte';`;
+  }
+  if (uniqueImports.has('LocationInput')) {
+    code += `\n  import LocationSelector from '$lib/components/templates/comps/location-input/LocationSelector.svelte';`;
+  }
+  if (uniqueImports.has('TagsInput')) {
+    code += `\n  import TagsInput from '$lib/components/ui/tags-input/tags-input.svelte';`;
   }
 
   code += `
@@ -640,6 +986,201 @@ function generateRemoteFieldCode(field: InputTypeV2): string {
 `;
   }
 
+  // Date Picker
+  if (type === 'date-picker') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <Popover.Root>
+        <Popover.Trigger
+          class={[buttonVariants({ variant: 'outline' }), 'w-full justify-start pl-4 text-left font-normal', !dateValue && 'text-muted-foreground']}
+        >
+          {dateValue || '${placeholder || 'Pick a date'}'}
+          <CalendarIcon class="ml-auto h-4 w-4 opacity-50" />
+        </Popover.Trigger>
+        <Popover.Content class="w-auto p-0" side="bottom">
+          <CalendarPrimitive.Root
+            type="single"
+            bind:value={dateValue}
+            class="rounded-md border p-3"
+          >
+            {#snippet children({ months, weekdays })}
+              <Calendar.Header>
+                <Calendar.Heading />
+                <Calendar.PrevButton />
+                <Calendar.NextButton />
+              </Calendar.Header>
+              <Calendar.Months>
+                {#each months as month}
+                  <Calendar.Grid>
+                    <Calendar.GridHead>
+                      <Calendar.GridRow>
+                        {#each weekdays as day}
+                          <Calendar.HeadCell>{day}</Calendar.HeadCell>
+                        {/each}
+                      </Calendar.GridRow>
+                    </Calendar.GridHead>
+                    <Calendar.GridBody>
+                      {#each month.weeks as week}
+                        <Calendar.GridRow>
+                          {#each week as day}
+                            <Calendar.Cell {day} month={month.value}>
+                              <Calendar.Day />
+                            </Calendar.Cell>
+                          {/each}
+                        </Calendar.GridRow>
+                      {/each}
+                    </Calendar.GridBody>
+                  </Calendar.Grid>
+                {/each}
+              </Calendar.Months>
+            {/snippet}
+          </CalendarPrimitive.Root>
+        </Popover.Content>
+      </Popover.Root>
+      <input type="hidden" name="${named_id}" value={dateValue?.toString() || ''} />
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Input OTP
+  if (type === 'input-otp') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <InputOTP.Root
+        maxlength={6}
+        name="${named_id}"
+        bind:value={otpValue}
+        pattern={REGEXP_ONLY_DIGITS}
+      >
+        {#snippet children({ cells })}
+          <InputOTP.Group>
+            {#each cells.slice(0, 3) as cell}
+              <InputOTP.Slot {cell} />
+            {/each}
+          </InputOTP.Group>
+          <InputOTP.Separator />
+          <InputOTP.Group>
+            {#each cells.slice(3, 6) as cell}
+              <InputOTP.Slot {cell} />
+            {/each}
+          </InputOTP.Group>
+        {/snippet}
+      </InputOTP.Root>
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Combobox
+  if (type === 'combobox') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <Popover.Root bind:open={comboOpen}>
+        <Popover.Trigger bind:ref={triggerRef}>
+          {#snippet child({ props })}
+            <Button variant="outline" class="w-full justify-between" {...props} role="combobox">
+              {selectedValue || '${placeholder || 'Select...'}'}
+              <ChevronsUpDown class="opacity-50" />
+            </Button>
+          {/snippet}
+        </Popover.Trigger>
+        <Popover.Content align="start" class="w-full p-0">
+          <Command.Root>
+            <Command.Input placeholder="${placeholder || 'Search...'}" class="h-9" />
+            <Command.List class="w-full">
+              <Command.Empty>No results found.</Command.Empty>
+              <Command.Group>
+                {#each options as option}
+                  <Command.Item
+                    value={option.value}
+                    onSelect={() => { selectedValue = option.value; comboOpen = false; }}
+                  >
+                    <Check class={cn(selectedValue !== option.value && 'text-transparent')} />
+                    {option.label}
+                  </Command.Item>
+                {/each}
+              </Command.Group>
+            </Command.List>
+          </Command.Root>
+        </Popover.Content>
+      </Popover.Root>
+      <input type="hidden" name="${named_id}" value={selectedValue} />
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // File Input
+  if (type === 'file') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <FileDropZone
+        onUpload={handleFileUpload}
+        onFileRejected={handleFileRejected}
+        maxFileSize={10 * MEGABYTE}
+        accept="image/*"
+        maxFiles={4}
+        class="mt-1"
+      />
+      {#if uploadedFiles.length > 0}
+        <div class="mt-2 space-y-2">
+          {#each uploadedFiles as file, i}
+            <div class="flex items-center justify-between p-2 border rounded" transition:slide>
+              <span class="text-sm truncate">{file.name} ({displaySize(file.size)})</span>
+              <Button variant="ghost" size="sm" onclick={() => removeFile(i)}>
+                <Trash2 class="h-4 w-4" />
+              </Button>
+            </div>
+          {/each}
+        </div>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Phone Input
+  if (type === 'phone') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <PhoneInput
+        country="IN"
+        name="${named_id}"
+        placeholder="${placeholder || 'Enter phone number'}"
+        bind:value={phoneValue}
+      />
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Location Input
+  if (type === 'location-input') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <LocationSelector bind:selectedCountry bind:selectedState />
+      <input type="hidden" name="country" value={selectedCountry?.name || ''} />
+      <input type="hidden" name="state" value={selectedState?.name || ''} />
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
+  // Tags Input
+  if (type === 'tags-input') {
+    return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      <TagsInput
+        placeholder="${placeholder || 'Add tag...'}"
+        bind:value={tags}
+      />
+      <input type="hidden" name="${named_id}" value={JSON.stringify(tags)} />
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+  }
+
   // Default fallback
   return `    <!-- ${type} field: ${label} - Add custom implementation -->
     <Field.Field>
@@ -700,14 +1241,20 @@ export function generateInstallCommand(schemaType: SchemaType, mode: ModeType, p
     return `${installCmd} sveltekit-superforms ${pkg}
 
 # Add UI components (field component includes label, description, error)
-${runnerCmd} shadcn-svelte@next add button field input textarea switch checkbox select radio-group slider`;
+${runnerCmd} shadcn-svelte@next add button field input textarea switch checkbox select radio-group slider popover calendar command input-otp
+
+# Additional dependencies for advanced components
+${installCmd} @internationalized/date bits-ui svelte-sonner`;
   }
 
   // Remote functions don't need superforms
   return `${installCmd} ${pkg}
 
 # Add UI components (field component includes label, description, error)
-${runnerCmd} shadcn-svelte@next add button field input textarea switch checkbox select radio-group slider
+${runnerCmd} shadcn-svelte@next add button field input textarea switch checkbox select radio-group slider popover calendar command input-otp
+
+# Additional dependencies for advanced components
+${installCmd} @internationalized/date bits-ui svelte-sonner
 
 # Note: Remote Functions require SvelteKit 2.27+`;
 }

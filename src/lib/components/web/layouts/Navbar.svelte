@@ -10,6 +10,10 @@
       name: "Docs",
       url: "/docs",
     },
+    {
+      name: "Smart Playground",
+      url: "/v2",
+    },
   ];
   import Button from "$lib/components/ui/button/button.svelte";
 

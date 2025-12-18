@@ -1,15 +1,23 @@
 <script lang="ts">
-  import { formV2 } from '../state/form-v2.svelte';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import Button from '$lib/components/ui/button/button.svelte';
-  import Input from '$lib/components/ui/input/input.svelte';
-  import Label from '$lib/components/ui/label/label.svelte';
-  import Textarea from '$lib/components/ui/textarea/textarea.svelte';
-  import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
-  import Switch from '$lib/components/ui/switch/switch.svelte';
-  import * as Select from '$lib/components/ui/select';
-  import Slider from '$lib/components/ui/slider/slider.svelte';
-  import Eye from '@lucide/svelte/icons/eye';
+  import { formV2 } from "../state/form-v2.svelte";
+  import { ScrollArea } from "$lib/components/ui/scroll-area";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import Input from "$lib/components/ui/input/input.svelte";
+  import Label from "$lib/components/ui/label/label.svelte";
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
+  import Switch from "$lib/components/ui/switch/switch.svelte";
+  import * as Select from "$lib/components/ui/select";
+  import Slider from "$lib/components/ui/slider/slider.svelte";
+  import Eye from "@lucide/svelte/icons/eye";
+  // New component imports
+  import * as RadioGroup from "$lib/components/ui/radio-group";
+  import * as InputOTP from "$lib/components/ui/input-otp";
+  import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
+  import LocationSelector from "$lib/components/templates/comps/location-input/LocationSelector.svelte";
+  import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
+  import { FileDropZone, MEGABYTE } from "$lib/components/ui/file-drop-zone";
+  import DatePickerSimple from "$lib/components/templates/comps/date-picker/DatePickerSimple.svelte";
 </script>
 
 <div class="flex h-full flex-col">
@@ -23,7 +31,9 @@
   <ScrollArea class="flex-1">
     {#if formV2.allFields.length === 0}
       <!-- Empty State -->
-      <div class="flex flex-col items-center justify-center h-64 text-center p-4">
+      <div
+        class="flex flex-col items-center justify-center h-64 text-center p-4"
+      >
         <div class="rounded-full bg-muted p-4 mb-4">
           <Eye class="h-6 w-6 text-muted-foreground" />
         </div>
@@ -38,72 +48,88 @@
         {#each formV2.rows as row (row.id)}
           <div class="flex gap-4">
             {#each row.fields as field (field.id)}
-              <div class={row.fields.length > 1 ? 'flex-1' : 'w-full'}>
-                {#if field.type === 'h1'}
+              <div class={row.fields.length > 1 ? "flex-1" : "w-full"}>
+                {#if field.type === "h1"}
                   <h1 class="text-2xl font-bold">{field.label}</h1>
-                {:else if field.type === 'h2'}
+                {:else if field.type === "h2"}
                   <h2 class="text-xl font-semibold">{field.label}</h2>
-                {:else if field.type === 'h3'}
+                {:else if field.type === "h3"}
                   <h3 class="text-lg font-medium">{field.label}</h3>
-                {:else if field.type === 'desc'}
+                {:else if field.type === "desc"}
                   <p class="text-sm text-muted-foreground">{field.label}</p>
-                {:else if field.type === 'separator'}
+                {:else if field.type === "separator"}
                   <hr class="my-2" />
-                {:else if field.type === 'text' || field.type === 'email' || field.type === 'password' || field.type === 'number' || field.type === 'phone'}
+                {:else if field.type === "text" || field.type === "email" || field.type === "password" || field.type === "number" || field.type === "phone"}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
-                      {#if field.required}<span class="text-destructive">*</span>{/if}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
                     </Label>
                     <Input
-                      type={field.type === 'phone' ? 'tel' : field.type}
+                      type={field.type === "phone" ? "tel" : field.type}
                       placeholder={field.placeholder}
                       disabled={field.disabled}
                     />
                     {#if field.description}
-                      <p class="text-xs text-muted-foreground">{field.description}</p>
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
                     {/if}
                   </div>
-                {:else if field.type === 'textarea'}
+                {:else if field.type === "textarea"}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
-                      {#if field.required}<span class="text-destructive">*</span>{/if}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
                     </Label>
-                    <Textarea placeholder={field.placeholder} disabled={field.disabled} />
+                    <Textarea
+                      placeholder={field.placeholder}
+                      disabled={field.disabled}
+                    />
                     {#if field.description}
-                      <p class="text-xs text-muted-foreground">{field.description}</p>
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
                     {/if}
                   </div>
-                {:else if field.category === 'checkbox'}
+                {:else if field.category === "checkbox"}
                   <div class="flex items-start gap-2 p-4 border rounded-lg">
                     <Checkbox disabled={field.disabled} />
                     <div>
                       <Label>{field.label}</Label>
                       {#if field.description}
-                        <p class="text-xs text-muted-foreground">{field.description}</p>
+                        <p class="text-xs text-muted-foreground">
+                          {field.description}
+                        </p>
                       {/if}
                     </div>
                   </div>
-                {:else if field.category === 'switch'}
-                  <div class="flex items-center justify-between p-4 border rounded-lg">
+                {:else if field.category === "switch"}
+                  <div
+                    class="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div>
                       <Label>{field.label}</Label>
                       {#if field.description}
-                        <p class="text-xs text-muted-foreground">{field.description}</p>
+                        <p class="text-xs text-muted-foreground">
+                          {field.description}
+                        </p>
                       {/if}
                     </div>
                     <Switch disabled={field.disabled} />
                   </div>
-                {:else if field.type === 'select' || field.type === 'combobox'}
+                {:else if field.type === "select" || field.type === "combobox"}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
-                      {#if field.required}<span class="text-destructive">*</span>{/if}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
                     </Label>
                     <Select.Root type="single">
                       <Select.Trigger disabled={field.disabled}>
-                        {field.placeholder || 'Select...'}
+                        {field.placeholder || "Select..."}
                       </Select.Trigger>
                       <Select.Content>
                         <Select.Item value="option1" label="Option 1" />
@@ -112,18 +138,163 @@
                       </Select.Content>
                     </Select.Root>
                     {#if field.description}
-                      <p class="text-xs text-muted-foreground">{field.description}</p>
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
                     {/if}
                   </div>
-                {:else if field.type === 'slider'}
+                {:else if field.type === "slider"}
                   <div class="space-y-3">
                     <Label>
                       {field.label}
-                      {#if field.required}<span class="text-destructive">*</span>{/if}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
                     </Label>
-                    <Slider value={[50]} min={field.min || 0} max={field.max || 100} />
+                    <Slider
+                      type="single"
+                      value={50}
+                      min={field.min || 0}
+                      max={field.max || 100}
+                    />
                     {#if field.description}
-                      <p class="text-xs text-muted-foreground">{field.description}</p>
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    {/if}
+                  </div>
+                {:else if field.type === "radio"}
+                  <div class="space-y-2">
+                    <Label>
+                      {field.label}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
+                    </Label>
+                    <RadioGroup.Root value="option1">
+                      <div class="flex items-center space-x-2">
+                        <RadioGroup.Item value="option1" id="r1" />
+                        <Label for="r1">Option 1</Label>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <RadioGroup.Item value="option2" id="r2" />
+                        <Label for="r2">Option 2</Label>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <RadioGroup.Item value="option3" id="r3" />
+                        <Label for="r3">Option 3</Label>
+                      </div>
+                    </RadioGroup.Root>
+                    {#if field.description}
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    {/if}
+                  </div>
+                {:else if field.type === "date-picker"}
+                  <div class="space-y-1.5">
+                    <Label>
+                      {field.label}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
+                    </Label>
+                    <DatePickerSimple />
+                    {#if field.description}
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    {/if}
+                  </div>
+                {:else if field.type === "input-otp"}
+                  <div class="space-y-1.5">
+                    <Label>
+                      {field.label}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
+                    </Label>
+                    <InputOTP.Root maxlength={6}>
+                      {#snippet children({ cells })}
+                        <InputOTP.Group>
+                          {#each cells.slice(0, 3) as cell}
+                            <InputOTP.Slot {cell} />
+                          {/each}
+                        </InputOTP.Group>
+                        <InputOTP.Separator />
+                        <InputOTP.Group>
+                          {#each cells.slice(3, 6) as cell}
+                            <InputOTP.Slot {cell} />
+                          {/each}
+                        </InputOTP.Group>
+                      {/snippet}
+                    </InputOTP.Root>
+                    {#if field.description}
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    {/if}
+                  </div>
+                {:else if field.type === "phone"}
+                  <div class="space-y-1.5">
+                    <Label>
+                      {field.label}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
+                    </Label>
+                    <PhoneInput
+                      country="IN"
+                      placeholder={field.placeholder || "Enter phone number"}
+                    />
+                    {#if field.description}
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    {/if}
+                  </div>
+                {:else if field.type === "location-input"}
+                  <div class="space-y-1.5">
+                    <Label>
+                      {field.label}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
+                    </Label>
+                    <LocationSelector />
+                    {#if field.description}
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    {/if}
+                  </div>
+                {:else if field.type === "tags-input"}
+                  <div class="space-y-1.5">
+                    <Label>
+                      {field.label}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
+                    </Label>
+                    <TagsInput
+                      placeholder={field.placeholder || "Add tag..."}
+                    />
+                    {#if field.description}
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    {/if}
+                  </div>
+                {:else if field.type === "file"}
+                  <div class="space-y-1.5">
+                    <Label>
+                      {field.label}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
+                    </Label>
+                    <FileDropZone
+                      onUpload={async () => {}}
+                      maxFileSize={10 * MEGABYTE}
+                      accept="image/*"
+                      maxFiles={4}
+                    />
+                    {#if field.description}
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
                     {/if}
                   </div>
                 {:else}
@@ -131,11 +302,17 @@
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
-                      {#if field.required}<span class="text-destructive">*</span>{/if}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
                     </Label>
-                    <Input placeholder={field.placeholder} disabled={field.disabled} />
+                    <Input
+                      placeholder={field.placeholder}
+                      disabled={field.disabled}
+                    />
                     {#if field.description}
-                      <p class="text-xs text-muted-foreground">{field.description}</p>
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
                     {/if}
                   </div>
                 {/if}
@@ -152,4 +329,3 @@
     {/if}
   </ScrollArea>
 </div>
-
