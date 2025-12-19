@@ -1263,32 +1263,116 @@ function getRunnerCmd(pm: PackageManager): string {
   }
 }
 
+// Map component imports to shadcn-svelte component names
+function getShadcnComponents(imports: Set<string>): string[] {
+  const components: string[] = ['button', 'field']; // button and field are mandatory
+
+  imports.forEach(imp => {
+    switch (imp) {
+      case 'Input':
+        components.push('input');
+        break;
+      case 'Textarea':
+        components.push('textarea');
+        break;
+      case 'Switch':
+        components.push('switch');
+        break;
+      case 'Checkbox':
+        components.push('checkbox');
+        break;
+      case 'Select':
+        components.push('select');
+        break;
+      case 'RadioGroup':
+        components.push('radio-group');
+        break;
+      case 'Slider':
+        components.push('slider');
+        break;
+      case 'InputOTP':
+        components.push('input-otp');
+        break;
+      case 'Combobox':
+        components.push('popover', 'command');
+        break;
+      case 'DatePicker':
+        components.push('popover', 'calendar');
+        break;
+    }
+  });
+
+  // Remove duplicates and return
+  return [...new Set(components)];
+}
+
+// Get jsrepo commands for extra components
+function getJsrepoCommands(imports: Set<string>): string[] {
+  const commands: string[] = [];
+
+  imports.forEach(imp => {
+    switch (imp) {
+      case 'FileDropZone':
+        commands.push('jsrepo add github/ieedan/shadcn-svelte-extras/ui/file-drop-zone');
+        break;
+      case 'PhoneInput':
+        commands.push('jsrepo add github/ieedan/shadcn-svelte-extras/ui/phone-input');
+        break;
+      case 'LocationInput':
+        commands.push('jsrepo add github/sikandarjodd/form-builder/comps/location-input');
+        break;
+      case 'TagsInput':
+        commands.push('jsrepo add github/ieedan/shadcn-svelte-extras/ui/tags-input');
+        break;
+    }
+  });
+
+  return commands;
+}
+
+// Check if extra dependencies are needed
+function needsExtraDeps(imports: Set<string>): boolean {
+  return imports.has('DatePicker') || imports.has('InputOTP') || imports.has('FileDropZone');
+}
+
 // Generate install command with field component
-export function generateInstallCommand(schemaType: SchemaType, mode: ModeType, packageManager: PackageManager = 'npm'): string {
+export function generateInstallCommand(fields: InputTypeV2[], schemaType: SchemaType, mode: ModeType, packageManager: PackageManager = 'npm'): string {
   const pkg = schemaType === 'arktype' ? 'arktype' : schemaType;
   const installCmd = getInstallCmd(packageManager);
   const runnerCmd = getRunnerCmd(packageManager);
 
+  // Get unique imports needed
+  const imports = getUniqueImports(fields);
+  const shadcnComponents = getShadcnComponents(imports);
+  const jsrepoCommands = getJsrepoCommands(imports);
+  const needsExtras = needsExtraDeps(imports);
+
+  let command = '';
+
   if (mode === 'superforms') {
-    return `${installCmd} sveltekit-superforms ${pkg}
-
-# Add UI components (field component includes label, description, error)
-${runnerCmd} shadcn-svelte@next add button field input textarea switch checkbox select radio-group slider popover calendar command input-otp
-
-# Additional dependencies for advanced components
-${installCmd} @internationalized/date bits-ui svelte-sonner`;
+    command += `${installCmd} sveltekit-superforms ${pkg}\n\n`;
+  } else {
+    command += `${installCmd} ${pkg}\n\n`;
   }
 
-  // Remote functions don't need superforms
-  return `${installCmd} ${pkg}
+  command += `# Add UI components (field component includes label, description, error)\n`;
+  command += `${runnerCmd} shadcn-svelte@next add ${shadcnComponents.join(' ')}\n`;
 
-# Add UI components (field component includes label, description, error)
-${runnerCmd} shadcn-svelte@next add button field input textarea switch checkbox select radio-group slider popover calendar command input-otp
+  if (needsExtras) {
+    command += `\n# Additional dependencies for advanced components\n`;
+    command += `${installCmd} @internationalized/date bits-ui svelte-sonner\n`;
+  }
 
-# Additional dependencies for advanced components
-${installCmd} @internationalized/date bits-ui svelte-sonner
+  if (jsrepoCommands.length > 0) {
+    command += `\n# Extra components from jsrepo\n`;
+    command += jsrepoCommands.join('\n') + '\n';
+  }
 
-# Note: Remote Functions require SvelteKit 2.27+`;
+  if (mode === 'remote') {
+    command += `\n# Note: Remote Functions require SvelteKit 2.27+`;
+  }
+
+  return command.trim();
 }
 
 // Generate file structure ASCII diagram
@@ -1326,7 +1410,7 @@ export function generateAllCode(
       ? generateSuperformsServer(schemaType)
       : generateRemoteServer(schemaType),
     json: generateJSON(fields),
-    install: generateInstallCommand(schemaType, mode, packageManager),
+    install: generateInstallCommand(fields, schemaType, mode, packageManager),
     structure: generateFileStructure(mode),
   };
 }
