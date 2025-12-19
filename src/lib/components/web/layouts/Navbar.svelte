@@ -10,6 +10,10 @@
       name: "Docs",
       url: "/docs",
     },
+    {
+      name: "Smart Playground",
+      url: "/v2",
+    },
   ];
   import Button from "$lib/components/ui/button/button.svelte";
 
@@ -17,15 +21,17 @@
   let isMobileMenu = $state(false);
   // Dark & Light Mode
   import { toggleMode, mode } from "mode-watcher";
-
-
 </script>
 
-<nav class="bg-background/70 backdrop-blur-sm border-b sticky top-0 z-50">
+<nav class="bg-background/70 backdrop-blur-xs border-b sticky top-0 z-50">
   <div class="mx-auto max-w-5xl px-4 sm:px-4 lg:px-6 xl:px-0">
     <div class="flex h-16 sm:h-14 items-center justify-between">
       <div class="flex items-center w-full">
-        <a href="/" aria-label="home" class="shrink-0">
+        <a
+          href="/"
+          aria-label="home"
+          class="shrink-0 flex items-center gap-1.5"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -45,6 +51,11 @@
               d="M10 17l-4 4"
             /></svg
           >
+          <span
+            class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary"
+          >
+            v2
+          </span>
         </a>
         <div class="hidden sm:ml-6 sm:flex justify-between w-full items-center">
           <div class="flex space-x-4">
@@ -152,7 +163,7 @@
     size="icon"
   >
     <!-- Sun Icon -->
-    {#if $mode === "light"}
+    {#if mode.current === "light"}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"

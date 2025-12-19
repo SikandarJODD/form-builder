@@ -31,7 +31,7 @@
   let statesData = states as StateProps[];
 
   function handleCountrySelect(country: CountryProps) {
-    selectedCountry = $state.snapshot(country);
+    selectedCountry = country;
     selectedState = null; // Reset state when country changes
     onCountryChange?.(country);
     onStateChange?.(null);

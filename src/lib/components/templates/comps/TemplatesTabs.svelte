@@ -36,7 +36,7 @@
 
 <Tabs bind:value={tab_value}>
   <TabsList
-    class="h-auto -space-x-px bg-background  p-0 shadow-sm shadow-black/5 rtl:space-x-reverse"
+    class="h-auto -space-x-px bg-background  p-0 shadow-2xs shadow-black/5 rtl:space-x-reverse"
   >
     {#each tabs_content as tabItem}
       {@const Icon = tabItem.icon}

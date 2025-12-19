@@ -19,7 +19,7 @@
       description:
         "Easily implement powerful form validations with support for both Zod and Valibot, ensuring data accuracy with minimal effort.",
       class:
-        "order-3 xl:order-none hover:bg-blue-500/10 transition-all duration-500 ease-out",
+        "order-3 xl:order-0 hover:bg-blue-500/10 transition-all duration-500 ease-out",
       content: SubSoln2,
     },
     {
@@ -35,7 +35,7 @@
       description:
         "Customize form behavior effortlessly with support for Zod & Valibot and other powerful tools.",
       class:
-        "flex-row order-4 md:col-span-2 md:flex-row xl:order-none hover:bg-green-500/10 transition-all duration-500 ease-out",
+        "flex-row order-4 md:col-span-2 md:flex-row xl:order-0 hover:bg-green-500/10 transition-all duration-500 ease-out",
       content: SubSoln4,
     },
   ];
@@ -66,7 +66,7 @@
         </div>
         <Component />
         <div
-          class="absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-neutral-50 dark:from-neutral-900 pointer-events-none"
+          class="absolute bottom-0 left-0 h-32 w-full bg-linear-to-t from-neutral-50 dark:from-neutral-900 pointer-events-none"
         ></div>
       </div>
     {/each}

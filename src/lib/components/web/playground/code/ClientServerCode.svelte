@@ -148,7 +148,7 @@
   <div
     class={[
       "overflow-scroll scrollbar max-h-[420px] p-4 duration-300",
-      blurbg && "blur-sm",
+      blurbg && "blur-xs",
     ]}
   >
     {#if codeType === "client"}
