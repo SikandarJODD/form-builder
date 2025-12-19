@@ -67,12 +67,12 @@
   ];
 
   const tabs: { id: CodeTab; label: string; icon: typeof FileCode }[] = [
-    { id: "structure", label: "File Structure", icon: FolderTree },
     { id: "client", label: "Client", icon: FileCode },
     { id: "server", label: "Server", icon: Server },
     { id: "schema", label: "Schema", icon: Braces },
-    { id: "json", label: "JSON", icon: FileJson },
     { id: "install", label: "Install", icon: Terminal },
+    { id: "json", label: "JSON", icon: FileJson },
+    { id: "structure", label: "File Structure", icon: FolderTree },
   ];
 
   // Helper to escape HTML for fallback display
@@ -250,7 +250,7 @@
 
 <Dialog.Root bind:open {onOpenChange}>
   <Dialog.Content class="max-w-4xl h-[80vh] flex flex-col">
-    <Dialog.Header class="flex-shrink-0">
+    <Dialog.Header class="shrink-0">
       <Dialog.Title>Generated Code</Dialog.Title>
       <Dialog.Description>
         Copy the generated code to your project
@@ -369,7 +369,7 @@
                   <span class="text-muted-foreground">Generating...</span>
                 </div>
               {:else}
-                <div class="text-sm [&_.shiki]:!bg-transparent">
+                <div class="text-sm [&_.shiki]:bg-transparent!">
                   {@html highlightedCode[tab.id]}
                 </div>
               {/if}

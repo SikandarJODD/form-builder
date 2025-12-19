@@ -23,11 +23,11 @@
     { value: "arktype", label: "ArkType" },
   ];
 
-  const tabs: { id: TabType; label: string; icon: typeof LayoutGrid }[] = [
-    { id: "fields", label: "Fields", icon: LayoutGrid },
-    { id: "template", label: "Template", icon: LayoutTemplate },
-    { id: "settings", label: "Settings", icon: Settings },
-  ];
+  // const tabs: { id: TabType; label: string; icon: typeof LayoutGrid }[] = [
+  //   { id: "fields", label: "Fields", icon: LayoutGrid },
+  //   { id: "template", label: "Template", icon: LayoutTemplate },
+  //   { id: "settings", label: "Settings", icon: Settings },
+  // ];
 
   let schemaValue = $state(formV2.schema);
   let codeModalOpen = $state(false);
@@ -64,7 +64,7 @@
 >
   <!-- Left side: Tabs -->
   <div class="flex items-center gap-1">
-    {#each tabs as tab}
+    <!-- {#each tabs as tab}
       <Button
         variant={formV2.activeTab === tab.id ? "secondary" : "ghost"}
         size="sm"
@@ -81,7 +81,7 @@
     <Button variant="ghost" size="sm" class="gap-2">
       <Sparkles class="h-4 w-4" />
       <span class="hidden sm:inline">Generate with AI</span>
-    </Button>
+    </Button> -->
   </div>
 
   <!-- Right side: Controls -->
@@ -92,7 +92,7 @@
       value={schemaValue}
       onValueChange={handleSchemaChange}
     >
-      <Select.Trigger class="w-[100px] h-8">
+      <Select.Trigger class="w-25 h-8">
         {schemas.find((s) => s.value === schemaValue)?.label ?? "Schema"}
       </Select.Trigger>
       <Select.Content>

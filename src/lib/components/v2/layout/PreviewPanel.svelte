@@ -191,14 +191,17 @@
                       {#if field.required}<span class="text-destructive">*</span
                         >{/if}
                     </Label>
-                    <Popover.Root bind:open={comboboxOpen[fieldId]}>
+                    <Popover.Root
+                      open={comboboxOpen[fieldId] ?? false}
+                      onOpenChange={(isOpen) => (comboboxOpen[fieldId] = isOpen)}
+                    >
                       <Popover.Trigger>
                         {#snippet child({ props })}
                           <Button
                             {...props}
                             variant="outline"
                             role="combobox"
-                            aria-expanded={comboboxOpen[fieldId]}
+                            aria-expanded={comboboxOpen[fieldId] ?? false}
                             disabled={field.disabled}
                             class="w-full justify-between"
                           >
