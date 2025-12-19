@@ -139,13 +139,8 @@
   const generateCode = () => {
     isGenerating = true;
 
-    // Generate raw code immediately
-    const code = generateAllCode(
-      formV2.allFields,
-      schema,
-      mode,
-      packageManager
-    );
+    // Generate raw code immediately (pass rows for layout-aware generation)
+    const code = generateAllCode(formV2.rows, schema, mode, packageManager);
     generatedCode = code;
 
     // Show escaped code immediately as fallback

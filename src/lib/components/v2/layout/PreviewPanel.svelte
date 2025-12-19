@@ -8,16 +8,56 @@
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import * as Select from "$lib/components/ui/select";
+  import * as Popover from "$lib/components/ui/popover";
+  import * as Command from "$lib/components/ui/command";
   import Slider from "$lib/components/ui/slider/slider.svelte";
   import Eye from "@lucide/svelte/icons/eye";
+  import Trash2 from "@lucide/svelte/icons/trash-2";
+  import Check from "@lucide/svelte/icons/check";
+  import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
+  import { toast } from "svelte-sonner";
+  import { cn } from "$lib/utils";
   // New component imports
   import * as RadioGroup from "$lib/components/ui/radio-group";
   import * as InputOTP from "$lib/components/ui/input-otp";
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";
   import LocationSelector from "$lib/components/templates/comps/location-input/LocationSelector.svelte";
   import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
-  import { FileDropZone, MEGABYTE } from "$lib/components/ui/file-drop-zone";
+  import {
+    FileDropZone,
+    MEGABYTE,
+    displaySize,
+  } from "$lib/components/ui/file-drop-zone";
   import DatePickerSimple from "$lib/components/templates/comps/date-picker/DatePickerSimple.svelte";
+
+  // State for file uploads in preview (keyed by field id)
+  let uploadedFiles: Record<string, File[]> = $state({});
+
+  // State for combobox (keyed by field id)
+  let comboboxOpen: Record<string, boolean> = $state({});
+  let comboboxValues: Record<string, string> = $state({});
+
+  // Sample options for combobox preview
+  const comboboxOptions = [
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
+    { value: "option4", label: "Option 4" },
+    { value: "option5", label: "Option 5" },
+  ];
+
+  function handleFileUpload(fieldId: string) {
+    return async (files: File[]) => {
+      uploadedFiles[fieldId] = [...(uploadedFiles[fieldId] || []), ...files];
+      toast.success(`Uploaded ${files.length} file(s)`);
+    };
+  }
+
+  function removeFile(fieldId: string, index: number) {
+    uploadedFiles[fieldId] = uploadedFiles[fieldId].filter(
+      (_, i) => i !== index
+    );
+  }
 </script>
 
 <div class="flex h-full flex-col">
@@ -59,7 +99,7 @@
                   <p class="text-sm text-muted-foreground">{field.label}</p>
                 {:else if field.type === "separator"}
                   <hr class="my-2" />
-                {:else if field.type === "text" || field.type === "email" || field.type === "password" || field.type === "number" || field.type === "phone"}
+                {:else if field.type === "text" || field.type === "email" || field.type === "password" || field.type === "number"}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
@@ -67,7 +107,7 @@
                         >{/if}
                     </Label>
                     <Input
-                      type={field.type === "phone" ? "tel" : field.type}
+                      type={field.type}
                       placeholder={field.placeholder}
                       disabled={field.disabled}
                     />
@@ -120,7 +160,7 @@
                     </div>
                     <Switch disabled={field.disabled} />
                   </div>
-                {:else if field.type === "select" || field.type === "combobox"}
+                {:else if field.type === "select"}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
@@ -137,6 +177,72 @@
                         <Select.Item value="option3" label="Option 3" />
                       </Select.Content>
                     </Select.Root>
+                    {#if field.description}
+                      <p class="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    {/if}
+                  </div>
+                {:else if field.type === "combobox"}
+                  {@const fieldId = field.id ?? ""}
+                  <div class="space-y-1.5">
+                    <Label>
+                      {field.label}
+                      {#if field.required}<span class="text-destructive">*</span
+                        >{/if}
+                    </Label>
+                    <Popover.Root bind:open={comboboxOpen[fieldId]}>
+                      <Popover.Trigger>
+                        {#snippet child({ props })}
+                          <Button
+                            {...props}
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={comboboxOpen[fieldId]}
+                            disabled={field.disabled}
+                            class="w-full justify-between"
+                          >
+                            {comboboxValues[fieldId]
+                              ? comboboxOptions.find(
+                                  (opt) => opt.value === comboboxValues[fieldId]
+                                )?.label
+                              : field.placeholder || "Select..."}
+                            <ChevronsUpDown
+                              class="ml-2 h-4 w-4 shrink-0 opacity-50"
+                            />
+                          </Button>
+                        {/snippet}
+                      </Popover.Trigger>
+                      <Popover.Content class="w-[200px] p-0">
+                        <Command.Root>
+                          <Command.Input placeholder="Search..." />
+                          <Command.List>
+                            <Command.Empty>No option found.</Command.Empty>
+                            <Command.Group>
+                              {#each comboboxOptions as option}
+                                <Command.Item
+                                  value={option.value}
+                                  onSelect={() => {
+                                    comboboxValues[fieldId] = option.value;
+                                    comboboxOpen[fieldId] = false;
+                                  }}
+                                >
+                                  <Check
+                                    class={cn(
+                                      "mr-2 h-4 w-4",
+                                      comboboxValues[fieldId] === option.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  {option.label}
+                                </Command.Item>
+                              {/each}
+                            </Command.Group>
+                          </Command.List>
+                        </Command.Root>
+                      </Popover.Content>
+                    </Popover.Root>
                     {#if field.description}
                       <p class="text-xs text-muted-foreground">
                         {field.description}
@@ -279,6 +385,7 @@
                     {/if}
                   </div>
                 {:else if field.type === "file"}
+                  {@const fieldId = field.id ?? ""}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
@@ -286,11 +393,35 @@
                         >{/if}
                     </Label>
                     <FileDropZone
-                      onUpload={async () => {}}
+                      onUpload={handleFileUpload(fieldId)}
                       maxFileSize={10 * MEGABYTE}
                       accept="image/*"
                       maxFiles={4}
+                      fileCount={uploadedFiles[fieldId]?.length ?? 0}
+                      onFileRejected={({ reason }) => toast.error(reason)}
                     />
+                    <!-- Display uploaded files -->
+                    {#if uploadedFiles[fieldId]?.length}
+                      <div class="space-y-2 mt-2">
+                        {#each uploadedFiles[fieldId] as file, i}
+                          <div
+                            class="flex items-center justify-between p-2 bg-muted rounded-md text-sm"
+                          >
+                            <span class="truncate flex-1">{file.name}</span>
+                            <span class="text-muted-foreground mx-2"
+                              >{displaySize(file.size)}</span
+                            >
+                            <button
+                              type="button"
+                              onclick={() => removeFile(fieldId, i)}
+                              class="text-destructive hover:text-destructive/80"
+                            >
+                              <Trash2 class="h-4 w-4" />
+                            </button>
+                          </div>
+                        {/each}
+                      </div>
+                    {/if}
                     {#if field.description}
                       <p class="text-xs text-muted-foreground">
                         {field.description}

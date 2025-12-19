@@ -2,7 +2,7 @@
 // On-demand code generation (not derived) for performance
 // Uses shadcn-svelte Field component pattern
 
-import type { InputTypeV2, SchemaType, ModeType } from '../state/form-v2.svelte';
+import type { InputTypeV2, SchemaType, ModeType, FieldRow } from '../state/form-v2.svelte';
 
 export type CodeTab = 'client' | 'server' | 'schema' | 'json' | 'install' | 'structure';
 export type ClientServerVariant = 'client' | 'server';
@@ -268,8 +268,9 @@ export const actions: Actions = {
 }
 
 // Generate Superforms client code with Field component
-export function generateSuperformsClient(fields: InputTypeV2[], schemaType: SchemaType): string {
+export function generateSuperformsClient(rows: FieldRow[], schemaType: SchemaType): string {
   const adapter = getClientAdapter(schemaType);
+  const fields = rows.flatMap(r => r.fields);
   const uniqueImports = getUniqueImports(fields);
 
   let code = `<script lang="ts">
@@ -360,8 +361,23 @@ export function generateSuperformsClient(fields: InputTypeV2[], schemaType: Sche
   <Field.Group>
 `;
 
-  fields.forEach(field => {
-    code += generateFieldCode(field);
+  // Generate code for each row, handling side-by-side layout
+  rows.forEach(row => {
+    if (row.fields.length > 1) {
+      // Side-by-side layout
+      code += `    <div class="grid grid-cols-2 gap-4">\n`;
+      row.fields.forEach(field => {
+        code += `      <div>\n`;
+        // Add extra indentation for side-by-side fields
+        const fieldCode = generateFieldCode(field).replace(/^    /gm, '        ');
+        code += fieldCode;
+        code += `      </div>\n`;
+      });
+      code += `    </div>\n`;
+    } else if (row.fields.length === 1) {
+      // Single field - full width
+      code += generateFieldCode(row.fields[0]);
+    }
   });
 
   code += `  </Field.Group>
@@ -759,7 +775,7 @@ export function generateRemoteServer(schemaType: SchemaType): string {
   return `import { form } from '$app/server';
 import { schema } from './schema';
 
-export const submitForm = form(schema, async (data, { cookies }) => {
+export const submitForm = form(schema, async (data) => {
   // Handle form submission
   console.log('Form data:', data);
 
@@ -769,7 +785,8 @@ export const submitForm = form(schema, async (data, { cookies }) => {
 }
 
 // Generate Remote Functions client code with Field component
-export function generateRemoteClient(fields: InputTypeV2[]): string {
+export function generateRemoteClient(rows: FieldRow[]): string {
+  const fields = rows.flatMap(r => r.fields);
   const uniqueImports = getUniqueImports(fields);
 
   let code = `<script lang="ts">
@@ -840,12 +857,27 @@ export function generateRemoteClient(fields: InputTypeV2[]): string {
   code += `
 <\/script>
 
-<form action={submitForm} class="space-y-4">
+<form {...submitForm} class="space-y-4">
   <Field.Group>
 `;
 
-  fields.forEach(field => {
-    code += generateRemoteFieldCode(field);
+  // Generate code for each row, handling side-by-side layout
+  rows.forEach(row => {
+    if (row.fields.length > 1) {
+      // Side-by-side layout
+      code += `    <div class="grid grid-cols-2 gap-4">\n`;
+      row.fields.forEach(field => {
+        code += `      <div>\n`;
+        // Add extra indentation for side-by-side fields
+        const fieldCode = generateRemoteFieldCode(field).replace(/^    /gm, '        ');
+        code += fieldCode;
+        code += `      </div>\n`;
+      });
+      code += `    </div>\n`;
+    } else if (row.fields.length === 1) {
+      // Single field - full width
+      code += generateRemoteFieldCode(row.fields[0]);
+    }
   });
 
   code += `  </Field.Group>
@@ -1277,16 +1309,19 @@ export function generateFileStructure(mode: ModeType): string {
 
 // Generate all code at once
 export function generateAllCode(
-  fields: InputTypeV2[],
+  rows: FieldRow[],
   schemaType: SchemaType,
   mode: ModeType,
   packageManager: PackageManager = 'npm'
 ): GeneratedCode {
+  // Flatten fields for schema and JSON generation
+  const fields = rows.flatMap(r => r.fields);
+
   return {
     schema: generateSchema(fields, schemaType),
     client: mode === 'superforms'
-      ? generateSuperformsClient(fields, schemaType)
-      : generateRemoteClient(fields),
+      ? generateSuperformsClient(rows, schemaType)
+      : generateRemoteClient(rows),
     server: mode === 'superforms'
       ? generateSuperformsServer(schemaType)
       : generateRemoteServer(schemaType),
