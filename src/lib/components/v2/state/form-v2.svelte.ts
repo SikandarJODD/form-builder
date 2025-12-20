@@ -1,11 +1,19 @@
 // V2 Form Builder State Management
 import type { InputType } from '$lib/form-generator/form-gen.svelte';
 
+// Option type for select, combobox, and radio fields
+export type FieldOption = {
+  id: string;
+  value: string;
+  label: string;
+};
+
 // Extended input type for V2 with row support
 export type InputTypeV2 = InputType & {
   rowId?: string;
   position?: 'left' | 'right' | 'full';
   expanded?: boolean;
+  options?: FieldOption[]; // For select, combobox, radio fields
 };
 
 // Row structure for side-by-side fields
@@ -64,6 +72,42 @@ class FormGeneratorV2 {
   // Generate unique ID
   private generateId = () => crypto.randomUUID().slice(0, 8);
 
+  // Generate default options for fields that support them
+  private generateDefaultOptions = (category: string): FieldOption[] | undefined => {
+    if (category === 'select' || category === 'combobox' || category === 'radio') {
+      return [
+        { id: this.generateId(), value: 'option1', label: 'Option 1' },
+        { id: this.generateId(), value: 'option2', label: 'Option 2' },
+        { id: this.generateId(), value: 'option3', label: 'Option 3' },
+      ];
+    }
+    return undefined;
+  };
+
+  // Generate default options for fields that need them
+  private generateDefaultOptions = (category: string): FieldOption[] => {
+    if (category === 'select') {
+      return [
+        { id: this.generateId(), value: 'option1', label: 'Option 1' },
+        { id: this.generateId(), value: 'option2', label: 'Option 2' },
+        { id: this.generateId(), value: 'option3', label: 'Option 3' },
+      ];
+    } else if (category === 'combobox') {
+      return [
+        { id: this.generateId(), value: 'framework1', label: 'Framework 1' },
+        { id: this.generateId(), value: 'framework2', label: 'Framework 2' },
+        { id: this.generateId(), value: 'framework3', label: 'Framework 3' },
+      ];
+    } else if (category === 'radio') {
+      return [
+        { id: this.generateId(), value: 'choice1', label: 'Choice 1' },
+        { id: this.generateId(), value: 'choice2', label: 'Choice 2' },
+        { id: this.generateId(), value: 'choice3', label: 'Choice 3' },
+      ];
+    }
+    return [];
+  };
+
   // Add a new field (creates a new row with full-width field)
   addField = (field: InputType) => {
     const newField: InputTypeV2 = {
@@ -74,6 +118,7 @@ class FormGeneratorV2 {
       position: 'full',
       expanded: false,
       required: true,
+      options: this.generateDefaultOptions(field.category),
     };
 
     const newRow: FieldRow = {
@@ -112,6 +157,7 @@ class FormGeneratorV2 {
       position: 'right',
       expanded: false,
       required: true,
+      options: this.generateDefaultOptions(templateField.category),
     };
 
     // Update positions
@@ -231,6 +277,73 @@ class FormGeneratorV2 {
     const [removed] = newRows.splice(fromIndex, 1);
     newRows.splice(toIndex, 0, removed);
     this.rows = newRows;
+  };
+
+  // Options management methods
+
+  // Add a new option to a field
+  addOption = (fieldId: string) => {
+    this.rows = this.rows.map(row => ({
+      ...row,
+      fields: row.fields.map(f => {
+        if (f.id === fieldId) {
+          const newOption: FieldOption = {
+            id: this.generateId(),
+            value: `option${(f.options?.length || 0) + 1}`,
+            label: `Option ${(f.options?.length || 0) + 1}`,
+          };
+          return {
+            ...f,
+            options: [...(f.options || []), newOption],
+          };
+        }
+        return f;
+      })
+    }));
+  };
+
+  // Update an option
+  updateOption = (fieldId: string, optionId: string, updates: Partial<FieldOption>) => {
+    this.rows = this.rows.map(row => ({
+      ...row,
+      fields: row.fields.map(f => {
+        if (f.id === fieldId && f.options) {
+          return {
+            ...f,
+            options: f.options.map(opt =>
+              opt.id === optionId ? { ...opt, ...updates } : opt
+            ),
+          };
+        }
+        return f;
+      })
+    }));
+  };
+
+  // Delete an option
+  deleteOption = (fieldId: string, optionId: string) => {
+    this.rows = this.rows.map(row => ({
+      ...row,
+      fields: row.fields.map(f => {
+        if (f.id === fieldId && f.options) {
+          return {
+            ...f,
+            options: f.options.filter(opt => opt.id !== optionId),
+          };
+        }
+        return f;
+      })
+    }));
+  };
+
+  // Reorder options (for drag and drop)
+  reorderOptions = (fieldId: string, newOptions: FieldOption[]) => {
+    this.rows = this.rows.map(row => ({
+      ...row,
+      fields: row.fields.map(f =>
+        f.id === fieldId ? { ...f, options: newOptions } : f
+      )
+    }));
   };
 }
 
