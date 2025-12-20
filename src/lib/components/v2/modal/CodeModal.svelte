@@ -57,8 +57,8 @@
   });
 
   const schemas: { value: SchemaType; label: string }[] = [
-    { value: "zod", label: "Zod" },
     { value: "valibot", label: "Valibot" },
+    { value: "zod", label: "Zod" },
     { value: "arktype", label: "ArkType" },
   ];
 
@@ -382,10 +382,10 @@
       {/each}
     </Tabs.Root>
 
-    <Dialog.Footer class="shrink-0 pt-4">
+    <!-- <Dialog.Footer class="shrink-0 pt-4">
       <Button variant="outline" onclick={() => onOpenChange(false)}>
         Close
       </Button>
-    </Dialog.Footer>
+    </Dialog.Footer> -->
   </Dialog.Content>
 </Dialog.Root>

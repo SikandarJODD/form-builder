@@ -20,16 +20,16 @@
   import Code from "@lucide/svelte/icons/code";
 
   const schemas: { value: SchemaType; label: string }[] = [
-    { value: "zod", label: "Zod" },
     { value: "valibot", label: "Valibot" },
+    { value: "zod", label: "Zod" },
     { value: "arktype", label: "ArkType" },
   ];
 
-  // const tabs: { id: TabType; label: string; icon: typeof LayoutGrid }[] = [
-  //   { id: "fields", label: "Fields", icon: LayoutGrid },
-  //   { id: "template", label: "Template", icon: LayoutTemplate },
-  //   { id: "settings", label: "Settings", icon: Settings },
-  // ];
+  const tabs: { id: TabType; label: string; icon: typeof LayoutGrid }[] = [
+    { id: "fields", label: "Fields", icon: LayoutGrid },
+    { id: "template", label: "Templates", icon: LayoutTemplate },
+    // { id: "settings", label: "Settings", icon: Settings },
+  ];
 
   let codeModalOpen = $state(false);
 
@@ -64,7 +64,7 @@
 >
   <!-- Left side: Tabs -->
   <div class="flex items-center gap-1">
-    <!-- {#each tabs as tab}
+    {#each tabs as tab}
       <Button
         variant={formV2.activeTab === tab.id ? "secondary" : "ghost"}
         size="sm"
@@ -81,7 +81,7 @@
     <Button variant="ghost" size="sm" class="gap-2">
       <Sparkles class="h-4 w-4" />
       <span class="hidden sm:inline">Generate with AI</span>
-    </Button> -->
+    </Button>
   </div>
 
   <!-- Right side: Controls -->

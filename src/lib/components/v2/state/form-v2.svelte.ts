@@ -253,6 +253,37 @@ class FormGeneratorV2 {
     this.rows = [];
   };
 
+  // Load a template into the form
+  loadTemplate = (templateRows: FieldRow[]) => {
+    this.reset();
+
+    // Deep clone and regenerate IDs for the template
+    this.rows = templateRows.map((row) => {
+      const newRowId = this.generateId();
+      return {
+        id: newRowId,
+        fields: row.fields.map((field) => {
+          const newFieldId = this.generateId();
+          // Generate unique named_id
+          const existingIds = this.rows.flatMap((r) => r.fields.map((f) => f.named_id));
+          let namedId = field.category.replace(/-/g, '');
+          if (existingIds.includes(namedId)) {
+            namedId = `${namedId}_${crypto.randomUUID().slice(0, 2)}`;
+          }
+
+          return {
+            ...field,
+            id: newFieldId,
+            named_id: namedId,
+            rowId: newRowId,
+            // Keep original position, options, and other properties
+            options: field.options ? [...field.options] : []
+          };
+        })
+      };
+    });
+  };
+
   // Get all fields as flat array
   get allFields(): InputTypeV2[] {
     return this.rows.flatMap(r => r.fields);

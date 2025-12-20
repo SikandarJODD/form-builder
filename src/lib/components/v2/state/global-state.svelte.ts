@@ -9,7 +9,7 @@ import type { SchemaType, ModeType } from './form-v2.svelte';
  */
 class GlobalFormState {
   // Schema type selection (zod, valibot, arktype)
-  schema: SchemaType = $state('zod');
+  schema: SchemaType = $state('valibot');
 
   // Mode selection (superforms, remote)
   mode: ModeType = $state('superforms');
