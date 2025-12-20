@@ -15,6 +15,8 @@
   import Ungroup from "@lucide/svelte/icons/ungroup";
   import ArrowLeftRight from "@lucide/svelte/icons/arrow-left-right";
   import Pencil from "@lucide/svelte/icons/pencil";
+  import Check from "@lucide/svelte/icons/check";
+  import X from "@lucide/svelte/icons/x";
   import type { InputType } from "$lib/form-generator/form-gen.svelte";
   // Field Icons
   import TextCursorInput from "@lucide/svelte/icons/text-cursor-input";
@@ -101,7 +103,9 @@
   let openPopoverId = $state<string | null>(null);
 
   // Track which option is being edited
-  let editingOption = $state<{ fieldId: string; optionId: string } | null>(null);
+  let editingOption = $state<{ fieldId: string; optionId: string } | null>(
+    null
+  );
   let editOptionValue = $state("");
   let editOptionLabel = $state("");
 </script>
@@ -145,7 +149,7 @@
           <!-- Row Container - supports side-by-side fields -->
           <div
             class={[
-              "border rounded-lg bg-card transition-shadow",
+              "border border-dashed rounded-lg bg-card transition-shadow",
               row.fields.length > 1 && "p-2",
             ]}
             animate:flip={{ duration: flipDurationMs }}
@@ -194,7 +198,7 @@
                 <div
                   class={[
                     "",
-                    row.fields.length > 1 && "border rounded-lg bg-background",
+                    row.fields.length > 1 && "border  rounded-lg bg-background",
                   ]}
                 >
                   <!-- Field Header -->
@@ -283,8 +287,8 @@
                   </div>
 
                   <!-- Field Customization (Accordion) -->
-                  <Accordion.Root type="single" class="w-full">
-                    <Accordion.Item value="customize">
+                  <Accordion.Root type="single" class="w-full ">
+                    <Accordion.Item value="customize" class="border-none">
                       <Accordion.Trigger
                         class="px-3 py-2 text-xs hover:no-underline"
                       >
@@ -359,8 +363,12 @@
                           <!-- Options Editor for select, combobox, radio -->
                           {#if field.category === "select" || field.category === "combobox" || field.category === "radio"}
                             <div class="space-y-2 pt-3 border-t mt-3">
-                              <div class="flex items-center justify-between mb-3">
-                                <Label class="text-xs font-semibold">Options</Label>
+                              <div
+                                class="flex items-center justify-between mb-3"
+                              >
+                                <Label class="text-xs font-semibold"
+                                  >Options</Label
+                                >
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -382,10 +390,16 @@
                                     type: `options-${field.id}`,
                                   }}
                                   onconsider={(e) => {
-                                    formV2.reorderOptions(field.id!, e.detail.items);
+                                    formV2.reorderOptions(
+                                      field.id!,
+                                      e.detail.items
+                                    );
                                   }}
                                   onfinalize={(e) => {
-                                    formV2.reorderOptions(field.id!, e.detail.items);
+                                    formV2.reorderOptions(
+                                      field.id!,
+                                      e.detail.items
+                                    );
                                   }}
                                 >
                                   {#each field.options as option (option.id)}
@@ -404,53 +418,135 @@
                                       <div class="flex-1 min-w-0">
                                         {#if editingOption?.fieldId === field.id && editingOption?.optionId === option.id}
                                           <!-- Edit Mode -->
-                                          <div class="space-y-1.5">
-                                            <Input
-                                              value={editOptionLabel}
-                                              oninput={(e) => editOptionLabel = e.currentTarget.value}
-                                              placeholder="Label"
-                                              class="h-7 text-xs"
-                                              autofocus
-                                            />
-                                            <Input
-                                              value={editOptionValue}
-                                              oninput={(e) => editOptionValue = e.currentTarget.value}
-                                              placeholder="value"
-                                              class="h-7 text-xs font-mono"
-                                            />
-                                            <div class="flex gap-1">
+                                          <div class="flex flex-col gap-1.5">
+                                            <!-- <div
+                                              class="flex items-center gap-1.5 text-xs text-muted-foreground"
+                                            >
+                                              <div class="flex-1">Label</div>
+                                              <div class="w-24">Value</div>
+                                            </div> -->
+                                            <!-- <div
+                                              class="flex items-center gap-1.5"
+                                            >
+                                              <Input
+                                                value={editOptionLabel}
+                                                oninput={(e) =>
+                                                  (editOptionLabel =
+                                                    e.currentTarget.value)}
+                                                placeholder="Option 1"
+                                                class="h-8 text-sm flex-1"
+                                                autofocus
+                                              />
+                                              <Input
+                                                value={editOptionValue}
+                                                oninput={(e) =>
+                                                  (editOptionValue =
+                                                    e.currentTarget.value)}
+                                                placeholder="1"
+                                                class="h-8 text-sm font-mono w-24"
+                                              />
                                               <Button
-                                                variant="default"
-                                                size="sm"
-                                                class="h-6 text-xs flex-1"
+                                                variant="ghost"
+                                                size="icon"
+                                                class="h-8 w-8 shrink-0"
                                                 onclick={() => {
                                                   formV2.updateOption(
                                                     field.id!,
                                                     option.id,
-                                                    { label: editOptionLabel, value: editOptionValue }
+                                                    {
+                                                      label: editOptionLabel,
+                                                      value: editOptionValue,
+                                                    }
                                                   );
                                                   editingOption = null;
                                                 }}
                                               >
-                                                Save
+                                                <Check class="h-4 w-4" />
                                               </Button>
                                               <Button
                                                 variant="ghost"
-                                                size="sm"
-                                                class="h-6 text-xs flex-1"
-                                                onclick={() => editingOption = null}
+                                                size="icon"
+                                                class="h-8 w-8 shrink-0"
+                                                onclick={() =>
+                                                  (editingOption = null)}
                                               >
-                                                Cancel
+                                                <X class="h-4 w-4" />
                                               </Button>
+                                            </div> -->
+                                            <div
+                                              class="grid grid-cols-[2fr_2fr_auto] gap-1.5"
+                                            >
+                                              <div>
+                                                <div class="flex-1 mb-0.5">
+                                                  Label
+                                                </div>
+                                                <Input
+                                                  value={editOptionLabel}
+                                                  oninput={(e) =>
+                                                    (editOptionLabel =
+                                                      e.currentTarget.value)}
+                                                  placeholder="Option 1"
+                                                  class="h-8 text-sm flex-1"
+                                                  autofocus
+                                                />
+                                              </div>
+                                              <div>
+                                                <div class="flex-1 mb-0.5">
+                                                  Value
+                                                </div>
+                                                <Input
+                                                  value={editOptionValue}
+                                                  oninput={(e) =>
+                                                    (editOptionValue =
+                                                      e.currentTarget.value)}
+                                                  placeholder="1"
+                                                  class="h-8 text-sm font-mono w-full"
+                                                />
+                                              </div>
+                                              <div
+                                                class="flex items-end gap-1 justify-end"
+                                              >
+                                                <Button
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  class="h-8 w-8 shrink-0"
+                                                  onclick={() => {
+                                                    formV2.updateOption(
+                                                      field.id!,
+                                                      option.id,
+                                                      {
+                                                        label: editOptionLabel,
+                                                        value: editOptionValue,
+                                                      }
+                                                    );
+                                                    editingOption = null;
+                                                  }}
+                                                >
+                                                  <Check class="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  class="h-8 w-8 shrink-0"
+                                                  onclick={() =>
+                                                    (editingOption = null)}
+                                                >
+                                                  <X class="h-4 w-4" />
+                                                </Button>
+                                              </div>
                                             </div>
                                           </div>
                                         {:else}
                                           <!-- Display Mode -->
                                           <div class="space-y-0.5">
-                                            <div class="text-sm font-medium truncate">
+                                            <div
+                                              class="text-sm font-medium truncate"
+                                            >
                                               {option.label}
                                             </div>
-                                            <div class="text-xs text-muted-foreground font-mono">
+                                            <div
+                                              class="text-xs text-muted-foreground font-mono"
+                                            >
                                               Value: {option.value}
                                             </div>
                                           </div>
@@ -458,13 +554,18 @@
                                       </div>
 
                                       {#if !editingOption || editingOption?.optionId !== option.id}
-                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div
+                                          class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
                                           <Button
                                             variant="ghost"
                                             size="icon-sm"
                                             class="h-7 w-7"
                                             onclick={() => {
-                                              editingOption = { fieldId: field.id!, optionId: option.id };
+                                              editingOption = {
+                                                fieldId: field.id!,
+                                                optionId: option.id,
+                                              };
                                               editOptionLabel = option.label;
                                               editOptionValue = option.value;
                                             }}
@@ -476,7 +577,11 @@
                                             variant="ghost"
                                             size="icon-sm"
                                             class="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                            onclick={() => formV2.deleteOption(field.id!, option.id)}
+                                            onclick={() =>
+                                              formV2.deleteOption(
+                                                field.id!,
+                                                option.id
+                                              )}
                                             title="Delete option"
                                           >
                                             <Trash2 class="h-3.5 w-3.5" />
@@ -487,7 +592,9 @@
                                   {/each}
                                 </div>
                               {:else}
-                                <div class="text-xs text-muted-foreground text-center py-3 border rounded-lg bg-muted/30">
+                                <div
+                                  class="text-xs text-muted-foreground text-center py-3 border rounded-lg bg-muted/30"
+                                >
                                   No options added yet
                                 </div>
                               {/if}

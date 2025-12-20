@@ -487,6 +487,14 @@ function generateFieldCode(field: InputTypeV2): string {
 
   // Select
   if (type === 'select') {
+    const options = field.options && field.options.length > 0
+      ? field.options
+      : [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }, { value: 'option3', label: 'Option 3' }];
+
+    const optionsCode = options.map(opt =>
+      `          <Select.Item value="${opt.value}">${opt.label}</Select.Item>`
+    ).join('\n');
+
     return `    <Field.Field>
       <Field.Label>${label}</Field.Label>
       <Select.Root type="single" name="${named_id}" bind:value={$formData.${named_id}}>
@@ -494,9 +502,7 @@ function generateFieldCode(field: InputTypeV2): string {
           <Select.Value placeholder="${placeholder}" />
         </Select.Trigger>
         <Select.Content>
-          <Select.Item value="option1">Option 1</Select.Item>
-          <Select.Item value="option2">Option 2</Select.Item>
-          <Select.Item value="option3">Option 3</Select.Item>
+${optionsCode}
         </Select.Content>
       </Select.Root>
       {#if $errors.${named_id}}
@@ -509,22 +515,22 @@ function generateFieldCode(field: InputTypeV2): string {
 
   // Radio Group
   if (type === 'radio') {
+    const options = field.options && field.options.length > 0
+      ? field.options
+      : [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }, { value: 'option3', label: 'Option 3' }];
+
+    const radioItemsCode = options.map(opt =>
+      `        <Field.Field orientation="horizontal">
+          <RadioGroup.Item value="${opt.value}" />
+          <Field.Label>${opt.label}</Field.Label>
+        </Field.Field>`
+    ).join('\n');
+
     return `    <Field.Set>
       <Field.Legend>${label}</Field.Legend>
       <Field.Description>${description}</Field.Description>
       <RadioGroup.Root name="${named_id}" bind:value={$formData.${named_id}}>
-        <Field.Field orientation="horizontal">
-          <RadioGroup.Item value="option1" />
-          <Field.Label>Option 1</Field.Label>
-        </Field.Field>
-        <Field.Field orientation="horizontal">
-          <RadioGroup.Item value="option2" />
-          <Field.Label>Option 2</Field.Label>
-        </Field.Field>
-        <Field.Field orientation="horizontal">
-          <RadioGroup.Item value="option3" />
-          <Field.Label>Option 3</Field.Label>
-        </Field.Field>
+${radioItemsCode}
       </RadioGroup.Root>
       {#if $errors.${named_id}}
         <Field.Error>{$errors.${named_id}}</Field.Error>
@@ -643,8 +649,18 @@ function generateFieldCode(field: InputTypeV2): string {
 
   // Combobox
   if (type === 'combobox') {
+    const options = field.options && field.options.length > 0
+      ? field.options
+      : [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }, { value: 'option3', label: 'Option 3' }];
+
+    const optionsArrayCode = JSON.stringify(options, null, 2)
+      .split('\n')
+      .map((line, i) => i === 0 ? line : '    ' + line)
+      .join('\n');
+
     return `    <Field.Field>
       <Field.Label>${label}</Field.Label>
+      {@const options = ${optionsArrayCode}}
       <Popover.Root bind:open={comboOpen}>
         <Popover.Trigger bind:ref={triggerRef}>
           {#snippet child({ props })}
@@ -978,6 +994,14 @@ function generateRemoteFieldCode(field: InputTypeV2): string {
 
   // Select
   if (type === 'select') {
+    const options = field.options && field.options.length > 0
+      ? field.options
+      : [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }, { value: 'option3', label: 'Option 3' }];
+
+    const optionsCode = options.map(opt =>
+      `          <Select.Item value="${opt.value}">${opt.label}</Select.Item>`
+    ).join('\n');
+
     return `    <Field.Field>
       <Field.Label>${label}</Field.Label>
       <Select.Root type="single" name="${named_id}">
@@ -985,9 +1009,7 @@ function generateRemoteFieldCode(field: InputTypeV2): string {
           <Select.Value placeholder="${placeholder}" />
         </Select.Trigger>
         <Select.Content>
-          <Select.Item value="option1">Option 1</Select.Item>
-          <Select.Item value="option2">Option 2</Select.Item>
-          <Select.Item value="option3">Option 3</Select.Item>
+${optionsCode}
         </Select.Content>
       </Select.Root>
       <Field.Description>${description}</Field.Description>
@@ -997,22 +1019,22 @@ function generateRemoteFieldCode(field: InputTypeV2): string {
 
   // Radio Group
   if (type === 'radio') {
+    const options = field.options && field.options.length > 0
+      ? field.options
+      : [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }, { value: 'option3', label: 'Option 3' }];
+
+    const radioItemsCode = options.map(opt =>
+      `        <Field.Field orientation="horizontal">
+          <RadioGroup.Item value="${opt.value}" />
+          <Field.Label>${opt.label}</Field.Label>
+        </Field.Field>`
+    ).join('\n');
+
     return `    <Field.Set>
       <Field.Legend>${label}</Field.Legend>
       <Field.Description>${description}</Field.Description>
       <RadioGroup.Root name="${named_id}">
-        <Field.Field orientation="horizontal">
-          <RadioGroup.Item value="option1" />
-          <Field.Label>Option 1</Field.Label>
-        </Field.Field>
-        <Field.Field orientation="horizontal">
-          <RadioGroup.Item value="option2" />
-          <Field.Label>Option 2</Field.Label>
-        </Field.Field>
-        <Field.Field orientation="horizontal">
-          <RadioGroup.Item value="option3" />
-          <Field.Label>Option 3</Field.Label>
-        </Field.Field>
+${radioItemsCode}
       </RadioGroup.Root>
     </Field.Set>
 `;
@@ -1120,8 +1142,18 @@ function generateRemoteFieldCode(field: InputTypeV2): string {
 
   // Combobox
   if (type === 'combobox') {
+    const options = field.options && field.options.length > 0
+      ? field.options
+      : [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }, { value: 'option3', label: 'Option 3' }];
+
+    const optionsArrayCode = JSON.stringify(options, null, 2)
+      .split('\n')
+      .map((line, i) => i === 0 ? line : '    ' + line)
+      .join('\n');
+
     return `    <Field.Field>
       <Field.Label>${label}</Field.Label>
+      {@const options = ${optionsArrayCode}}
       <Popover.Root bind:open={comboOpen}>
         <Popover.Trigger bind:ref={triggerRef}>
           {#snippet child({ props })}
