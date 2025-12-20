@@ -1,18 +1,19 @@
 <script lang="ts">
   import { Tabs, TabsList, TabsTrigger } from "$lib/components/ui/tabs";
-  import { Database, type Icon } from "lucide-svelte";
+  import Database from "@lucide/svelte/icons/database";
+  import { type Icon as IconType } from "@lucide/svelte";
   import type { Component } from "svelte";
-  import Box from "lucide-svelte/icons/box";
-  import Dock from "lucide-svelte/icons/dock";
-  import CodeXML from "lucide-svelte/icons/code-xml";
-  import Zap from "lucide-svelte/icons/zap";
+  import Box from "@lucide/svelte/icons/box";
+  import Dock from "@lucide/svelte/icons/dock";
+  import CodeXML from "@lucide/svelte/icons/code-xml";
+  import Zap from "@lucide/svelte/icons/zap";
 
   let { tab_value = $bindable("preview") } = $props();
   type TabConent = {
     value: string;
     content?: Component;
     isNew?: boolean;
-    icon: typeof Icon;
+    icon: typeof IconType;
   };
   let tabs_content: TabConent[] = [
     {

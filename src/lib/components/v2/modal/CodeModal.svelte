@@ -36,7 +36,7 @@
 
   let { open = $bindable(), onOpenChange }: Props = $props();
 
-  let activeTab: CodeTab = $state("structure");
+  let activeTab: CodeTab = $state("client");
   let packageManager: PackageManager = $state("npm");
   let generatedCode: GeneratedCode | null = $state(null);
   let copiedTab: CodeTab | null = $state(null);
@@ -261,7 +261,7 @@
     </Dialog.Header>
 
     <!-- Controls -->
-    <div class="flex items-center gap-4 py-2 flex-shrink-0">
+    <div class="flex items-center gap-4 py-2 shrink-0">
       <!-- Schema Selector -->
       <div class="flex items-center gap-2">
         <span class="text-sm text-muted-foreground">Schema:</span>
@@ -270,7 +270,7 @@
           value={schema}
           onValueChange={handleSchemaChange}
         >
-          <Select.Trigger class="w-[100px] h-8">
+          <Select.Trigger class="w-25 h-8">
             {schemas.find((s) => s.value === schema)?.label ?? "Schema"}
           </Select.Trigger>
           <Select.Content>
@@ -307,11 +307,11 @@
       </div>
     </div>
 
-    <Separator class="flex-shrink-0" />
+    <Separator class="shrink-0" />
 
     <!-- Tabs Content -->
     <Tabs.Root bind:value={activeTab} class="flex-1 flex flex-col min-h-0">
-      <Tabs.List class="flex-shrink-0 w-full justify-start">
+      <Tabs.List class="shrink-0 w-full justify-start">
         {#each tabs as tab}
           <Tabs.Trigger value={tab.id} class="gap-2">
             <tab.icon class="h-4 w-4" />

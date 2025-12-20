@@ -1,6 +1,4 @@
 // V2 Code Generator Utility
-// On-demand code generation (not derived) for performance
-// Uses shadcn-svelte Field component pattern
 
 import type { InputTypeV2, SchemaType, ModeType, FieldRow } from '../state/form-v2.svelte';
 
@@ -350,7 +348,16 @@ export function generateSuperformsClient(rows: FieldRow[], schemaType: SchemaTyp
   const { form: formData, errors, enhance, message } = superForm(
     untrack(() => data.form),
     { validators: ${adapter}(schema) }
-  );
+  );`;
+
+  // Add state variables for components that need them
+  const hasLocationInput = fields.some(f => f.type === 'location-input');
+
+  if (hasLocationInput) {
+    code += `\n\n  // Location selector state\n  let selectedCountry = $state(null);\n  let selectedState = $state(null);`;
+  }
+
+  code += `
 <\/script>
 
 {#if $message}
@@ -852,6 +859,13 @@ export function generateRemoteClient(rows: FieldRow[]): string {
   }
   if (uniqueImports.has('TagsInput')) {
     code += `\n  import TagsInput from '$lib/components/ui/tags-input/tags-input.svelte';`;
+  }
+
+  // Add state variables for components that need them
+  const hasLocationInput = fields.some(f => f.type === 'location-input');
+
+  if (hasLocationInput) {
+    code += `\n\n  // Location selector state\n  let selectedCountry = $state(null);\n  let selectedState = $state(null);`;
   }
 
   code += `

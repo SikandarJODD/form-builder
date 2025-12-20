@@ -1,8 +1,8 @@
 <script lang="ts">
   import { cn } from "$lib/utils";
 
-  import Check from "lucide-svelte/icons/check";
-  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import Check from "@lucide/svelte/icons/check";
+  import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
 
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Popover from "$lib/components/ui/popover/index";

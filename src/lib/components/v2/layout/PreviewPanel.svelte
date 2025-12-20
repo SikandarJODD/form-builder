@@ -178,7 +178,10 @@
                       <Select.Content>
                         {#if field.options && field.options.length > 0}
                           {#each field.options as option}
-                            <Select.Item value={option.value} label={option.label} />
+                            <Select.Item
+                              value={option.value}
+                              label={option.label}
+                            />
                           {/each}
                         {:else}
                           <Select.Item value="option1" label="Option 1" />
@@ -195,7 +198,10 @@
                   </div>
                 {:else if field.type === "combobox"}
                   {@const fieldId = field.id ?? ""}
-                  {@const options = field.options && field.options.length > 0 ? field.options : comboboxOptions}
+                  {@const options =
+                    field.options && field.options.length > 0
+                      ? field.options
+                      : comboboxOptions}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
@@ -204,7 +210,8 @@
                     </Label>
                     <Popover.Root
                       open={comboboxOpen[fieldId] ?? false}
-                      onOpenChange={(isOpen) => (comboboxOpen[fieldId] = isOpen)}
+                      onOpenChange={(isOpen) =>
+                        (comboboxOpen[fieldId] = isOpen)}
                     >
                       <Popover.Trigger>
                         {#snippet child({ props })}
@@ -227,7 +234,7 @@
                           </Button>
                         {/snippet}
                       </Popover.Trigger>
-                      <Popover.Content class="w-[200px] p-0">
+                      <Popover.Content class="w-50 p-0">
                         <Command.Root>
                           <Command.Input placeholder="Search..." />
                           <Command.List>
@@ -289,12 +296,19 @@
                       {#if field.required}<span class="text-destructive">*</span
                         >{/if}
                     </Label>
-                    <RadioGroup.Root value={field.options?.[0]?.value || "option1"}>
+                    <RadioGroup.Root
+                      value={field.options?.[0]?.value || "option1"}
+                    >
                       {#if field.options && field.options.length > 0}
                         {#each field.options as option, index}
                           <div class="flex items-center space-x-2">
-                            <RadioGroup.Item value={option.value} id={`${field.id}-${option.id}`} />
-                            <Label for={`${field.id}-${option.id}`}>{option.label}</Label>
+                            <RadioGroup.Item
+                              value={option.value}
+                              id={`${field.id}-${option.id}`}
+                            />
+                            <Label for={`${field.id}-${option.id}`}
+                              >{option.label}</Label
+                            >
                           </div>
                         {/each}
                       {:else}

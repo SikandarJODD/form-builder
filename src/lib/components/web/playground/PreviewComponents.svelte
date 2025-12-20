@@ -22,9 +22,9 @@
   import { tick } from "svelte";
 
   // Lucide Icons
-  import CalendarIcon from "lucide-svelte/icons/calendar";
-  import Check from "lucide-svelte/icons/check";
-  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import CalendarIcon from "@lucide/svelte/icons/calendar";
+  import Check from "@lucide/svelte/icons/check";
+  import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
   import { cn } from "$lib/utils";
   // Shadcn Extra Components : https://www.shadcn-svelte-extras.com
   import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";
@@ -167,7 +167,7 @@
   } from "$lib/components/ui/file-drop-zone";
   import { enhance } from "$app/forms";
 
-  import { Trash2, X } from "lucide-svelte";
+  import Trash2 from "@lucide/svelte/icons/trash-2";
   import { onDestroy } from "svelte";
   import { SvelteDate } from "svelte/reactivity";
   import { fly, slide } from "svelte/transition";
@@ -240,9 +240,10 @@
     method="POST"
     use:enhance={() => {
       return async ({ result, update }) => {
-        if (result.status === 200) {
+        if (result.type === "success") {
           console.log(result);
-          toast.success(`${JSON.stringify(result.data.form, null, 2)}`);
+          const data = "data" in result ? result.data : null;
+          toast.success(`${JSON.stringify(data, null, 2)}`);
         }
       };
     }}
@@ -407,7 +408,7 @@
                       id={comp.named_id}
                       class={[
                         buttonVariants({ variant: "outline" }),
-                        "w-[250px] justify-start pl-4 text-left font-normal",
+                        "w-62.5 justify-start pl-4 text-left font-normal",
                         !dvalue && "text-muted-foreground",
                       ]}
                     >
@@ -450,7 +451,7 @@
                                   {monthLabel}
                                 </Select.Trigger>
                                 <Select.Content
-                                  class="max-h-[200px] overflow-y-auto"
+                                  class="max-h-50 overflow-y-auto"
                                 >
                                   {#each monthOptions as { value, label }}
                                     <Select.Item {value} {label} />
@@ -475,7 +476,7 @@
                                   {defaultYear?.label ?? "Select year"}
                                 </Select.Trigger>
                                 <Select.Content
-                                  class="max-h-[200px] overflow-y-auto"
+                                  class="max-h-50 overflow-y-auto"
                                 >
                                   {#each yearOptions as { value, label }}
                                     <Select.Item {value} {label} />

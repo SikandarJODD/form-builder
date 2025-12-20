@@ -47,7 +47,7 @@
 </script>
 
 <script lang="ts">
-  import { Upload } from "lucide-svelte";
+  import Upload from "@lucide/svelte/icons/upload";
   import { displaySize } from "./index";
   import { useId } from "bits-ui";
 

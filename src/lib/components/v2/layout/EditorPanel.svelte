@@ -198,7 +198,7 @@
                   ]}
                 >
                   <!-- Field Header -->
-                  <div class="flex items-center gap-2 p-3 border-b">
+                  <div class="flex items-center gap-2 p-3">
                     {#if row.fields.length === 1}
                       <!-- Drag handle for single field rows -->
                       <button

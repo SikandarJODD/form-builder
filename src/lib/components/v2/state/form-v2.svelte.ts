@@ -73,16 +73,16 @@ class FormGeneratorV2 {
   private generateId = () => crypto.randomUUID().slice(0, 8);
 
   // Generate default options for fields that support them
-  private generateDefaultOptions = (category: string): FieldOption[] | undefined => {
-    if (category === 'select' || category === 'combobox' || category === 'radio') {
-      return [
-        { id: this.generateId(), value: 'option1', label: 'Option 1' },
-        { id: this.generateId(), value: 'option2', label: 'Option 2' },
-        { id: this.generateId(), value: 'option3', label: 'Option 3' },
-      ];
-    }
-    return undefined;
-  };
+  // private generateDefaultOptions = (category: string): FieldOption[] | undefined => {
+  //   if (category === 'select' || category === 'combobox' || category === 'radio') {
+  //     return [
+  //       { id: this.generateId(), value: 'option1', label: 'Option 1' },
+  //       { id: this.generateId(), value: 'option2', label: 'Option 2' },
+  //       { id: this.generateId(), value: 'option3', label: 'Option 3' },
+  //     ];
+  //   }
+  //   return undefined;
+  // };
 
   // Generate default options for fields that need them
   private generateDefaultOptions = (category: string): FieldOption[] => {

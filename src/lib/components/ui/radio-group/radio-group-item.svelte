@@ -4,8 +4,6 @@
     type WithoutChildrenOrChild,
   } from "bits-ui";
   import { cn } from "$lib/utils.js";
-  import { Check, CheckCircle } from "lucide-svelte";
-  import { draw, fade, scale } from "svelte/transition";
 
   let {
     ref = $bindable(null),

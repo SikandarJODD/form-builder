@@ -1,6 +1,7 @@
 <script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
-  import { HeartIcon, Zap } from "lucide-svelte";
+  import HeartIcon from "@lucide/svelte/icons/heart";
+  import Zap from "@lucide/svelte/icons/zap";
   import { onMount } from "svelte";
   import { Motion } from "motion-start";
   import NumberTicker from "$lib/components/magicui/NumberTicker/NumberTicker.svelte";
@@ -211,7 +212,11 @@
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.8, ease }}
   >
-    <Button data-umami-event="Hero Playground" variant="secondary" href="/playground" class="rounded-full sm:rounded-lg w-full sm:w-fit"
+    <Button
+      data-umami-event="Hero Playground"
+      variant="secondary"
+      href="/playground"
+      class="rounded-full sm:rounded-lg w-full sm:w-fit"
       >Go to Playground</Button
     >
   </Motion.div>
