@@ -10,6 +10,7 @@
     type SchemaType,
     type ModeType,
   } from "../state/form-v2.svelte";
+  import { globalFormState } from "../state/global-state.svelte";
   import {
     generateAllCode,
     type CodeTab,
@@ -36,12 +37,14 @@
   let { open = $bindable(), onOpenChange }: Props = $props();
 
   let activeTab: CodeTab = $state("structure");
-  let schema: SchemaType = $state(formV2.schema);
-  let mode: ModeType = $state(formV2.mode);
   let packageManager: PackageManager = $state("npm");
   let generatedCode: GeneratedCode | null = $state(null);
   let copiedTab: CodeTab | null = $state(null);
   let isGenerating = $state(false);
+
+  // Use global state for schema and mode
+  let schema = $derived(globalFormState.schema);
+  let mode = $derived(globalFormState.mode);
 
   // Highlighted HTML code for each tab
   let highlightedCode: Record<CodeTab, string> = $state({
@@ -194,12 +197,12 @@
   };
 
   const handleSchemaChange = (value: string) => {
-    schema = value as SchemaType;
+    globalFormState.setSchema(value as SchemaType);
     generateCode();
   };
 
   const handleModeChange = (newMode: ModeType) => {
-    mode = newMode;
+    globalFormState.setMode(newMode);
     generateCode();
   };
 

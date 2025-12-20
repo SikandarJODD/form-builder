@@ -5,6 +5,7 @@
     type ModeType,
     type TabType,
   } from "../state/form-v2.svelte";
+  import { globalFormState } from "../state/global-state.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Select from "$lib/components/ui/select/index";
   import { Separator } from "$lib/components/ui/separator";
@@ -29,21 +30,19 @@
   //   { id: "settings", label: "Settings", icon: Settings },
   // ];
 
-  let schemaValue = $state(formV2.schema);
   let codeModalOpen = $state(false);
 
-  const handleSchemaChange = (value: string) => {
-    formV2.schema = value as SchemaType;
-    schemaValue = value as SchemaType;
-  };
+  // Use global state
+  let schemaValue = $derived(globalFormState.schema);
+  let isRemoteMode = $derived(globalFormState.mode === "remote");
 
-  // Switch checked = true means Remote, unchecked = Superforms
-  let isRemoteMode = $state(formV2.mode === "remote");
+  const handleSchemaChange = (value: string) => {
+    globalFormState.setSchema(value as SchemaType);
+  };
 
   const handleModeSwitch = (checked: boolean) => {
     const newMode: ModeType = checked ? "remote" : "superforms";
-    formV2.mode = newMode;
-    isRemoteMode = checked;
+    globalFormState.setMode(newMode);
   };
 
   const handleReset = () => {

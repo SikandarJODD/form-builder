@@ -37,6 +37,10 @@
   let comboboxOpen: Record<string, boolean> = $state({});
   let comboboxValues: Record<string, string> = $state({});
 
+  // State for location selector (keyed by field id)
+  let locationCountry: Record<string, any> = $state({});
+  let locationState: Record<string, any> = $state({});
+
   // Sample options for combobox preview
   const comboboxOptions = [
     { value: "option1", label: "Option 1" },
@@ -172,9 +176,15 @@
                         {field.placeholder || "Select..."}
                       </Select.Trigger>
                       <Select.Content>
-                        <Select.Item value="option1" label="Option 1" />
-                        <Select.Item value="option2" label="Option 2" />
-                        <Select.Item value="option3" label="Option 3" />
+                        {#if field.options && field.options.length > 0}
+                          {#each field.options as option}
+                            <Select.Item value={option.value} label={option.label} />
+                          {/each}
+                        {:else}
+                          <Select.Item value="option1" label="Option 1" />
+                          <Select.Item value="option2" label="Option 2" />
+                          <Select.Item value="option3" label="Option 3" />
+                        {/if}
                       </Select.Content>
                     </Select.Root>
                     {#if field.description}
@@ -185,6 +195,7 @@
                   </div>
                 {:else if field.type === "combobox"}
                   {@const fieldId = field.id ?? ""}
+                  {@const options = field.options && field.options.length > 0 ? field.options : comboboxOptions}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
@@ -206,7 +217,7 @@
                             class="w-full justify-between"
                           >
                             {comboboxValues[fieldId]
-                              ? comboboxOptions.find(
+                              ? options.find(
                                   (opt) => opt.value === comboboxValues[fieldId]
                                 )?.label
                               : field.placeholder || "Select..."}
@@ -222,7 +233,7 @@
                           <Command.List>
                             <Command.Empty>No option found.</Command.Empty>
                             <Command.Group>
-                              {#each comboboxOptions as option}
+                              {#each options as option}
                                 <Command.Item
                                   value={option.value}
                                   onSelect={() => {
@@ -278,19 +289,28 @@
                       {#if field.required}<span class="text-destructive">*</span
                         >{/if}
                     </Label>
-                    <RadioGroup.Root value="option1">
-                      <div class="flex items-center space-x-2">
-                        <RadioGroup.Item value="option1" id="r1" />
-                        <Label for="r1">Option 1</Label>
-                      </div>
-                      <div class="flex items-center space-x-2">
-                        <RadioGroup.Item value="option2" id="r2" />
-                        <Label for="r2">Option 2</Label>
-                      </div>
-                      <div class="flex items-center space-x-2">
-                        <RadioGroup.Item value="option3" id="r3" />
-                        <Label for="r3">Option 3</Label>
-                      </div>
+                    <RadioGroup.Root value={field.options?.[0]?.value || "option1"}>
+                      {#if field.options && field.options.length > 0}
+                        {#each field.options as option, index}
+                          <div class="flex items-center space-x-2">
+                            <RadioGroup.Item value={option.value} id={`${field.id}-${option.id}`} />
+                            <Label for={`${field.id}-${option.id}`}>{option.label}</Label>
+                          </div>
+                        {/each}
+                      {:else}
+                        <div class="flex items-center space-x-2">
+                          <RadioGroup.Item value="option1" id="r1" />
+                          <Label for="r1">Option 1</Label>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <RadioGroup.Item value="option2" id="r2" />
+                          <Label for="r2">Option 2</Label>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <RadioGroup.Item value="option3" id="r3" />
+                          <Label for="r3">Option 3</Label>
+                        </div>
+                      {/if}
                     </RadioGroup.Root>
                     {#if field.description}
                       <p class="text-xs text-muted-foreground">
@@ -358,13 +378,17 @@
                     {/if}
                   </div>
                 {:else if field.type === "location-input"}
+                  {@const fieldId = field.id ?? ""}
                   <div class="space-y-1.5">
                     <Label>
                       {field.label}
                       {#if field.required}<span class="text-destructive">*</span
                         >{/if}
                     </Label>
-                    <LocationSelector />
+                    <LocationSelector
+                      bind:selectedCountry={locationCountry[fieldId]}
+                      bind:selectedState={locationState[fieldId]}
+                    />
                     {#if field.description}
                       <p class="text-xs text-muted-foreground">
                         {field.description}

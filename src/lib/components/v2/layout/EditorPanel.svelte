@@ -14,6 +14,7 @@
   import GripVertical from "@lucide/svelte/icons/grip-vertical";
   import Ungroup from "@lucide/svelte/icons/ungroup";
   import ArrowLeftRight from "@lucide/svelte/icons/arrow-left-right";
+  import Pencil from "@lucide/svelte/icons/pencil";
   import type { InputType } from "$lib/form-generator/form-gen.svelte";
   // Field Icons
   import TextCursorInput from "@lucide/svelte/icons/text-cursor-input";
@@ -98,6 +99,11 @@
 
   // Track which row's popover is open
   let openPopoverId = $state<string | null>(null);
+
+  // Track which option is being edited
+  let editingOption = $state<{ fieldId: string; optionId: string } | null>(null);
+  let editOptionValue = $state("");
+  let editOptionLabel = $state("");
 </script>
 
 <div class="flex h-full flex-col">
@@ -350,8 +356,146 @@
                             />
                           </div>
 
+                          <!-- Options Editor for select, combobox, radio -->
+                          {#if field.category === "select" || field.category === "combobox" || field.category === "radio"}
+                            <div class="space-y-2 pt-3 border-t mt-3">
+                              <div class="flex items-center justify-between mb-3">
+                                <Label class="text-xs font-semibold">Options</Label>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  class="h-7 text-xs gap-1.5"
+                                  onclick={() => formV2.addOption(field.id!)}
+                                >
+                                  <Plus class="h-3.5 w-3.5" />
+                                  Add Option
+                                </Button>
+                              </div>
+
+                              {#if field.options && field.options.length > 0}
+                                <div
+                                  class="space-y-2"
+                                  use:dragHandleZone={{
+                                    items: field.options,
+                                    flipDurationMs: 200,
+                                    dropTargetStyle: {},
+                                    type: `options-${field.id}`,
+                                  }}
+                                  onconsider={(e) => {
+                                    formV2.reorderOptions(field.id!, e.detail.items);
+                                  }}
+                                  onfinalize={(e) => {
+                                    formV2.reorderOptions(field.id!, e.detail.items);
+                                  }}
+                                >
+                                  {#each field.options as option (option.id)}
+                                    <div
+                                      class="group flex items-start gap-2 p-2.5 border rounded-lg bg-card hover:bg-accent/50 transition-colors"
+                                      animate:flip={{ duration: 200 }}
+                                    >
+                                      <button
+                                        use:dragHandle
+                                        aria-label="drag-handle for option {option.label}"
+                                        class="mt-0.5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+                                      >
+                                        <GripVertical class="h-4 w-4" />
+                                      </button>
+
+                                      <div class="flex-1 min-w-0">
+                                        {#if editingOption?.fieldId === field.id && editingOption?.optionId === option.id}
+                                          <!-- Edit Mode -->
+                                          <div class="space-y-1.5">
+                                            <Input
+                                              value={editOptionLabel}
+                                              oninput={(e) => editOptionLabel = e.currentTarget.value}
+                                              placeholder="Label"
+                                              class="h-7 text-xs"
+                                              autofocus
+                                            />
+                                            <Input
+                                              value={editOptionValue}
+                                              oninput={(e) => editOptionValue = e.currentTarget.value}
+                                              placeholder="value"
+                                              class="h-7 text-xs font-mono"
+                                            />
+                                            <div class="flex gap-1">
+                                              <Button
+                                                variant="default"
+                                                size="sm"
+                                                class="h-6 text-xs flex-1"
+                                                onclick={() => {
+                                                  formV2.updateOption(
+                                                    field.id!,
+                                                    option.id,
+                                                    { label: editOptionLabel, value: editOptionValue }
+                                                  );
+                                                  editingOption = null;
+                                                }}
+                                              >
+                                                Save
+                                              </Button>
+                                              <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                class="h-6 text-xs flex-1"
+                                                onclick={() => editingOption = null}
+                                              >
+                                                Cancel
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        {:else}
+                                          <!-- Display Mode -->
+                                          <div class="space-y-0.5">
+                                            <div class="text-sm font-medium truncate">
+                                              {option.label}
+                                            </div>
+                                            <div class="text-xs text-muted-foreground font-mono">
+                                              Value: {option.value}
+                                            </div>
+                                          </div>
+                                        {/if}
+                                      </div>
+
+                                      {#if !editingOption || editingOption?.optionId !== option.id}
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <Button
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            class="h-7 w-7"
+                                            onclick={() => {
+                                              editingOption = { fieldId: field.id!, optionId: option.id };
+                                              editOptionLabel = option.label;
+                                              editOptionValue = option.value;
+                                            }}
+                                            title="Edit option"
+                                          >
+                                            <Pencil class="h-3.5 w-3.5" />
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            class="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                            onclick={() => formV2.deleteOption(field.id!, option.id)}
+                                            title="Delete option"
+                                          >
+                                            <Trash2 class="h-3.5 w-3.5" />
+                                          </Button>
+                                        </div>
+                                      {/if}
+                                    </div>
+                                  {/each}
+                                </div>
+                              {:else}
+                                <div class="text-xs text-muted-foreground text-center py-3 border rounded-lg bg-muted/30">
+                                  No options added yet
+                                </div>
+                              {/if}
+                            </div>
+                          {/if}
+
                           <!-- Checkboxes -->
-                          <div class="flex gap-4">
+                          <div class="flex gap-4 pt-3 border-t mt-3">
                             <div class="flex items-center gap-2">
                               <Checkbox
                                 checked={field.required}
