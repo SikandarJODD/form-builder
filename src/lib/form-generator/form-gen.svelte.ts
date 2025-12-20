@@ -1,682 +1,668 @@
 export type InputType = {
-  id?: string;
-  name: string;
-  named_id?: string;
-  type: string;
-  min?: number;
-  max?: number;
-  label?: string;
-  category: string;
-  description?: string;
-  placeholder?: string;
-  required?: boolean;
-  disabled?: boolean;
-  isNew?: boolean;
+	id?: string;
+	name: string;
+	named_id?: string;
+	type: string;
+	min?: number;
+	max?: number;
+	label?: string;
+	category: string;
+	description?: string;
+	placeholder?: string;
+	required?: boolean;
+	disabled?: boolean;
+	isNew?: boolean;
 };
 let dummyInput: InputType[] = [
-  // Title and Description
-  // {
-  //   name: "Title",
-  //   type: "title",
-  //   category: "title",
-  //   label: "Create Account",
-  //   description: "",
-  //   placeholder: "",
-  //   min: 0,
-  //   max: 0,
-  // },
-  // {
-  //   name: "Desc",
-  //   type: "desc",
-  //   category: "desc",
-  //   label: "Please fill out the form below to create an account.",
-  //   description: "",
-  //   placeholder: "",
-  //   min: 0,
-  //   max: 0,
-  // },
+	// Title and Description
+	// {
+	//   name: "Title",
+	//   type: "title",
+	//   category: "title",
+	//   label: "Create Account",
+	//   description: "",
+	//   placeholder: "",
+	//   min: 0,
+	//   max: 0,
+	// },
+	// {
+	//   name: "Desc",
+	//   type: "desc",
+	//   category: "desc",
+	//   label: "Please fill out the form below to create an account.",
+	//   description: "",
+	//   placeholder: "",
+	//   min: 0,
+	//   max: 0,
+	// },
 
-  // Form Fields
-  {
-    name: "Input",
-    type: "text",
-    category: "text",
-    label: "Username",
-    description: "This is your public display name",
-    placeholder: "Enter your username",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Email",
-    type: "email",
-    category: "email",
-    label: "Email",
-    description: "Enter your email address",
-    placeholder: "Enter your email",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Textarea",
-    type: "textarea",
-    category: "textarea",
-    label: "Bio",
-    description: "Tell us about yourself",
-    placeholder: "Enter your bio",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Password",
-    type: "password",
-    category: "password",
-    label: "Password",
-    placeholder: "password",
-    description: "Enter your password",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Number",
-    type: "number",
-    category: "number",
-    label: "Age",
-    description: "This is your age",
-    placeholder: "Enter your age",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Switch",
-    type: "boolean",
-    category: "switch",
-    label: "Marketing Email",
-    description: "Receive emails about new products, features, and more.",
-    placeholder: "Placeholder",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Slider",
-    type: "slider",
-    category: "slider",
-    label: "Set Price Range *",
-    description:
-      "Adjust the price by sliding. Selected value is 5, minimun valus is 0, maximim values is 100, step size is 1",
-    placeholder: "No Placeholder",
-    min: 0,
-    max: 100,
-    isNew: true,
-  },
-  {
-    name: "Checkbox",
-    type: "boolean",
-    category: "checkbox",
-    label: "Use different settings for my mobile devices",
-    description:
-      "You can manage your mobile notifications in the mobile settings page.",
-    placeholder: "Placeholder",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Radio Group",
-    type: "radio",
-    category: "radio",
-    label: "Gender",
-    description: "Select your gender",
-    placeholder: "",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "File Input",
-    type: "file",
-    category: "file",
-    label: "Upload File*",
-    description: "Select File to upload.",
-    placeholder: "Placeholder",
-    min: 0,
-    max: 0,
-    isNew: true,
-  },
-  {
-    name: "Select",
-    type: "select",
-    category: "select",
-    label: "Framework",
-    description: "Select your favorite framework",
-    placeholder: "Placeholder",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Input OTP",
-    type: "input-otp",
-    category: "input-otp",
-    label: "One-Time Password",
-    description: "Please enter the one-time password sent to your phone.",
-    placeholder: "Placeholder",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Date Picker",
-    type: "date-picker",
-    category: "date-picker",
-    label: "Date of Birth",
-    description: "Your date of birth is used to calculate your age.",
-    placeholder: "Placeholder",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Location Input",
-    type: "location-input",
-    category: "location-input",
-    label: "Select Country*",
-    description: "Select your country and state from the dropdown.",
-    placeholder: "Select your country...",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Tags Input",
-    type: "tags-input",
-    category: "tags-input",
-    label: "Enter your tech stack.",
-    description: "Add tags.",
-    placeholder: "Enter your tags",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "Phone",
-    type: "phone",
-    category: "phone",
-    label: "Phone number",
-    placeholder: "Enter your phone number",
-    description: "Enter your phone number",
-    min: 0,
-    max: 0,
-  },
-  {
-    name: "ComboBox",
-    type: "combobox",
-    category: "combobox",
-    label: "Framework",
-    description: "Select your favorite framework",
-    placeholder: "Select your favorite framework",
-    min: 0,
-    max: 0,
-  },
+	// Form Fields
+	{
+		name: 'Input',
+		type: 'text',
+		category: 'text',
+		label: 'Username',
+		description: 'This is your public display name',
+		placeholder: 'Enter your username',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Email',
+		type: 'email',
+		category: 'email',
+		label: 'Email',
+		description: 'Enter your email address',
+		placeholder: 'Enter your email',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Textarea',
+		type: 'textarea',
+		category: 'textarea',
+		label: 'Bio',
+		description: 'Tell us about yourself',
+		placeholder: 'Enter your bio',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Password',
+		type: 'password',
+		category: 'password',
+		label: 'Password',
+		placeholder: 'password',
+		description: 'Enter your password',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Number',
+		type: 'number',
+		category: 'number',
+		label: 'Age',
+		description: 'This is your age',
+		placeholder: 'Enter your age',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Switch',
+		type: 'boolean',
+		category: 'switch',
+		label: 'Marketing Email',
+		description: 'Receive emails about new products, features, and more.',
+		placeholder: 'Placeholder',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Slider',
+		type: 'slider',
+		category: 'slider',
+		label: 'Set Price Range *',
+		description:
+			'Adjust the price by sliding. Selected value is 5, minimun valus is 0, maximim values is 100, step size is 1',
+		placeholder: 'No Placeholder',
+		min: 0,
+		max: 100,
+		isNew: true
+	},
+	{
+		name: 'Checkbox',
+		type: 'boolean',
+		category: 'checkbox',
+		label: 'Use different settings for my mobile devices',
+		description: 'You can manage your mobile notifications in the mobile settings page.',
+		placeholder: 'Placeholder',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Radio Group',
+		type: 'radio',
+		category: 'radio',
+		label: 'Gender',
+		description: 'Select your gender',
+		placeholder: '',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'File Input',
+		type: 'file',
+		category: 'file',
+		label: 'Upload File*',
+		description: 'Select File to upload.',
+		placeholder: 'Placeholder',
+		min: 0,
+		max: 0,
+		isNew: true
+	},
+	{
+		name: 'Select',
+		type: 'select',
+		category: 'select',
+		label: 'Framework',
+		description: 'Select your favorite framework',
+		placeholder: 'Placeholder',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Input OTP',
+		type: 'input-otp',
+		category: 'input-otp',
+		label: 'One-Time Password',
+		description: 'Please enter the one-time password sent to your phone.',
+		placeholder: 'Placeholder',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Date Picker',
+		type: 'date-picker',
+		category: 'date-picker',
+		label: 'Date of Birth',
+		description: 'Your date of birth is used to calculate your age.',
+		placeholder: 'Placeholder',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Location Input',
+		type: 'location-input',
+		category: 'location-input',
+		label: 'Select Country*',
+		description: 'Select your country and state from the dropdown.',
+		placeholder: 'Select your country...',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Tags Input',
+		type: 'tags-input',
+		category: 'tags-input',
+		label: 'Enter your tech stack.',
+		description: 'Add tags.',
+		placeholder: 'Enter your tags',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'Phone',
+		type: 'phone',
+		category: 'phone',
+		label: 'Phone number',
+		placeholder: 'Enter your phone number',
+		description: 'Enter your phone number',
+		min: 0,
+		max: 0
+	},
+	{
+		name: 'ComboBox',
+		type: 'combobox',
+		category: 'combobox',
+		label: 'Framework',
+		description: 'Select your favorite framework',
+		placeholder: 'Select your favorite framework',
+		min: 0,
+		max: 0
+	}
 ];
 
-let min_max_types = [
-  "number",
-  "password",
-  "text",
-  "textarea",
-  "tags-input",
-  "url",
-];
-let non_empty_types = ["date-picker", "email", "slider"];
+let min_max_types = ['number', 'password', 'text', 'textarea', 'tags-input', 'url'];
+let non_empty_types = ['date-picker', 'email', 'slider'];
 
-export type PackageManager = "pnpm" | "npm" | "yarn" | "bun";
+export type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun';
 
 class FormGenerator {
-  inputs: InputType[] = dummyInput;
-  selected_inputs: InputType[] = $state([]);
-  adapter: string = $state("zod");
-  formsnap: string = $state("");
-  packageManager: PackageManager = $state("pnpm");
+	inputs: InputType[] = dummyInput;
+	selected_inputs: InputType[] = $state([]);
+	adapter: string = $state('zod');
+	formsnap: string = $state('');
+	packageManager: PackageManager = $state('pnpm');
 
-  unique_imports = $derived.by(() => {
-    let all_imports = this.selected_inputs.map((input) => input.category);
-    let unique_imports = [...new Set(all_imports)];
-    return unique_imports;
-  });
-  unique_inputs_imports = $derived.by(() => {
-    let all_imports = this.selected_inputs.map((input) => input.category);
-    all_imports = all_imports.map((el) =>
-      ["email", "password", "number"].includes(el) ? "text" : el
-    );
-    let unique_imports = [...new Set(all_imports)];
-    return unique_imports;
-  });
-  date_picker_named_id = $derived.by(() => {
-    // did : date named_id (id) of date-picker
-    let did = this.selected_inputs.filter(
-      (input) => input.type === "date-picker"
-    );
-    return did;
-  });
-  combobox_named_id = $derived.by(() => {
-    let comboid = this.selected_inputs.filter(
-      (input) => input.type === "combobox"
-    );
-    return comboid;
-  });
+	unique_imports = $derived.by(() => {
+		let all_imports = this.selected_inputs.map((input) => input.category);
+		let unique_imports = [...new Set(all_imports)];
+		return unique_imports;
+	});
+	unique_inputs_imports = $derived.by(() => {
+		let all_imports = this.selected_inputs.map((input) => input.category);
+		all_imports = all_imports.map((el) =>
+			['email', 'password', 'number'].includes(el) ? 'text' : el
+		);
+		let unique_imports = [...new Set(all_imports)];
+		return unique_imports;
+	});
+	date_picker_named_id = $derived.by(() => {
+		// did : date named_id (id) of date-picker
+		let did = this.selected_inputs.filter((input) => input.type === 'date-picker');
+		return did;
+	});
+	combobox_named_id = $derived.by(() => {
+		let comboid = this.selected_inputs.filter((input) => input.type === 'combobox');
+		return comboid;
+	});
 
-  tags_input_named_id = $derived.by(() => {
-    let tagid = this.selected_inputs.filter(
-      (input) => input.type === "tags-input"
-    );
-    return tagid;
-  });
+	tags_input_named_id = $derived.by(() => {
+		let tagid = this.selected_inputs.filter((input) => input.type === 'tags-input');
+		return tagid;
+	});
 
-  file_input_named_id = $derived.by(() => {
-    let fileid = this.selected_inputs.filter((input) => input.type === "file");
-    return fileid;
-  });
+	file_input_named_id = $derived.by(() => {
+		let fileid = this.selected_inputs.filter((input) => input.type === 'file');
+		return fileid;
+	});
 
-  location_input_named_id = $derived.by(() => {
-    let locationid = this.selected_inputs.filter(
-      (input) => input.type === "location-input"
-    );
-    return locationid;
-  });
+	location_input_named_id = $derived.by(() => {
+		let locationid = this.selected_inputs.filter((input) => input.type === 'location-input');
+		return locationid;
+	});
 
-  add_input = (item: InputType, unshift?: boolean) => {
-    let id = crypto.randomUUID().slice(0, 5);
-    let random_id = "";
-    // here i am using loc for location-input and rest of the input type will be used as it is
-    if (item.type === "location-input") {
-      random_id = this.unique_imports.includes(item.category)
-        ? `loc_${crypto.randomUUID().slice(0, 2)}`
-        : "loc";
-    } else {
-      random_id = this.unique_imports.includes(item.category)
-        ? `${item.category.split("-").join("")}_${crypto
-            .randomUUID()
-            .slice(0, 2)}`
-        : item.category.split("-").join("");
-    }
-    let new_input: InputType = {
-      id: id,
-      named_id: random_id,
-      name: item.name,
-      type: item.type,
-      category: item.category,
-      label: item.label,
-      description: item.description,
-      placeholder: item.placeholder,
-      required: item.required || true,
-      min: item.min || 0,
-      max: item.max || 0,
-    };
-    if (unshift) {
-      this.selected_inputs.unshift(new_input);
-    } else {
-      this.selected_inputs.push(new_input);
-    }
-  };
+	add_input = (item: InputType, unshift?: boolean) => {
+		let id = crypto.randomUUID().slice(0, 5);
+		let random_id = '';
+		// here i am using loc for location-input and rest of the input type will be used as it is
+		if (item.type === 'location-input') {
+			random_id = this.unique_imports.includes(item.category)
+				? `loc_${crypto.randomUUID().slice(0, 2)}`
+				: 'loc';
+		} else {
+			random_id = this.unique_imports.includes(item.category)
+				? `${item.category.split('-').join('')}_${crypto.randomUUID().slice(0, 2)}`
+				: item.category.split('-').join('');
+		}
+		let new_input: InputType = {
+			id: id,
+			named_id: random_id,
+			name: item.name,
+			type: item.type,
+			category: item.category,
+			label: item.label,
+			description: item.description,
+			placeholder: item.placeholder,
+			required: item.required || true,
+			min: item.min || 0,
+			max: item.max || 0
+		};
+		if (unshift) {
+			this.selected_inputs.unshift(new_input);
+		} else {
+			this.selected_inputs.push(new_input);
+		}
+	};
 
-  remove_input = (id: string) => {
-    this.selected_inputs = this.selected_inputs.filter(
-      (input) => input.id !== id
-    );
-  };
+	remove_input = (id: string) => {
+		this.selected_inputs = this.selected_inputs.filter((input) => input.id !== id);
+	};
 
-  handleDndConsider = (e: CustomEvent) => {
-    this.selected_inputs = e.detail.items;
-  };
+	handleDndConsider = (e: CustomEvent) => {
+		this.selected_inputs = e.detail.items;
+	};
 
-  handleDndFinalize = (e: CustomEvent) => {
-    this.selected_inputs = e.detail.items;
-  };
+	handleDndFinalize = (e: CustomEvent) => {
+		this.selected_inputs = e.detail.items;
+	};
 
-  generateZodSchemaString(inputs: InputType[]): string {
-    let schemaString = `import { z } from 'zod';
+	generateZodSchemaString(inputs: InputType[]): string {
+		let schemaString = `import { z } from 'zod';
 ${
-  this.file_input_named_id.length > 0
-    ? `export const KILOBYTE = 1024;
+	this.file_input_named_id.length > 0
+		? `export const KILOBYTE = 1024;
 export const MEGABYTE = 1024 * KILOBYTE;\n`
-    : ""
+		: ''
 }export let schema = z.object({\n`;
 
-    inputs.forEach((input) => {
-      const label = input.label?.toLowerCase() || "value";
-      let fieldSchema = `z.string({ error: "Please enter your ${label}." })`;
+		inputs.forEach((input) => {
+			const label = input.label?.toLowerCase() || 'value';
+			let fieldSchema = `z.string({ error: "Please enter your ${label}." })`;
 
-      if (input.type === "number") {
-        fieldSchema = `z.number({ error: "Please enter a valid number." }).int({ error: "Please enter a whole number." })`;
-      } else if (input.type === "boolean") {
-        fieldSchema = `z.boolean().default(false)`;
-      } else if (input.type === "email") {
-        fieldSchema = `z.email({ error: "Please enter a valid email address." })`;
-      } else if (input.type === "url") {
-        fieldSchema = `z.url({ error: "Please enter a valid URL." })`;
-      } else if (input.type === "phone") {
-        fieldSchema = `z.string({ error: "Please enter your phone number." })`;
-      } else if (input.type === "input-otp") {
-        fieldSchema = `z.string({ error: "Please enter the verification code." }).min(6, { error: "Please enter a valid 6-digit code." })`;
-      } else if (input.type === "date-picker") {
-        fieldSchema = `z.string({ error: "Please select a date." }).refine((v) => v, { error: "Please select a date." })`;
-      } else if (input.type === "tags-input") {
-        fieldSchema = `z.string().array()`;
-      } else if (input.type === "file") {
-        fieldSchema = `z.array(z.instanceof(File, {
+			if (input.type === 'number') {
+				fieldSchema = `z.number({ error: "Please enter a valid number." }).int({ error: "Please enter a whole number." })`;
+			} else if (input.type === 'boolean') {
+				fieldSchema = `z.boolean().default(false)`;
+			} else if (input.type === 'email') {
+				fieldSchema = `z.email({ error: "Please enter a valid email address." })`;
+			} else if (input.type === 'url') {
+				fieldSchema = `z.url({ error: "Please enter a valid URL." })`;
+			} else if (input.type === 'phone') {
+				fieldSchema = `z.string({ error: "Please enter your phone number." })`;
+			} else if (input.type === 'input-otp') {
+				fieldSchema = `z.string({ error: "Please enter the verification code." }).min(6, { error: "Please enter a valid 6-digit code." })`;
+			} else if (input.type === 'date-picker') {
+				fieldSchema = `z.string({ error: "Please select a date." }).refine((v) => v, { error: "Please select a date." })`;
+			} else if (input.type === 'tags-input') {
+				fieldSchema = `z.string().array()`;
+			} else if (input.type === 'file') {
+				fieldSchema = `z.array(z.instanceof(File, {
         error: "Please select a file.",
       }).refine((file) => file.size <= (MEGABYTE * 2), {
         error: "File size must not exceed 2MB.",
       }))`;
-      } else if (input.type === "radio") {
-        fieldSchema = `z.enum(['male', 'female', 'other'], {
+			} else if (input.type === 'radio') {
+				fieldSchema = `z.enum(['male', 'female', 'other'], {
     error: "Please select an option.",
   })`;
-      } else if (input.type === "slider") {
-        fieldSchema = `z.number({ error: "Please select a value." }).min(${input.min || 0}, { error: "Value must be at least ${input.min || 0}." }).max(${input.max || 100}, { error: "Value must not exceed ${input.max || 100}." })`;
-      } else if (input.type === "select" || input.type === "combobox") {
-        fieldSchema = `z.string({ error: "Please select an option." })`;
-      } else if (input.type === "password") {
-        fieldSchema = `z.string({ error: "Please enter your password." })`;
-      } else if (input.type === "textarea") {
-        fieldSchema = `z.string({ error: "Please enter your ${label}." })`;
-      }
+			} else if (input.type === 'slider') {
+				fieldSchema = `z.number({ error: "Please select a value." }).min(${input.min || 0}, { error: "Value must be at least ${input.min || 0}." }).max(${input.max || 100}, { error: "Value must not exceed ${input.max || 100}." })`;
+			} else if (input.type === 'select' || input.type === 'combobox') {
+				fieldSchema = `z.string({ error: "Please select an option." })`;
+			} else if (input.type === 'password') {
+				fieldSchema = `z.string({ error: "Please enter your password." })`;
+			} else if (input.type === 'textarea') {
+				fieldSchema = `z.string({ error: "Please enter your ${label}." })`;
+			}
 
-      // Add `min` and `max` constraints if available for number, password, and text fields
-      if (min_max_types.includes(input.type)) {
-        if (input.min !== undefined && input.min > 0) {
-          if (input.type === "password") {
-            fieldSchema += `.min(${input.min}, { error: "Password must be at least ${input.min} characters long." })`;
-          } else if (input.type === "number") {
-            fieldSchema += `.min(${input.min}, { error: "Value must be at least ${input.min}." })`;
-          } else {
-            fieldSchema += `.min(${input.min}, { error: "Please enter at least ${input.min} characters." })`;
-          }
-        }
-        if (
-          input.max !== undefined &&
-          input.min !== undefined &&
-          input.max > 0 &&
-          input.max > input.min
-        ) {
-          if (input.type === "number") {
-            fieldSchema += `.max(${input.max}, { error: "Value must not exceed ${input.max}." })`;
-          } else {
-            fieldSchema += `.max(${input.max}, { error: "Please enter no more than ${input.max} characters." })`;
-          }
-        }
-      }
-      if (
-        !input.required &&
-        input.type !== "tags-input" &&
-        input.type !== "boolean"
-      ) {
-        fieldSchema += `.optional()`;
-      } else if (
-        !non_empty_types.includes(input.type) &&
-        input.min === 0 &&
-        input.type !== "boolean" &&
-        input.type !== "input-otp" &&
-        input.type !== "file" &&
-        input.type !== "radio"
-      ) {
-        if (input.type === "tags-input") {
-          fieldSchema += `\n   .min(1, { error: "Please add at least one tag." })`;
-        } else if (input.type === "password") {
-          fieldSchema += `.min(1, { error: "Please enter your password." })`;
-        } else if (input.type === "phone") {
-          fieldSchema += `.min(1, { error: "Please enter a valid phone number." })`;
-        } else if (input.type === "select" || input.type === "combobox") {
-          fieldSchema += `.min(1, { error: "Please select an option." })`;
-        } else {
-          fieldSchema += `.min(1, { error: "Please enter your ${label}." })`;
-        }
-      }
+			// Add `min` and `max` constraints if available for number, password, and text fields
+			if (min_max_types.includes(input.type)) {
+				if (input.min !== undefined && input.min > 0) {
+					if (input.type === 'password') {
+						fieldSchema += `.min(${input.min}, { error: "Password must be at least ${input.min} characters long." })`;
+					} else if (input.type === 'number') {
+						fieldSchema += `.min(${input.min}, { error: "Value must be at least ${input.min}." })`;
+					} else {
+						fieldSchema += `.min(${input.min}, { error: "Please enter at least ${input.min} characters." })`;
+					}
+				}
+				if (
+					input.max !== undefined &&
+					input.min !== undefined &&
+					input.max > 0 &&
+					input.max > input.min
+				) {
+					if (input.type === 'number') {
+						fieldSchema += `.max(${input.max}, { error: "Value must not exceed ${input.max}." })`;
+					} else {
+						fieldSchema += `.max(${input.max}, { error: "Please enter no more than ${input.max} characters." })`;
+					}
+				}
+			}
+			if (!input.required && input.type !== 'tags-input' && input.type !== 'boolean') {
+				fieldSchema += `.optional()`;
+			} else if (
+				!non_empty_types.includes(input.type) &&
+				input.min === 0 &&
+				input.type !== 'boolean' &&
+				input.type !== 'input-otp' &&
+				input.type !== 'file' &&
+				input.type !== 'radio'
+			) {
+				if (input.type === 'tags-input') {
+					fieldSchema += `\n   .min(1, { error: "Please add at least one tag." })`;
+				} else if (input.type === 'password') {
+					fieldSchema += `.min(1, { error: "Please enter your password." })`;
+				} else if (input.type === 'phone') {
+					fieldSchema += `.min(1, { error: "Please enter a valid phone number." })`;
+				} else if (input.type === 'select' || input.type === 'combobox') {
+					fieldSchema += `.min(1, { error: "Please select an option." })`;
+				} else {
+					fieldSchema += `.min(1, { error: "Please enter your ${label}." })`;
+				}
+			}
 
-      if (input.type === "location-input") {
-        fieldSchema = `z.object({
+			if (input.type === 'location-input') {
+				fieldSchema = `z.object({
     country: z.string({ error: "Please select a country." }).min(1, { error: "Please select a country." }),
     state: z.string().optional().default(''),
   })`;
-      }
+			}
 
-      if (input.type === "title" || input.type === "desc") {
-        fieldSchema = "";
-      }
-      if (input.type !== "title" && input.type !== "desc") {
-        schemaString += `  ${
-          input.named_id?.toLowerCase() || "name"
-        }: ${fieldSchema},\n`;
-      }
-    });
+			if (input.type === 'title' || input.type === 'desc') {
+				fieldSchema = '';
+			}
+			if (input.type !== 'title' && input.type !== 'desc') {
+				schemaString += `  ${input.named_id?.toLowerCase() || 'name'}: ${fieldSchema},\n`;
+			}
+		});
 
-    schemaString += `})`;
+		schemaString += `})`;
 
-    return schemaString;
-  }
+		return schemaString;
+	}
 
-  generateValibotSchemaString(inputs: InputType[]): string {
-    let schemaString = `import * as v from 'valibot';
+	generateValibotSchemaString(inputs: InputType[]): string {
+		let schemaString = `import * as v from 'valibot';
 ${
-  this.file_input_named_id.length > 0
-    ? `export const KILOBYTE = 1024;
+	this.file_input_named_id.length > 0
+		? `export const KILOBYTE = 1024;
 export const MEGABYTE = 1024 * KILOBYTE; \n`
-    : ""
+		: ''
 }`;
-    schemaString += `export const schema = v.object({\n`;
+		schemaString += `export const schema = v.object({\n`;
 
-    inputs.forEach((input) => {
-      const label = input.label?.toLowerCase() || "value";
-      let fieldSchema = `v.pipe(\n`;
+		inputs.forEach((input) => {
+			const label = input.label?.toLowerCase() || 'value';
+			let fieldSchema = `v.pipe(\n`;
 
-      if (
-        input.type === "text" ||
-        input.type === "textarea" ||
-        input.type === "password" ||
-        input.type === "select" ||
-        input.type === "phone" ||
-        input.type === "combobox" ||
-        input.type === "url"
-      ) {
-        if (!input.required) {
-          fieldSchema += `    v.optional(v.string())`;
-        } else {
-          fieldSchema += `    v.string()`;
-        }
-        if (input.type === "url") {
-          fieldSchema += `,\n    v.url('Please enter a valid URL.')`;
-        }
-        if (input.type === "password" && input.required && input.min === 0) {
-          fieldSchema += `,\n    v.nonEmpty('Please enter your password.')`;
-        } else if (input.type === "phone" && input.required && input.min === 0) {
-          fieldSchema += `,\n    v.nonEmpty('Please enter a valid phone number.')`;
-        } else if ((input.type === "select" || input.type === "combobox") && input.required && input.min === 0) {
-          fieldSchema += `,\n    v.nonEmpty('Please select an option.')`;
-        } else if (input.required && input.min === 0) {
-          fieldSchema += `,\n    v.nonEmpty('Please enter your ${label}.')`;
-        }
-      } else if (input.type === "email") {
-        fieldSchema += `    v.string(),\n    v.nonEmpty('Please enter your email address.'),\n    v.email('Please enter a valid email address.')`;
-      } else if (input.type === "number") {
-        fieldSchema += `    v.number('Please enter a valid number.')`;
-      } else if (input.type === "boolean") {
-        fieldSchema += `    v.boolean()`;
-      } else if (input.type === "input-otp") {
-        fieldSchema += `    v.string(),\n    v.minLength(6, 'Please enter a valid 6-digit code.')`;
-      } else if (input.type === "date-picker") {
-        fieldSchema += `    v.string(),\n    v.nonEmpty('Please select a date.')`;
-      } else if (input.type === "tags-input") {
-        fieldSchema += `    v.array(v.string(), 'Please add at least one tag.')`;
-      } else if (input.type === "file") {
-        fieldSchema += `    v.array(v.pipe(v.file('Please select a file.'), v.maxSize(MEGABYTE * 2, 'File size must not exceed 2MB.')))`;
-      } else if (input.type === "radio") {
-        fieldSchema += `    v.picklist(['male', 'female', 'other'], 'Please select an option.')`;
-      } else if (input.type === "slider") {
-        fieldSchema += `    v.number('Please select a value.'),\n    v.minValue(${input.min || 0}, 'Value must be at least ${input.min || 0}.'),\n    v.maxValue(${input.max || 100}, 'Value must not exceed ${input.max || 100}.')`;
-      }
+			if (
+				input.type === 'text' ||
+				input.type === 'textarea' ||
+				input.type === 'password' ||
+				input.type === 'select' ||
+				input.type === 'phone' ||
+				input.type === 'combobox' ||
+				input.type === 'url'
+			) {
+				if (!input.required) {
+					fieldSchema += `    v.optional(v.string())`;
+				} else {
+					fieldSchema += `    v.string()`;
+				}
+				if (input.type === 'url') {
+					fieldSchema += `,\n    v.url('Please enter a valid URL.')`;
+				}
+				if (input.type === 'password' && input.required && input.min === 0) {
+					fieldSchema += `,\n    v.nonEmpty('Please enter your password.')`;
+				} else if (input.type === 'phone' && input.required && input.min === 0) {
+					fieldSchema += `,\n    v.nonEmpty('Please enter a valid phone number.')`;
+				} else if (
+					(input.type === 'select' || input.type === 'combobox') &&
+					input.required &&
+					input.min === 0
+				) {
+					fieldSchema += `,\n    v.nonEmpty('Please select an option.')`;
+				} else if (input.required && input.min === 0) {
+					fieldSchema += `,\n    v.nonEmpty('Please enter your ${label}.')`;
+				}
+			} else if (input.type === 'email') {
+				fieldSchema += `    v.string(),\n    v.nonEmpty('Please enter your email address.'),\n    v.email('Please enter a valid email address.')`;
+			} else if (input.type === 'number') {
+				fieldSchema += `    v.number('Please enter a valid number.')`;
+			} else if (input.type === 'boolean') {
+				fieldSchema += `    v.boolean()`;
+			} else if (input.type === 'input-otp') {
+				fieldSchema += `    v.string(),\n    v.minLength(6, 'Please enter a valid 6-digit code.')`;
+			} else if (input.type === 'date-picker') {
+				fieldSchema += `    v.string(),\n    v.nonEmpty('Please select a date.')`;
+			} else if (input.type === 'tags-input') {
+				fieldSchema += `    v.array(v.string(), 'Please add at least one tag.')`;
+			} else if (input.type === 'file') {
+				fieldSchema += `    v.array(v.pipe(v.file('Please select a file.'), v.maxSize(MEGABYTE * 2, 'File size must not exceed 2MB.')))`;
+			} else if (input.type === 'radio') {
+				fieldSchema += `    v.picklist(['male', 'female', 'other'], 'Please select an option.')`;
+			} else if (input.type === 'slider') {
+				fieldSchema += `    v.number('Please select a value.'),\n    v.minValue(${input.min || 0}, 'Value must be at least ${input.min || 0}.'),\n    v.maxValue(${input.max || 100}, 'Value must not exceed ${input.max || 100}.')`;
+			}
 
-      // Add `min` and `max` constraints if available for number, password, and text fields
-      if (min_max_types.includes(input.type) && input.required) {
-        if (input.min !== undefined && input.min > 0) {
-          if (input.type === "password") {
-            fieldSchema += `,\n    v.minLength(${input.min}, 'Password must be at least ${input.min} characters long.')`;
-          } else if (input.type === "number") {
-            fieldSchema += `,\n    v.minValue(${input.min}, 'Value must be at least ${input.min}.')`;
-          } else {
-            fieldSchema += `,\n    v.minLength(${input.min}, 'Please enter at least ${input.min} characters.')`;
-          }
-        }
-        if (
-          input.max !== undefined &&
-          input.min !== undefined &&
-          input.max > 0 &&
-          input.max > input.min &&
-          input.required
-        ) {
-          if (input.type === "number") {
-            fieldSchema += `,\n    v.maxValue(${input.max}, 'Value must not exceed ${input.max}.')`;
-          } else {
-            fieldSchema += `,\n    v.maxLength(${input.max}, 'Please enter no more than ${input.max} characters.')`;
-          }
-        }
-      }
-      if (input.type === "location-input") {
-        fieldSchema = `v.object({
+			// Add `min` and `max` constraints if available for number, password, and text fields
+			if (min_max_types.includes(input.type) && input.required) {
+				if (input.min !== undefined && input.min > 0) {
+					if (input.type === 'password') {
+						fieldSchema += `,\n    v.minLength(${input.min}, 'Password must be at least ${input.min} characters long.')`;
+					} else if (input.type === 'number') {
+						fieldSchema += `,\n    v.minValue(${input.min}, 'Value must be at least ${input.min}.')`;
+					} else {
+						fieldSchema += `,\n    v.minLength(${input.min}, 'Please enter at least ${input.min} characters.')`;
+					}
+				}
+				if (
+					input.max !== undefined &&
+					input.min !== undefined &&
+					input.max > 0 &&
+					input.max > input.min &&
+					input.required
+				) {
+					if (input.type === 'number') {
+						fieldSchema += `,\n    v.maxValue(${input.max}, 'Value must not exceed ${input.max}.')`;
+					} else {
+						fieldSchema += `,\n    v.maxLength(${input.max}, 'Please enter no more than ${input.max} characters.')`;
+					}
+				}
+			}
+			if (input.type === 'location-input') {
+				fieldSchema = `v.object({
     country: v.pipe(v.string(), v.nonEmpty('Please select a country.')),
     state: v.optional(v.string()),
   })`;
-      }
-      if (input.type !== "location-input") {
-        fieldSchema += `\n  )`;
-      }
-      if (input.type !== "title" && input.type !== "desc") {
-        schemaString += `  ${
-          input.named_id?.toLowerCase() || "name"
-        }: ${fieldSchema},\n`;
-      }
-    });
+			}
+			if (input.type !== 'location-input') {
+				fieldSchema += `\n  )`;
+			}
+			if (input.type !== 'title' && input.type !== 'desc') {
+				schemaString += `  ${input.named_id?.toLowerCase() || 'name'}: ${fieldSchema},\n`;
+			}
+		});
 
-    schemaString += `})`;
+		schemaString += `})`;
 
-    return schemaString;
-  }
+		return schemaString;
+	}
 
-  generateArkTypeSchemaString(inputs: InputType[]): string {
-    let schemaString = `import { type } from 'arktype';
+	generateArkTypeSchemaString(inputs: InputType[]): string {
+		let schemaString = `import { type } from 'arktype';
 ${
-  this.file_input_named_id.length > 0
-    ? `export const KILOBYTE = 1024;
+	this.file_input_named_id.length > 0
+		? `export const KILOBYTE = 1024;
 export const MEGABYTE = 1024 * KILOBYTE;\n`
-    : ""
+		: ''
 }export const schema = type({\n`;
 
-    inputs.forEach((input) => {
-      const label = input.label?.toLowerCase() || "value";
-      let fieldSchema = `"string"`;
+		inputs.forEach((input) => {
+			const label = input.label?.toLowerCase() || 'value';
+			let fieldSchema = `"string"`;
 
-      if (input.type === "number" || input.type === "slider") {
-        if (input.type === "slider") {
-          fieldSchema = `"${input.min || 0} <= number <= ${input.max || 100}"`;
-        } else if (input.min !== undefined && input.min > 0 && input.max !== undefined && input.max > input.min) {
-          fieldSchema = `"${input.min} <= number.integer <= ${input.max}"`;
-        } else if (input.min !== undefined && input.min > 0) {
-          fieldSchema = `"number.integer >= ${input.min}"`;
-        } else {
-          fieldSchema = `"number.integer"`;
-        }
-      } else if (input.type === "boolean") {
-        fieldSchema = `"boolean"`;
-      } else if (input.type === "email") {
-        fieldSchema = `"string.email"`;
-      } else if (input.type === "url") {
-        fieldSchema = `"string.url"`;
-      } else if (input.type === "phone") {
-        fieldSchema = `"string >= 1"`;
-      } else if (input.type === "input-otp") {
-        fieldSchema = `"string >= 6"`;
-      } else if (input.type === "date-picker") {
-        fieldSchema = `"string >= 1"`;
-      } else if (input.type === "tags-input") {
-        fieldSchema = `"string[] >= 1"`;
-      } else if (input.type === "file") {
-        fieldSchema = `"File[]"`;
-      } else if (input.type === "radio") {
-        fieldSchema = `"'male' | 'female' | 'other'"`;
-      } else if (input.type === "select" || input.type === "combobox") {
-        fieldSchema = `"string >= 1"`;
-      } else if (input.type === "password") {
-        if (input.min !== undefined && input.min > 0) {
-          fieldSchema = `"string >= ${input.min}"`;
-        } else {
-          fieldSchema = `"string >= 1"`;
-        }
-      } else if (input.type === "text" || input.type === "textarea") {
-        if (input.min !== undefined && input.min > 0 && input.max !== undefined && input.max > input.min) {
-          fieldSchema = `"${input.min} <= string <= ${input.max}"`;
-        } else if (input.min !== undefined && input.min > 0) {
-          fieldSchema = `"string >= ${input.min}"`;
-        } else if (input.required) {
-          fieldSchema = `"string >= 1"`;
-        } else {
-          fieldSchema = `"string"`;
-        }
-      }
+			if (input.type === 'number' || input.type === 'slider') {
+				if (input.type === 'slider') {
+					fieldSchema = `"${input.min || 0} <= number <= ${input.max || 100}"`;
+				} else if (
+					input.min !== undefined &&
+					input.min > 0 &&
+					input.max !== undefined &&
+					input.max > input.min
+				) {
+					fieldSchema = `"${input.min} <= number.integer <= ${input.max}"`;
+				} else if (input.min !== undefined && input.min > 0) {
+					fieldSchema = `"number.integer >= ${input.min}"`;
+				} else {
+					fieldSchema = `"number.integer"`;
+				}
+			} else if (input.type === 'boolean') {
+				fieldSchema = `"boolean"`;
+			} else if (input.type === 'email') {
+				fieldSchema = `"string.email"`;
+			} else if (input.type === 'url') {
+				fieldSchema = `"string.url"`;
+			} else if (input.type === 'phone') {
+				fieldSchema = `"string >= 1"`;
+			} else if (input.type === 'input-otp') {
+				fieldSchema = `"string >= 6"`;
+			} else if (input.type === 'date-picker') {
+				fieldSchema = `"string >= 1"`;
+			} else if (input.type === 'tags-input') {
+				fieldSchema = `"string[] >= 1"`;
+			} else if (input.type === 'file') {
+				fieldSchema = `"File[]"`;
+			} else if (input.type === 'radio') {
+				fieldSchema = `"'male' | 'female' | 'other'"`;
+			} else if (input.type === 'select' || input.type === 'combobox') {
+				fieldSchema = `"string >= 1"`;
+			} else if (input.type === 'password') {
+				if (input.min !== undefined && input.min > 0) {
+					fieldSchema = `"string >= ${input.min}"`;
+				} else {
+					fieldSchema = `"string >= 1"`;
+				}
+			} else if (input.type === 'text' || input.type === 'textarea') {
+				if (
+					input.min !== undefined &&
+					input.min > 0 &&
+					input.max !== undefined &&
+					input.max > input.min
+				) {
+					fieldSchema = `"${input.min} <= string <= ${input.max}"`;
+				} else if (input.min !== undefined && input.min > 0) {
+					fieldSchema = `"string >= ${input.min}"`;
+				} else if (input.required) {
+					fieldSchema = `"string >= 1"`;
+				} else {
+					fieldSchema = `"string"`;
+				}
+			}
 
-      if (!input.required && input.type !== "tags-input" && input.type !== "boolean") {
-        fieldSchema += ` | undefined`;
-        fieldSchema = `"${fieldSchema.replace(/"/g, '')}"`;
-      }
+			if (!input.required && input.type !== 'tags-input' && input.type !== 'boolean') {
+				fieldSchema += ` | undefined`;
+				fieldSchema = `"${fieldSchema.replace(/"/g, '')}"`;
+			}
 
-      if (input.type === "location-input") {
-        fieldSchema = `{
+			if (input.type === 'location-input') {
+				fieldSchema = `{
     country: "string >= 1",
     "state?": "string",
   }`;
-      }
+			}
 
-      if (input.type === "title" || input.type === "desc") {
-        fieldSchema = "";
-      }
-      if (input.type !== "title" && input.type !== "desc") {
-        schemaString += `  ${input.named_id?.toLowerCase() || "name"}: ${fieldSchema},\n`;
-      }
-    });
+			if (input.type === 'title' || input.type === 'desc') {
+				fieldSchema = '';
+			}
+			if (input.type !== 'title' && input.type !== 'desc') {
+				schemaString += `  ${input.named_id?.toLowerCase() || 'name'}: ${fieldSchema},\n`;
+			}
+		});
 
-    schemaString += `})`;
+		schemaString += `})`;
 
-    return schemaString;
-  }
+		return schemaString;
+	}
 
-  valibotSchema = $derived.by(() => {
-    let sh = this.generateValibotSchemaString(this.selected_inputs);
-    return sh;
-  });
-  // Generate schema string
-  zodSchema = $derived.by(() => {
-    let sh = this.generateZodSchemaString(this.selected_inputs);
-    return sh;
-  });
-  // Generate ArkType schema string
-  arkTypeSchema = $derived.by(() => {
-    let sh = this.generateArkTypeSchemaString(this.selected_inputs);
-    return sh;
-  });
+	valibotSchema = $derived.by(() => {
+		let sh = this.generateValibotSchemaString(this.selected_inputs);
+		return sh;
+	});
+	// Generate schema string
+	zodSchema = $derived.by(() => {
+		let sh = this.generateZodSchemaString(this.selected_inputs);
+		return sh;
+	});
+	// Generate ArkType schema string
+	arkTypeSchema = $derived.by(() => {
+		let sh = this.generateArkTypeSchemaString(this.selected_inputs);
+		return sh;
+	});
 
-  // Helper to get adapter name for server-side code
-  getServerAdapter = () => {
-    if (this.adapter === "zod") return "zod4";
-    if (this.adapter === "valibot") return "valibot";
-    if (this.adapter === "arktype") return "arktype";
-    return "zod4";
-  };
+	// Helper to get adapter name for server-side code
+	getServerAdapter = () => {
+		if (this.adapter === 'zod') return 'zod4';
+		if (this.adapter === 'valibot') return 'valibot';
+		if (this.adapter === 'arktype') return 'arktype';
+		return 'zod4';
+	};
 
-  // Helper to get adapter name for client-side code
-  getClientAdapter = () => {
-    if (this.adapter === "zod") return "zod4Client";
-    if (this.adapter === "valibot") return "valibotClient";
-    if (this.adapter === "arktype") return "arktypeClient";
-    return "zod4Client";
-  };
+	// Helper to get adapter name for client-side code
+	getClientAdapter = () => {
+		if (this.adapter === 'zod') return 'zod4Client';
+		if (this.adapter === 'valibot') return 'valibotClient';
+		if (this.adapter === 'arktype') return 'arktypeClient';
+		return 'zod4Client';
+	};
 
-  // Replace below logic of zod, valibot, and arktype
-  // Updated to support 3 Schema Adapters
-  serverCode = $derived.by(() => {
-    const serverAdapter = this.getServerAdapter();
-    return `import type { Actions } from '@sveltejs/kit';
+	// Replace below logic of zod, valibot, and arktype
+	// Updated to support 3 Schema Adapters
+	serverCode = $derived.by(() => {
+		const serverAdapter = this.getServerAdapter();
+		return `import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 import { fail, message, superValidate } from 'sveltekit-superforms';
@@ -699,48 +685,48 @@ export const actions: Actions = {
         return message(form, 'Form Posted Successfully!');
     }
 };`;
-  });
+	});
 
-  clientCode = $derived.by(() => {
-    let clientrawCode = `<script lang="ts">
+	clientCode = $derived.by(() => {
+		let clientrawCode = `<script lang="ts">
   import { superForm${
-    this.file_input_named_id.length > 0 ? ", filesProxy" : ""
-  } } from 'sveltekit-superforms';
+		this.file_input_named_id.length > 0 ? ', filesProxy' : ''
+	} } from 'sveltekit-superforms';
     // add your own path
   import type { PageData } from './$types';
   import Label from '$lib/components/ui/label/label.svelte';
   import Button from '$lib/components/ui/button/button.svelte';`;
 
-    this.unique_imports.map((input) => {
-      if (input === "text") {
-        clientrawCode += `
+		this.unique_imports.map((input) => {
+			if (input === 'text') {
+				clientrawCode += `
   import Input from '$lib/components/ui/input/input.svelte';`;
-      } else if (input === "email") {
-        if (!this.unique_imports.includes("text")) {
-          clientrawCode += `
+			} else if (input === 'email') {
+				if (!this.unique_imports.includes('text')) {
+					clientrawCode += `
   import Input from '$lib/components/ui/input/input.svelte';`;
-        }
-      } else if (input === "password") {
-        clientrawCode += `
+				}
+			} else if (input === 'password') {
+				clientrawCode += `
   import PasswordInput from "$lib/components/templates/comps/PasswordInput.svelte";`;
-      } else if (input === "switch") {
-        clientrawCode += `
+			} else if (input === 'switch') {
+				clientrawCode += `
   import Switch from "$lib/components/ui/switch/switch.svelte";`;
-      } else if (input === "checkbox") {
-        clientrawCode += `
+			} else if (input === 'checkbox') {
+				clientrawCode += `
   import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';`;
-      } else if (input === "textarea") {
-        clientrawCode += `
+			} else if (input === 'textarea') {
+				clientrawCode += `
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
-      } else if (input === "select") {
-        clientrawCode += `
+			} else if (input === 'select') {
+				clientrawCode += `
   import * as Select from "$lib/components/ui/select/index";`;
-      } else if (input === "input-otp") {
-        clientrawCode += `
+			} else if (input === 'input-otp') {
+				clientrawCode += `
   import * as InputOTP from "$lib/components/ui/input-otp/index";
   import { REGEXP_ONLY_DIGITS } from "bits-ui";`;
-      } else if (input === "date-picker") {
-        clientrawCode += `import CalendarIcon from "@lucide/svelte/icons/calendar";
+			} else if (input === 'date-picker') {
+				clientrawCode += `import CalendarIcon from "@lucide/svelte/icons/calendar";
 
   import * as Popover from "$lib/components/ui/popover";
   import * as Select from "$lib/components/ui/select";
@@ -783,14 +769,14 @@ export const actions: Actions = {
     value: String(currentYear - i),
   }));
 `;
-      } else if (input === "tags-input") {
-        clientrawCode += `
+			} else if (input === 'tags-input') {
+				clientrawCode += `
   import { TagsInput } from "$lib/components/ui/tags-input";`;
-      } else if (input === "phone") {
-        clientrawCode += `
+			} else if (input === 'phone') {
+				clientrawCode += `
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
-      } else if (input === "combobox") {
-        clientrawCode += `
+			} else if (input === 'combobox') {
+				clientrawCode += `
   import Check from "@lucide/svelte/icons/check";
   import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
   import * as Popover from "$lib/components/ui/popover/index";
@@ -820,8 +806,8 @@ export const actions: Actions = {
         label: "Astro",
       },
     ];`;
-      } else if (input === "file") {
-        clientrawCode += `
+			} else if (input === 'file') {
+				clientrawCode += `
       // File Upload
   import { toast } from "svelte-sonner";
   import {
@@ -839,23 +825,23 @@ export const actions: Actions = {
     toast.error(\`\${ file.name } failed to upload!\`, { description: reason });
   };
   `;
-      } else if (input === "location-input") {
-        clientrawCode += `
+			} else if (input === 'location-input') {
+				clientrawCode += `
   import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
         `;
-      } else if (input === "radio") {
-        clientrawCode += `
+			} else if (input === 'radio') {
+				clientrawCode += `
   import * as RadioGroup from "$lib/components/ui/radio-group/index";
         `;
-      } else if (input === "slider") {
-        clientrawCode += `
+			} else if (input === 'slider') {
+				clientrawCode += `
   import Slider from "$lib/components/ui/slider/slider.svelte";`;
-      }
-    });
+			}
+		});
 
-    if (this.combobox_named_id.length > 0) {
-      this.combobox_named_id.map((combobox) => {
-        clientrawCode += `
+		if (this.combobox_named_id.length > 0) {
+			this.combobox_named_id.map((combobox) => {
+				clientrawCode += `
   // Popover State for ${combobox.named_id}
   let open_${combobox.named_id} = $state(false);
   // Value
@@ -876,11 +862,11 @@ export const actions: Actions = {
       triggerRef_${combobox.named_id}.focus();
     });
   }`;
-      });
-    }
-    if (this.date_picker_named_id.length > 0) {
-      this.date_picker_named_id.map((date) => {
-        clientrawCode += `
+			});
+		}
+		if (this.date_picker_named_id.length > 0) {
+			this.date_picker_named_id.map((date) => {
+				clientrawCode += `
   let value_${date.named_id} = $state<DateValue | undefined>();
   let df_${date.named_id} = new DateFormatter("en-US", {
     dateStyle: "long",
@@ -907,20 +893,20 @@ export const actions: Actions = {
     monthOptions.find((m) => m.value === defaultMonth_${date.named_id}?.value)?.label ??
       "Select a month"
   );`;
-      });
-    }
+			});
+		}
 
-    if (this.location_input_named_id.length > 0) {
-      this.location_input_named_id.map((location) => {
-        clientrawCode += `
+		if (this.location_input_named_id.length > 0) {
+			this.location_input_named_id.map((location) => {
+				clientrawCode += `
     // Location Input
     let selectedCountry_${location.named_id} = $state(null);
     let selectedState_${location.named_id} = $state(null);
         `;
-      });
-    }
-    const clientAdapter = this.getClientAdapter();
-    clientrawCode += `
+			});
+		}
+		const clientAdapter = this.getClientAdapter();
+		clientrawCode += `
   // Form Validation & Schema
   import { ${clientAdapter} } from 'sveltekit-superforms/adapters';
   import { schema } from './schema';
@@ -936,58 +922,58 @@ export const actions: Actions = {
     untrack(() => data.form),
     {
       validators: ${clientAdapter}(schema)`;
-    if (this.location_input_named_id.length > 0) {
-      clientrawCode += `,
+		if (this.location_input_named_id.length > 0) {
+			clientrawCode += `,
       dataType: "json"`;
-    }
-    if (
-      this.tags_input_named_id.length > 0 ||
-      this.combobox_named_id.length > 0 ||
-      this.location_input_named_id.length > 0
-    ) {
-      clientrawCode += `,
+		}
+		if (
+			this.tags_input_named_id.length > 0 ||
+			this.combobox_named_id.length > 0 ||
+			this.location_input_named_id.length > 0
+		) {
+			clientrawCode += `,
       onUpdated(event) {
         if (event.form.valid) {`;
-      if (this.tags_input_named_id.length > 0) {
-        this.tags_input_named_id.map((tag) => {
-          clientrawCode += `
+			if (this.tags_input_named_id.length > 0) {
+				this.tags_input_named_id.map((tag) => {
+					clientrawCode += `
         ${tag.named_id}_value = [];`;
-        });
-      }
-      if (this.combobox_named_id.length > 0) {
-        this.combobox_named_id.map((combobox) => {
-          clientrawCode += `
+				});
+			}
+			if (this.combobox_named_id.length > 0) {
+				this.combobox_named_id.map((combobox) => {
+					clientrawCode += `
         combovalue_${combobox.named_id} = "";`;
-        });
-      }
-      if (this.location_input_named_id.length > 0) {
-        this.location_input_named_id.map((location) => {
-          clientrawCode += `
+				});
+			}
+			if (this.location_input_named_id.length > 0) {
+				this.location_input_named_id.map((location) => {
+					clientrawCode += `
         selectedCountry_${location.named_id} = null;
         selectedState_${location.named_id} = null;`;
-        });
-      }
-      clientrawCode += `
+				});
+			}
+			clientrawCode += `
         }
       }`;
-    }
-    clientrawCode += `
+		}
+		clientrawCode += `
     }
   );`;
-    if (this.tags_input_named_id.length > 0) {
-      this.tags_input_named_id.map((tag) => {
-        clientrawCode += `
+		if (this.tags_input_named_id.length > 0) {
+			this.tags_input_named_id.map((tag) => {
+				clientrawCode += `
     let ${tag.named_id}_value = $state([]);`;
-      });
-      clientrawCode += `\n$effect(() => {`;
-      this.tags_input_named_id.map((tag) => {
-        clientrawCode += `
+			});
+			clientrawCode += `\n$effect(() => {`;
+			this.tags_input_named_id.map((tag) => {
+				clientrawCode += `
     $form.${tag.named_id} = ${tag.named_id}_value;`;
-      });
-      clientrawCode += `\n  });`;
-    }
-    if (this.file_input_named_id.length > 0) {
-      clientrawCode += `
+			});
+			clientrawCode += `\n  });`;
+		}
+		if (this.file_input_named_id.length > 0) {
+			clientrawCode += `
   message.subscribe((message) => {
     if (message) {
       toast.success(message.text, {
@@ -996,45 +982,45 @@ export const actions: Actions = {
     }
   });
       `;
-      this.file_input_named_id.map((file) => {
-        clientrawCode += `
+			this.file_input_named_id.map((file) => {
+				clientrawCode += `
   let files_${file.named_id} = filesProxy(form, "${file.named_id}");
   let onUpload_${file.named_id}: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
     // we use set instead of an assignment since it accepts a File[]
     files_${file.named_id}.set([...Array.from($files_${file.named_id}), ...uploadedFiles]);
   };`;
-      });
-    }
+			});
+		}
 
-    clientrawCode += `\n</script>
+		clientrawCode += `\n</script>
 <div class="flex min-h-[80vh] flex-col items-center justify-center">
 	{#if $message}
 		<p class="text-emerald-400 mb-2">{$message}</p>
 	{/if}
   <form method="post" ${
-    this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ""
-  } use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
-    this.selected_inputs.map((input) => {
-      if (input.type === "title") {
-        clientrawCode += `
+		this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ''
+	} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+		this.selected_inputs.map((input) => {
+			if (input.type === 'title') {
+				clientrawCode += `
         <h2 class="text-2xl font-semibold leading-none tracking-tight">
           ${input.label}
         </h2>`;
-      }
-      if (input.type === "desc") {
-        clientrawCode += `
+			}
+			if (input.type === 'desc') {
+				clientrawCode += `
         <p class="text-sm text-muted-foreground">
           ${input.label}
         </p>`;
-      }
-      if (
-        input.type === "text" ||
-        input.type === "number" ||
-        input.type === "email" ||
-        input.type === "tel" ||
-        input.type === "url"
-      ) {
-        clientrawCode += `
+			}
+			if (
+				input.type === 'text' ||
+				input.type === 'number' ||
+				input.type === 'email' ||
+				input.type === 'tel' ||
+				input.type === 'url'
+			) {
+				clientrawCode += `
     <div>
       <Label for="${input.named_id}" class="mb-1.5 {$errors.${input.named_id} && 'text-destructive'}">${input.label}</Label>
       <Input type="${input.type}" id="${input.named_id}" name="${input.named_id}" placeholder="${input.placeholder}" bind:value={$form.${input.named_id}} />
@@ -1046,8 +1032,8 @@ export const actions: Actions = {
       </p>
     </div>
     `;
-      } else if (input.type === "password") {
-        clientrawCode += `
+			} else if (input.type === 'password') {
+				clientrawCode += `
     <div>
     <!-- Add Password Input Component from : https://github.com/SikandarJODD/form-builder/blob/master/src/lib/components/templates/comps/PasswordInput.svelte -->
       <PasswordInput
@@ -1063,8 +1049,8 @@ export const actions: Actions = {
       {/if}
     </div>
         `;
-      } else if (input.category === "switch") {
-        clientrawCode += `
+			} else if (input.category === 'switch') {
+				clientrawCode += `
     <div class="flex flex-row items-center justify-between rounded-lg border p-4">
         <div class="space-y-0.5">
             <Label for="${input.named_id}" class="mb-1.5 {$errors.${input.named_id} && 'text-destructive'}">
@@ -1079,8 +1065,8 @@ export const actions: Actions = {
           <p class="mt-1 text-sm text-destructive">{$errors.${input.named_id}}</p>
         {/if}
     </div>`;
-      } else if (input.category === "checkbox") {
-        clientrawCode += `
+			} else if (input.category === 'checkbox') {
+				clientrawCode += `
     <div class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
       <Checkbox id="${input.named_id}" name="${input.named_id}" bind:checked={$form.${input.named_id}} />
       <div class="space-y-1 leading-none">
@@ -1096,8 +1082,8 @@ export const actions: Actions = {
       {/if}
     </div>
         `;
-      } else if (input.category === "textarea") {
-        clientrawCode += `
+			} else if (input.category === 'textarea') {
+				clientrawCode += `
     <div>
       <Label for="${input.named_id}" class="mb-1.5 {$errors.${input.named_id} && 'text-destructive'}">${input.label}</Label>
       <Textarea
@@ -1114,8 +1100,8 @@ export const actions: Actions = {
         <p class="mt-1 text-xs text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>`;
-      } else if (input.category === "select") {
-        clientrawCode += `
+			} else if (input.category === 'select') {
+				clientrawCode += `
     <div>
       <Label for="${input.named_id}" class="mb-1.5 {$errors.${input.named_id} && 'text-destructive'}">${input.label}</Label>
       <Select.Root type="single" bind:value={$form.${input.named_id}}
@@ -1139,8 +1125,8 @@ export const actions: Actions = {
           <p class="mt-1 text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>`;
-      } else if (input.category === "input-otp") {
-        clientrawCode += `
+			} else if (input.category === 'input-otp') {
+				clientrawCode += `
     <div>
       <Label for="${input.named_id}" class="mb-1.5 {$errors.${input.named_id} && 'text-destructive'}">${input.label}</Label>
       <InputOTP.Root
@@ -1171,8 +1157,8 @@ export const actions: Actions = {
           <p class="mt-1 text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>`;
-      } else if (input.category === "date-picker") {
-        clientrawCode += ` <div class="flex flex-col">
+			} else if (input.category === 'date-picker') {
+				clientrawCode += ` <div class="flex flex-col">
       <div class="grid gap-2">
         <Label>
           ${input.label}
@@ -1291,32 +1277,28 @@ export const actions: Actions = {
         <p class="mt-1 text-sm text-destructive">{$errors.${input.named_id}}</p>
       {/if}
     </div>`;
-      } else if (input.category === "tags-input") {
-        clientrawCode += `
+			} else if (input.category === 'tags-input') {
+				clientrawCode += `
     <div>
       <Label for="${input.named_id}" class="mb-1.5 {$errors.${
-        input.named_id
-      } && 'text-destructive'}">${input.label}</Label>
+				input.named_id
+			} && 'text-destructive'}">${input.label}</Label>
        <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
-      <TagsInput bind:value={${
-        input.named_id + "_value"
-      }} placeholder="Add Tech Stack" />
+      <TagsInput bind:value={${input.named_id + '_value'}} placeholder="Add Tech Stack" />
       {#each $form.${input.named_id} as item, i}
         <input type="hidden" bind:value={$form.${input.named_id}[i]} name="${
-          input.named_id
-        }" id="${input.named_id}" />
+					input.named_id
+				}" id="${input.named_id}" />
       {/each}
       <p class="mt-1.5 text-xs text-muted-foreground">
         ${input.description}
       </p>
       {#if $errors.${input.named_id}}
-        <p class="mt-1 text-sm text-destructive">{$errors.${
-          input.named_id
-        }?._errors}</p>
+        <p class="mt-1 text-sm text-destructive">{$errors.${input.named_id}?._errors}</p>
       {/if}
     </div>`;
-      } else if (input.category === "phone") {
-        clientrawCode += `
+			} else if (input.category === 'phone') {
+				clientrawCode += `
       <div>
       <!-- Add Phone Input Component from Shadcn Extra : https://www.shadcn-svelte-extras.com/components/phone-input -->
         <Label for="${input.named_id}" class="mb-1.5 {$errors.${input.named_id} && 'text-destructive'}">${input.label}</Label>
@@ -1333,8 +1315,8 @@ export const actions: Actions = {
           <p class="mt-1 text-sm text-destructive">{$errors.${input.named_id}}</p>
         {/if}
       </div>`;
-      } else if (input.category === "combobox") {
-        clientrawCode += `
+			} else if (input.category === 'combobox') {
+				clientrawCode += `
         <div>
           <Label for="${input.named_id}" class="mb-1.5 {$errors.${input.named_id} && 'text-destructive'}">
             ${input.label}
@@ -1394,8 +1376,8 @@ export const actions: Actions = {
           </p>
       </div>
         `;
-      } else if (input.category === "file") {
-        clientrawCode += `
+			} else if (input.category === 'file') {
+				clientrawCode += `
   <div>
     <Label for="${input.named_id}" class="mb-1.5">
         ${input.label}
@@ -1460,8 +1442,8 @@ export const actions: Actions = {
       {/each}
     </div>
   </div>`;
-      } else if (input.category === "location-input") {
-        clientrawCode += `
+			} else if (input.category === 'location-input') {
+				clientrawCode += `
   <!-- Location Input Component : https://svelte-form-builder.vercel.app/docs/components/location-input -->
   <div class="min-w-full">
     <Label for="${input.named_id}" class="mb-1.5">Location</Label>
@@ -1484,8 +1466,8 @@ export const actions: Actions = {
         <p class="mt-1 text-sm text-destructive">{$errors.${input.named_id}.country}</p>
     {/if}
   </div>`;
-      } else if (input.category === "radio") {
-        clientrawCode += `
+			} else if (input.category === 'radio') {
+				clientrawCode += `
   <div class="space-y-3">
     <Label class="mb-1.5 text-sm font-medium" for="${input.named_id}">${input.label}</Label>
     <RadioGroup.Root bind:value={$form.${input.named_id}} name="${input.named_id}">
@@ -1507,8 +1489,8 @@ export const actions: Actions = {
       </div>
     </div>
   </div>`;
-      } else if (input.category === "slider") {
-        clientrawCode += `
+			} else if (input.category === 'slider') {
+				clientrawCode += `
     <div class="space-y-3">
       <Label class="mb-1.5 text-sm font-medium" for="${input.named_id}"
         >${input.label}</Label
@@ -1531,22 +1513,22 @@ export const actions: Actions = {
         </div>
       </div>
     </div>`;
-      }
-    });
-    clientrawCode += `
+			}
+		});
+		clientrawCode += `
     <Button type="submit" size="sm">Submit</Button>
   </form>
 </div>
     `;
-    return clientrawCode;
-  });
+		return clientrawCode;
+	});
 
-  formsnapCode = $derived.by(() => {
-    const clientAdapter = this.getClientAdapter();
-    let formsnapCode = `<script lang="ts">
+	formsnapCode = $derived.by(() => {
+		const clientAdapter = this.getClientAdapter();
+		let formsnapCode = `<script lang="ts">
   import { superForm${
-    this.file_input_named_id.length > 0 ? ", filesProxy" : ""
-  } } from "sveltekit-superforms";
+		this.file_input_named_id.length > 0 ? ', filesProxy' : ''
+	} } from "sveltekit-superforms";
   import { ${clientAdapter} } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
   import { schema } from "./schema";
@@ -1555,28 +1537,28 @@ export const actions: Actions = {
   import { Field, Control, Label, Description, FieldErrors } from "formsnap";
   // Components
   import Button from "$lib/components/ui/button/button.svelte";`;
-    this.unique_inputs_imports.map((input) => {
-      if (input === "text") {
-        formsnapCode += `
+		this.unique_inputs_imports.map((input) => {
+			if (input === 'text') {
+				formsnapCode += `
   import Input from "$lib/components/ui/input/input.svelte";`;
-      } else if (input === "textarea") {
-        formsnapCode += `
+			} else if (input === 'textarea') {
+				formsnapCode += `
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";`;
-      } else if (input === "switch") {
-        formsnapCode += `
+			} else if (input === 'switch') {
+				formsnapCode += `
   import Switch from "$lib/components/ui/switch/switch.svelte";`;
-      } else if (input === "checkbox") {
-        formsnapCode += `
+			} else if (input === 'checkbox') {
+				formsnapCode += `
   import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";`;
-      } else if (input === "select") {
-        formsnapCode += `
+			} else if (input === 'select') {
+				formsnapCode += `
   import * as Select from "$lib/components/ui/select/index";`;
-      } else if (input === "input-otp") {
-        formsnapCode += `
+			} else if (input === 'input-otp') {
+				formsnapCode += `
   import * as InputOTP from "$lib/components/ui/input-otp/index";
   import { REGEXP_ONLY_DIGITS } from "bits-ui";`;
-      } else if (input === "date-picker") {
-        formsnapCode += `
+			} else if (input === 'date-picker') {
+				formsnapCode += `
   import CalendarIcon from "@lucide/svelte/icons/calendar";
   import * as Popover from "$lib/components/ui/popover";
   import * as Select from "$lib/components/ui/select";
@@ -1619,14 +1601,14 @@ export const actions: Actions = {
     value: String(currentYear - i),
   }));
   `;
-      } else if (input === "tags-input") {
-        formsnapCode += `
+			} else if (input === 'tags-input') {
+				formsnapCode += `
   import TagsInput from "$lib/components/ui/tags-input/tags-input.svelte";`;
-      } else if (input === "phone") {
-        formsnapCode += `
+			} else if (input === 'phone') {
+				formsnapCode += `
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
-      } else if (input === "combobox") {
-        formsnapCode += `
+			} else if (input === 'combobox') {
+				formsnapCode += `
   // Combobox
   import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
   import Check from "@lucide/svelte/icons/check";
@@ -1656,8 +1638,8 @@ export const actions: Actions = {
       label: "Astro",
     },
   ];`;
-      } else if (input === "file") {
-        formsnapCode += `// File Upload
+			} else if (input === 'file') {
+				formsnapCode += `// File Upload
   import { toast } from "svelte-sonner";
   import {
     displaySize,
@@ -1674,22 +1656,22 @@ export const actions: Actions = {
   }) => {
     toast.error(\`\${file.name} failed to upload!\`, { description: reason });
   };`;
-      } else if (input === "location-input") {
-        formsnapCode += `
+			} else if (input === 'location-input') {
+				formsnapCode += `
   import LocationSelector from "$lib/components/ui/location-input/LocationSelector.svelte";
         `;
-      } else if (input === "radio") {
-        formsnapCode += `
+			} else if (input === 'radio') {
+				formsnapCode += `
   import * as RadioGroup from "$lib/components/ui/radio-group/index";`;
-      } else if (input === "slider") {
-        formsnapCode += `
+			} else if (input === 'slider') {
+				formsnapCode += `
   import Slider from "$lib/components/ui/slider/slider.svelte";`;
-      }
-    });
+			}
+		});
 
-    if (this.date_picker_named_id.length > 0) {
-      this.date_picker_named_id.map((date) => {
-        formsnapCode += `
+		if (this.date_picker_named_id.length > 0) {
+			this.date_picker_named_id.map((date) => {
+				formsnapCode += `
   let value_${date.named_id} = $state<DateValue | undefined>();
   let df_${date.named_id} = new DateFormatter("en-US", {
     dateStyle: "long",
@@ -1715,12 +1697,12 @@ export const actions: Actions = {
     monthOptions.find((m) => m.value === defaultMonth_${date.named_id}?.value)?.label ??
       "Select a month"
   );`;
-      });
-    }
+			});
+		}
 
-    if (this.combobox_named_id.length > 0) {
-      this.combobox_named_id.map((combobox) => {
-        formsnapCode += `
+		if (this.combobox_named_id.length > 0) {
+			this.combobox_named_id.map((combobox) => {
+				formsnapCode += `
   // Popover State
   let open_${combobox.named_id} = $state(false);
   // Combobox Value
@@ -1741,19 +1723,19 @@ export const actions: Actions = {
       triggerRef_${combobox.named_id}.focus();
     });
   }`;
-      });
-    }
+			});
+		}
 
-    if (this.location_input_named_id.length > 0) {
-      this.location_input_named_id.map((location) => {
-        formsnapCode += `
+		if (this.location_input_named_id.length > 0) {
+			this.location_input_named_id.map((location) => {
+				formsnapCode += `
   // Location Input
   let selectedCountry_${location.named_id} = $state(null);
   let selectedState_${location.named_id} = $state(null);
         `;
-      });
-    }
-    formsnapCode += `
+			});
+		}
+		formsnapCode += `
   let {
     data
   }: {
@@ -1764,60 +1746,60 @@ export const actions: Actions = {
     untrack(() => data.form),
     {
       validators: ${clientAdapter}(schema)`;
-    if (this.location_input_named_id.length > 0) {
-      formsnapCode += `,
+		if (this.location_input_named_id.length > 0) {
+			formsnapCode += `,
       dataType: "json"`;
-    }
-    if (
-      this.tags_input_named_id.length > 0 ||
-      this.combobox_named_id.length > 0 ||
-      this.location_input_named_id.length > 0
-    ) {
-      formsnapCode += `,
+		}
+		if (
+			this.tags_input_named_id.length > 0 ||
+			this.combobox_named_id.length > 0 ||
+			this.location_input_named_id.length > 0
+		) {
+			formsnapCode += `,
       onUpdated(event) {
         if (event.form.valid) {`;
-      if (this.tags_input_named_id.length > 0) {
-        this.tags_input_named_id.map((tag) => {
-          formsnapCode += `
+			if (this.tags_input_named_id.length > 0) {
+				this.tags_input_named_id.map((tag) => {
+					formsnapCode += `
           ${tag.named_id}_value = [];`;
-        });
-      }
-      if (this.combobox_named_id.length > 0) {
-        this.combobox_named_id.map((combobox) => {
-          formsnapCode += `
+				});
+			}
+			if (this.combobox_named_id.length > 0) {
+				this.combobox_named_id.map((combobox) => {
+					formsnapCode += `
           combovalue_${combobox.named_id} = "";`;
-        });
-      }
-      if (this.location_input_named_id.length > 0) {
-        this.location_input_named_id.map((location) => {
-          formsnapCode += `
+				});
+			}
+			if (this.location_input_named_id.length > 0) {
+				this.location_input_named_id.map((location) => {
+					formsnapCode += `
           selectedCountry_${location.named_id} = null;
           selectedState_${location.named_id} = null;`;
-        });
-      }
-      formsnapCode += `
+				});
+			}
+			formsnapCode += `
         }
       }`;
-    }
-    formsnapCode += `
+		}
+		formsnapCode += `
     }
   );\n`;
-    formsnapCode += `
+		formsnapCode += `
   let { form: formData, enhance, message } = form;`;
-    if (this.tags_input_named_id.length > 0) {
-      this.tags_input_named_id.map((tag) => {
-        formsnapCode += `
-    let ${tag.named_id + "_value"} = $state([]);`;
-      });
-      this.tags_input_named_id.map((tag) => {
-        formsnapCode += `
+		if (this.tags_input_named_id.length > 0) {
+			this.tags_input_named_id.map((tag) => {
+				formsnapCode += `
+    let ${tag.named_id + '_value'} = $state([]);`;
+			});
+			this.tags_input_named_id.map((tag) => {
+				formsnapCode += `
     $effect(() => {
-      $formData.${tag.named_id} = ${tag.named_id + "_value"};
+      $formData.${tag.named_id} = ${tag.named_id + '_value'};
     });`;
-      });
-    }
-    if (this.file_input_named_id.length > 0) {
-      formsnapCode += `
+			});
+		}
+		if (this.file_input_named_id.length > 0) {
+			formsnapCode += `
   message.subscribe((message) => {
       if (message) {
         toast.success(message.text, {
@@ -1825,48 +1807,48 @@ export const actions: Actions = {
         });
       }
   });`;
-      this.file_input_named_id.map((file) => {
-        formsnapCode += `
+			this.file_input_named_id.map((file) => {
+				formsnapCode += `
   let files_${file.named_id} = filesProxy(form, "${file.named_id}");
   let onUpload_${file.named_id}: FileDropZoneProps["onUpload"] = async (uploadedFiles) => {
     // we use set instead of an assignment since it accepts a File[]
     files_${file.named_id}.set([...Array.from($files_${file.named_id}), ...uploadedFiles]);
   };`;
-      });
-    }
-    formsnapCode += `
+			});
+		}
+		formsnapCode += `
 </script> \n\n`; // close script tag
-    formsnapCode += `<div class="flex min-h-[80vh] flex-col items-center justify-center">
+		formsnapCode += `<div class="flex min-h-[80vh] flex-col items-center justify-center">
   {#if $message}
     <span class="text-emerald-400 mb-2">
       {$message}
     </span>
   {/if}
   <form method="post" ${
-    this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ""
-  } use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
-    this.selected_inputs.map((input) => {
-      if (input.type === "title") {
-        formsnapCode += `
+		this.file_input_named_id.length > 0 ? 'enctype="multipart/form-data"' : ''
+	} use:enhance class="w-full md:w-96 space-y-2 p-4 lg:p-0">`;
+		this.selected_inputs.map((input) => {
+			if (input.type === 'title') {
+				formsnapCode += `
         <h2 class="text-2xl font-semibold leading-none tracking-tight">
           ${input.label}
         </h2>`;
-      }
-      if (input.type === "desc") {
-        formsnapCode += `
+			}
+			if (input.type === 'desc') {
+				formsnapCode += `
         <p class="text-sm text-muted-foreground">
           ${input.label}
         </p>`;
-      }
-      if (
-        input.type === "text" ||
-        input.type === "number" ||
-        input.type === "email" ||
-        input.type === "tel" ||
-        input.type === "url" ||
-        input.type === "password"
-      ) {
-        formsnapCode += `
+			}
+			if (
+				input.type === 'text' ||
+				input.type === 'number' ||
+				input.type === 'email' ||
+				input.type === 'tel' ||
+				input.type === 'url' ||
+				input.type === 'password'
+			) {
+				formsnapCode += `
     <div>
       <Field {form} name="${input.named_id}">
         <Control>
@@ -1886,8 +1868,8 @@ export const actions: Actions = {
         <FieldErrors class='text-sm text-destructive' />
       </Field>
     </div>`;
-      } else if (input.type === "textarea") {
-        formsnapCode += `
+			} else if (input.type === 'textarea') {
+				formsnapCode += `
     <div>
       <Field {form} name="${input.named_id}">
         <Control>
@@ -1908,8 +1890,8 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      } else if (input.type === "boolean" && input.category === "switch") {
-        formsnapCode += `
+			} else if (input.type === 'boolean' && input.category === 'switch') {
+				formsnapCode += `
       <fieldset>
         <!-- <legend class="mb-4 text-lg font-medium"> Email Notifications </legend> -->
       <div class="space-y-4 flex flex-row items-center justify-between rounded-lg border p-4">
@@ -1931,8 +1913,8 @@ export const actions: Actions = {
         </Field>
       </div>
     </fieldset>`;
-      } else if (input.type === "boolean" && input.category === "checkbox") {
-        formsnapCode += `
+			} else if (input.type === 'boolean' && input.category === 'checkbox') {
+				formsnapCode += `
       <div
         class="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
       >
@@ -1953,8 +1935,8 @@ export const actions: Actions = {
         </Control>
       </Field>
     </div>`;
-      } else if (input.type === "select") {
-        formsnapCode += `
+			} else if (input.type === 'select') {
+				formsnapCode += `
       <div>
         <Field {form} name="${input.named_id}">
           <Control>
@@ -1988,8 +1970,8 @@ export const actions: Actions = {
           <FieldErrors class='text-sm text-destructive' />
         </Field>
       </div>`;
-      } else if (input.type === "input-otp") {
-        formsnapCode += `
+			} else if (input.type === 'input-otp') {
+				formsnapCode += `
       <div>
         <Field {form} name="${input.named_id}">
           <Control>
@@ -2018,8 +2000,8 @@ export const actions: Actions = {
           <FieldErrors class="text-xs text-destructive" />
         </Field>
       </div>`;
-      } else if (input.type === "date-picker") {
-        formsnapCode += `
+			} else if (input.type === 'date-picker') {
+				formsnapCode += `
         <div class="flex flex-col">
       <div class="grid gap-2">
         <Field {form} name="${input.named_id}">
@@ -2153,17 +2135,17 @@ export const actions: Actions = {
       </div>
     </div>
         `;
-      } else if (input.type === "tags-input") {
-        formsnapCode += `
+			} else if (input.type === 'tags-input') {
+				formsnapCode += `
        <!-- Add Tags Input Component from : https://www.shadcn-svelte-extras.com/components/tags-input -->
     <div>
       <Field {form} name="${input.named_id}">
         <Control>
           {#snippet children({ props })}
             <Label>${input.label}</Label>
-            <TagsInput bind:value={${input.named_id + "_value"}} placeholder="${
-              input.placeholder
-            }" />
+            <TagsInput bind:value={${input.named_id + '_value'}} placeholder="${
+							input.placeholder
+						}" />
             {#each $formData.${input.named_id} as item, i}
               <input
                 {...props}
@@ -2174,15 +2156,13 @@ export const actions: Actions = {
             {/each}
           {/snippet}
         </Control>
-        <Description class="text-sm text-muted-foreground">${
-          input.description
-        }</Description
+        <Description class="text-sm text-muted-foreground">${input.description}</Description
         >
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      } else if (input.type === "phone") {
-        formsnapCode += `<div>
+			} else if (input.type === 'phone') {
+				formsnapCode += `<div>
       <Field {form} name="${input.named_id}">
         <Control>
           {#snippet children({ props })}
@@ -2203,8 +2183,8 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      } else if (input.type === "combobox") {
-        formsnapCode += `
+			} else if (input.type === 'combobox') {
+				formsnapCode += `
       <div>
       <Field {form} name="${input.named_id}">
         <Control>
@@ -2272,8 +2252,8 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      } else if (input.type === "file") {
-        formsnapCode += `
+			} else if (input.type === 'file') {
+				formsnapCode += `
   <div>
     <Field {form} name="${input.named_id}">
       <Control>
@@ -2346,8 +2326,8 @@ export const actions: Actions = {
       </div>
     </Field>
   </div>`;
-      } else if (input.type === "location-input") {
-        formsnapCode += `
+			} else if (input.type === 'location-input') {
+				formsnapCode += `
   <!-- Location Input Component : https://svelte-form-builder.vercel.app/docs/components/location-input -->
   <div>
     <Field {form} name="${input.named_id}">
@@ -2378,8 +2358,8 @@ export const actions: Actions = {
       <FieldErrors class="text-sm text-destructive" />
     </Field>
   </div>`;
-      } else if (input.type === "radio") {
-        formsnapCode += `
+			} else if (input.type === 'radio') {
+				formsnapCode += `
   <div class="space-y-2">
     <Field {form} name="${input.named_id}">
       <legend>Gender</legend>
@@ -2405,8 +2385,8 @@ export const actions: Actions = {
       <FieldErrors class="text-sm text-destructive" />
     </Field>
   </div>`;
-      } else if (input.type === "slider") {
-        formsnapCode += `
+			} else if (input.type === 'slider') {
+				formsnapCode += `
     <div class="space-y-2">
       <Field {form} name="${input.named_id}">
         <Control>
@@ -2434,100 +2414,94 @@ export const actions: Actions = {
         <FieldErrors class="text-sm text-destructive" />
       </Field>
     </div>`;
-      }
-    });
-    formsnapCode += `
+			}
+		});
+		formsnapCode += `
     <div>
       <Button size="sm" type="submit">Submit</Button>
     </div>
   </form>
 </div>`;
-    return formsnapCode;
-  });
+		return formsnapCode;
+	});
 
-  // Get install and runner commands based on package manager
-  getInstallCmd = (pm: PackageManager) => {
-    switch (pm) {
-      case "pnpm":
-        return "pnpm add";
-      case "yarn":
-        return "yarn add";
-      case "bun":
-        return "bun add";
-      default:
-        return "npm install";
-    }
-  };
+	// Get install and runner commands based on package manager
+	getInstallCmd = (pm: PackageManager) => {
+		switch (pm) {
+			case 'pnpm':
+				return 'pnpm add';
+			case 'yarn':
+				return 'yarn add';
+			case 'bun':
+				return 'bun add';
+			default:
+				return 'npm install';
+		}
+	};
 
-  getRunnerCmd = (pm: PackageManager) => {
-    switch (pm) {
-      case "pnpm":
-        return "pnpm dlx";
-      case "yarn":
-        return "yarn dlx";
-      case "bun":
-        return "bunx";
-      default:
-        return "npx";
-    }
-  };
+	getRunnerCmd = (pm: PackageManager) => {
+		switch (pm) {
+			case 'pnpm':
+				return 'pnpm dlx';
+			case 'yarn':
+				return 'yarn dlx';
+			case 'bun':
+				return 'bunx';
+			default:
+				return 'npx';
+		}
+	};
 
-  command = $derived.by(() => {
-    let installCommand: string = "";
-    // Read packageManager directly to trigger reactivity
-    const pm = this.packageManager;
-    const installCmd = this.getInstallCmd(pm);
-    const runnerCmd = this.getRunnerCmd(pm);
-    // Map adapter to npm package name
-    const adapterPackage =
-      this.adapter === "arktype" ? "arktype" : this.adapter;
-    installCommand += `${installCmd} sveltekit-superforms ${adapterPackage} ${this.formsnap}\n`;
-    installCommand += `${runnerCmd} shadcn-svelte@next add button label \n`;
-    installCommand += `${runnerCmd} shadcn-svelte@next add`;
-    this.unique_inputs_imports.map((input) => {
-      if (
-        input === "text" ||
-        input === "number" ||
-        input === "email" ||
-        input === "password"
-      ) {
-        if (!installCommand.includes("input")) {
-          installCommand += ` input`;
-        }
-      } else if (input === "textarea") {
-        installCommand += ` textarea`;
-      } else if (input === "switch") {
-        installCommand += ` switch`;
-      } else if (input === "checkbox") {
-        installCommand += ` checkbox`;
-      } else if (input === "select") {
-        installCommand += ` select`;
-      } else if (input === "input-otp") {
-        installCommand += ` input-otp`;
-      } else if (input === "date-picker") {
-        installCommand += ` popover calendar range-calendar`;
-      } else if (input === "combobox") {
-        installCommand += ` popover command lucide-svelte`;
-      } else if (input === "slider") {
-        installCommand += ` slider`;
-      }
-    });
+	command = $derived.by(() => {
+		let installCommand: string = '';
+		// Read packageManager directly to trigger reactivity
+		const pm = this.packageManager;
+		const installCmd = this.getInstallCmd(pm);
+		const runnerCmd = this.getRunnerCmd(pm);
+		// Map adapter to npm package name
+		const adapterPackage = this.adapter === 'arktype' ? 'arktype' : this.adapter;
+		installCommand += `${installCmd} sveltekit-superforms ${adapterPackage} ${this.formsnap}\n`;
+		installCommand += `${runnerCmd} shadcn-svelte@next add button label \n`;
+		installCommand += `${runnerCmd} shadcn-svelte@next add`;
+		this.unique_inputs_imports.map((input) => {
+			if (input === 'text' || input === 'number' || input === 'email' || input === 'password') {
+				if (!installCommand.includes('input')) {
+					installCommand += ` input`;
+				}
+			} else if (input === 'textarea') {
+				installCommand += ` textarea`;
+			} else if (input === 'switch') {
+				installCommand += ` switch`;
+			} else if (input === 'checkbox') {
+				installCommand += ` checkbox`;
+			} else if (input === 'select') {
+				installCommand += ` select`;
+			} else if (input === 'input-otp') {
+				installCommand += ` input-otp`;
+			} else if (input === 'date-picker') {
+				installCommand += ` popover calendar range-calendar`;
+			} else if (input === 'combobox') {
+				installCommand += ` popover command @lucide/svelte`;
+			} else if (input === 'slider') {
+				installCommand += ` slider`;
+			}
+		});
 
-    this.unique_imports.map((input) => {
-      if (input === "file") {
-        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/file-drop-zone`;
-      } else if (input === "tags-input") {
-        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/tags-input`;
-      } else if (input === "phone") {
-        installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/phone-input`;
-      } else if (input === "location-input") {
-        installCommand += `\njsrepo add github/sikandarjodd/form-builder/comps/location-input`;
-      } else if (input === "password") {
-        installCommand += `\njsrepo add github/sikandarjodd/form-builder/comps/PasswordInput`;
-      }
-    });
-    return installCommand;
-  });
+		this.unique_imports.map((input) => {
+			if (input === 'file') {
+				installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/file-drop-zone`;
+			} else if (input === 'tags-input') {
+				installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/tags-input`;
+			} else if (input === 'phone') {
+				installCommand += `\njsrepo add github/ieedan/shadcn-svelte-extras/ui/phone-input`;
+			} else if (input === 'location-input') {
+				installCommand += `\njsrepo add github/sikandarjodd/form-builder/comps/location-input`;
+			} else if (input === 'password') {
+				installCommand += `\njsrepo add github/sikandarjodd/form-builder/comps/PasswordInput`;
+			}
+		});
+		return installCommand;
+	});
 }
 
 export let form_generator = new FormGenerator();

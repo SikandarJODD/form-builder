@@ -8,16 +8,16 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { schema } from './schema';
 
 export const load: PageServerLoad = async ({ request }) => {
-    return { form: await superValidate(zod4(schema)) }
+	return { form: await superValidate(zod4(schema)) };
 };
 
 export const actions: Actions = {
-    default: async ({ request }) => {
-        let form = await superValidate(request, zod4(schema));
-        console.log(form,'form');
-        if (!form.valid) {
-            return fail(400, { form });
-        }
-        return message(form, 'Form Posted Successfully!');
-    }
+	default: async ({ request }) => {
+		let form = await superValidate(request, zod4(schema));
+		console.log(form, 'form');
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+		return message(form, 'Form Posted Successfully!');
+	}
 };

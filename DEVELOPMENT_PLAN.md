@@ -34,31 +34,33 @@ Redesigning the Form Builder inspired by [tancn.dev/form-builder](https://tancn.
 
 Header - Left Nav (Fields, Template, Settings, AI Generate) + Right Controls (Schema Selector, Superforms/Remote Toggle, Reset, Code Modal)
 ┌─────────────────────────────────────────────────────────────────┐
-│  [Zod ▼]  │  [Superforms ◯━━ Remote]  │  [⟳ Reset]  │  [</>Code]│
+│ [Zod ▼] │ [Superforms ◯━━ Remote] │ [⟳ Reset] │ [</>Code]│
 └─────────────────────────────────────────────────────────────────┘
 
 Inside Code Modal
 ┌─────────────────────────────────────────────────────────────────────┐
-│ Code                                                          [✕]  │
+│ Code [✕] │
 ├─────────────────────────────────────────────────────────────────────┤
-│ Schema: [Zod] [Valibot] [ArkType]                                   │
-│ Mode:   [Superforms ◯━━ Remote]                                     │
+│ Schema: [Zod] [Valibot] [ArkType] │
+│ Mode: [Superforms ◯━━ Remote] │
 ├─────────────────────────────────────────────────────────────────────┤
-│ ┌─────────┬──────────┬────────────┬─────────┬──────────┐            │
-│ │ Client  │  Server  │   Schema   │  JSON   │ Install  │            │
-│ └─────────┴──────────┴────────────┴─────────┴──────────┘            │
-│                                                                     │
-│  // Generated code here...                                          │
-│                                                                     │
-│                                                      [📋 Copy]      │
+│ ┌─────────┬──────────┬────────────┬─────────┬──────────┐ │
+│ │ Client │ Server │ Schema │ JSON │ Install │ │
+│ └─────────┴──────────┴────────────┴─────────┴──────────┘ │
+│ │
+│ // Generated code here... │
+│ │
+│ [📋 Copy] │
 └─────────────────────────────────────────────────────────────────────┘
 
 ## 📅 1-Week Development Schedule
 
 ### Day 1: Foundation & Layout Setup
+
 **Focus: Core Layout Structure**
 
 #### Tasks:
+
 - [ ] Create new route `/v2` for the new form builder
 - [ ] Set up 3-panel resizable layout using `paneforge`
 - [ ] Create base components structure:
@@ -70,23 +72,26 @@ Inside Code Modal
 - [ ] Implement min/max width constraints for panels
 
 #### Key Icons (@lucide/svelte):
+
 ```typescript
 import {
-  Blocks,           // Fields tab
-  LayoutTemplate,   // Template tab
-  Settings,         // Settings tab
-  Sparkles,         // AI Generate
-  RotateCcw,        // Reset
-  Code,             // Code modal
+	Blocks, // Fields tab
+	LayoutTemplate, // Template tab
+	Settings, // Settings tab
+	Sparkles, // AI Generate
+	RotateCcw, // Reset
+	Code // Code modal
 } from '@lucide/svelte';
 ```
 
 ---
 
 ### Day 2: Header & Navigation
+
 **Focus: Header Controls & Tab Navigation**
 
 #### Tasks:
+
 - [ ] Create Header component with left/right sections
 - [ ] Implement tab navigation (Fields, Template, Settings, AI Generate)
 - [ ] Create validation library selector (Zod, Valibot, ArkType)
@@ -95,6 +100,7 @@ import {
 - [ ] Create Code modal trigger (opens existing code dialog)
 
 #### Component Structure:
+
 ```
 src/lib/components/v2/header/
 ├── Header.svelte
@@ -107,9 +113,11 @@ src/lib/components/v2/header/
 ---
 
 ### Day 3: Fields Panel
+
 **Focus: Field Selection Panel**
 
 #### Tasks:
+
 - [ ] Create Fields panel with categories
 - [ ] Implement Field Elements section (existing field types)
 - [ ] Implement Display Elements section (Heading, Description, Separator, Legend)
@@ -117,37 +125,41 @@ src/lib/components/v2/header/
 - [ ] Style field buttons with icons
 
 #### Field Elements:
-| Field | Icon |
-|-------|------|
-| Checkbox | `CheckSquare` |
-| Date Picker | `Calendar` |
-| Input | `TextCursor` |
-| Input OTP | `KeyRound` |
-| Multi Select | `ListChecks` |
-| Password | `Lock` |
-| Radio | `Circle` |
-| Select | `ChevronDown` |
-| Slider | `SlidersHorizontal` |
-| Switch | `ToggleLeft` |
-| Textarea | `AlignLeft` |
-| Toggle | `Power` |
+
+| Field        | Icon                |
+| ------------ | ------------------- |
+| Checkbox     | `CheckSquare`       |
+| Date Picker  | `Calendar`          |
+| Input        | `TextCursor`        |
+| Input OTP    | `KeyRound`          |
+| Multi Select | `ListChecks`        |
+| Password     | `Lock`              |
+| Radio        | `Circle`            |
+| Select       | `ChevronDown`       |
+| Slider       | `SlidersHorizontal` |
+| Switch       | `ToggleLeft`        |
+| Textarea     | `AlignLeft`         |
+| Toggle       | `Power`             |
 
 #### Display Elements:
-| Element | Icon |
-|---------|------|
-| Heading 1 | `Heading1` |
-| Heading 2 | `Heading2` |
-| Heading 3 | `Heading3` |
-| Description | `Text` |
-| Legend | `FileText` |
-| Separator | `Minus` |
+
+| Element     | Icon       |
+| ----------- | ---------- |
+| Heading 1   | `Heading1` |
+| Heading 2   | `Heading2` |
+| Heading 3   | `Heading3` |
+| Description | `Text`     |
+| Legend      | `FileText` |
+| Separator   | `Minus`    |
 
 ---
 
 ### Day 4: Editor Panel - Basic Structure
+
 **Focus: Editor Panel Foundation**
 
 #### Tasks:
+
 - [ ] Create EditorPanel with drag-and-drop zone
 - [ ] Implement field row component with accordion
 - [ ] Create field row container (supports single or side-by-side)
@@ -155,23 +167,25 @@ src/lib/components/v2/header/
 - [ ] Add delete and group (plus) buttons
 
 #### New Data Structures:
+
 ```typescript
 // Extended InputType for V2
 export type InputTypeV2 = InputType & {
-  rowId?: string;      // Group identifier for side-by-side
-  position?: 'left' | 'right' | 'full';
-  expanded?: boolean;  // Accordion state
+	rowId?: string; // Group identifier for side-by-side
+	position?: 'left' | 'right' | 'full';
+	expanded?: boolean; // Accordion state
 };
 
 // Row structure for grouping
 export type FieldRow = {
-  id: string;
-  fields: InputTypeV2[];  // 1 or 2 fields
-  expanded?: boolean;
+	id: string;
+	fields: InputTypeV2[]; // 1 or 2 fields
+	expanded?: boolean;
 };
 ```
 
 #### Component Structure:
+
 ```
 src/lib/components/v2/editor/
 ├── EditorPanel.svelte
@@ -185,9 +199,11 @@ src/lib/components/v2/editor/
 ---
 
 ### Day 5: Editor Panel - Accordion Customization
+
 **Focus: Field Customization via Accordion**
 
 #### Tasks:
+
 - [ ] Create accordion-based field customization (replaces modal)
 - [ ] Implement field property editor:
   - Label attribute
@@ -201,6 +217,7 @@ src/lib/components/v2/editor/
 - [ ] Sync changes with form generator state
 
 #### Component Structure:
+
 ```
 src/lib/components/v2/editor/customize/
 ├── FieldCustomizer.svelte     # Main accordion content
@@ -216,9 +233,11 @@ src/lib/components/v2/editor/customize/
 ---
 
 ### Day 6: Side-by-Side Fields & Preview
+
 **Focus: Field Grouping & Live Preview**
 
 #### Tasks:
+
 - [ ] Implement "Group" functionality (plus button)
   - Clicking group on field A allows selecting field B
   - Groups them into side-by-side layout
@@ -228,16 +247,17 @@ src/lib/components/v2/editor/customize/
 - [ ] Implement responsive behavior in preview
 
 #### Side-by-Side Logic:
+
 ```typescript
 // When grouping fields:
 function groupFields(fieldA: InputTypeV2, fieldB: InputTypeV2): FieldRow {
-  return {
-    id: generateId(),
-    fields: [
-      { ...fieldA, position: 'left' },
-      { ...fieldB, position: 'right' }
-    ]
-  };
+	return {
+		id: generateId(),
+		fields: [
+			{ ...fieldA, position: 'left' },
+			{ ...fieldB, position: 'right' }
+		]
+	};
 }
 
 // Preview grid class
@@ -248,9 +268,11 @@ function groupFields(fieldA: InputTypeV2, fieldB: InputTypeV2): FieldRow {
 ---
 
 ### Day 7: Templates, Settings & Polish
+
 **Focus: Templates, Settings Panel & Final Integration**
 
 #### Tasks:
+
 - [ ] Create Templates panel with predefined forms:
   - Signup Form
   - Login Form
@@ -338,52 +360,55 @@ src/
 ## 🔧 Key Technical Decisions
 
 ### 1. State Management
+
 Create a new `FormGeneratorV2` class that extends functionality:
 
 ```typescript
 // form-gen-v2.svelte.ts
 class FormGeneratorV2 {
-  // Field rows (supports grouping)
-  fieldRows: FieldRow[] = $state([]);
+	// Field rows (supports grouping)
+	fieldRows: FieldRow[] = $state([]);
 
-  // Active panel (fields, template, settings)
-  activePanel: 'fields' | 'template' | 'settings' = $state('fields');
+	// Active panel (fields, template, settings)
+	activePanel: 'fields' | 'template' | 'settings' = $state('fields');
 
-  // Expanded accordion IDs
-  expandedFields: Set<string> = $state(new Set());
+	// Expanded accordion IDs
+	expandedFields: Set<string> = $state(new Set());
 
-  // Inherit from existing form_generator for code generation
-  // ...
+	// Inherit from existing form_generator for code generation
+	// ...
 }
 ```
 
 ### 2. Resizable Panels
+
 Use existing `paneforge` integration:
 
 ```svelte
 <ResizablePaneGroup direction="horizontal">
-  <ResizablePane minSize={15} maxSize={25} defaultSize={20}>
-    <FieldsPanel />
-  </ResizablePane>
-  <ResizableHandle />
-  <ResizablePane minSize={30} maxSize={50} defaultSize={40}>
-    <EditorPanel />
-  </ResizablePane>
-  <ResizableHandle />
-  <ResizablePane minSize={25} maxSize={40} defaultSize={40}>
-    <PreviewPanel />
-  </ResizablePane>
+	<ResizablePane minSize={15} maxSize={25} defaultSize={20}>
+		<FieldsPanel />
+	</ResizablePane>
+	<ResizableHandle />
+	<ResizablePane minSize={30} maxSize={50} defaultSize={40}>
+		<EditorPanel />
+	</ResizablePane>
+	<ResizableHandle />
+	<ResizablePane minSize={25} maxSize={40} defaultSize={40}>
+		<PreviewPanel />
+	</ResizablePane>
 </ResizablePaneGroup>
 ```
 
 ### 3. Drag & Drop
+
 Use existing `svelte-dnd-action`:
 
 ```svelte
 <div use:dndzone={{ items: fieldRows, type: 'field-row' }}>
-  {#each fieldRows as row (row.id)}
-    <FieldRow {row} />
-  {/each}
+	{#each fieldRows as row (row.id)}
+		<FieldRow {row} />
+	{/each}
 </div>
 ```
 
@@ -392,16 +417,19 @@ Use existing `svelte-dnd-action`:
 ## 🎨 UI/UX Guidelines
 
 ### Colors & Theming
+
 - Follow existing dark theme
 - Accent color: `#EAB308` (amber/gold from tancn)
 - Use `bg-background`, `text-foreground`, `border-border`
 
 ### Spacing
+
 - Panel padding: `p-4`
 - Field gap: `gap-2`
 - Section gap: `gap-6`
 
 ### Icons (lucide-svelte)
+
 All icons should be 16-20px with `stroke-width={2}`
 
 ---
@@ -441,11 +469,13 @@ mkdir -p src/routes/v2
 ```
 
 ### 1. Validation Library Selector
+
 - **Component:** Select dropdown
 - **Options:** Zod, Valibot, ArkType
 - **Effect:** Updates schema generation logic
 
 ### 2. Superforms ↔ Remote Functions Toggle
+
 - **Superforms:** Traditional approach with `+page.server.ts` form actions
 - **Remote Functions:** New SvelteKit 2.27+ feature using `$app/server`
   - Uses `form()`, `command()`, `query()` from `$app/server`
@@ -453,10 +483,12 @@ mkdir -p src/routes/v2
   - Docs: https://svelte.dev/docs/kit/remote-functions
 
 ### 3. Reset Button
+
 - **Icon:** `RotateCcw` from @lucide/svelte
 - **Action:** Clear all selected fields
 
 ### 4. Code Button
+
 - **Icon:** `Code` from @lucide/svelte
 - **Action:** Opens Code Modal
 
@@ -465,20 +497,22 @@ mkdir -p src/routes/v2
 ## 📜 Code Modal - Detailed Spec
 
 ### On-Demand Generation (Performance Improvement)
+
 ```typescript
 // Instead of $derived (recalculates on every change):
 // code = $derived(() => generateCode(inputs));
 
 // Use on-demand generation:
 function openCodeModal() {
-  isGenerating = true;
-  generatedCode = generateCode(selectedInputs, options);
-  isGenerating = false;
-  showModal = true;
+	isGenerating = true;
+	generatedCode = generateCode(selectedInputs, options);
+	isGenerating = false;
+	showModal = true;
 }
 ```
 
 ### Modal Structure
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │ Generated Code                                                 [✕]  │
@@ -522,38 +556,40 @@ function openCodeModal() {
 ## 📦 JSON Import/Export - Future Feature
 
 ### JSON Schema Definition
+
 ```typescript
 interface FormBuilderJSON {
-  version: "2.0";
-  meta: {
-    name: string;
-    description?: string;
-    schema: "zod" | "valibot" | "arktype";
-    mode: "superforms" | "remote";
-  };
-  rows: {
-    id: string;
-    fields: {
-      id: string;
-      type: string;        // "text", "email", "select", etc.
-      category: string;
-      label: string;
-      name: string;        // Form field name (named_id)
-      placeholder?: string;
-      description?: string;
-      required?: boolean;
-      disabled?: boolean;
-      position: "left" | "right" | "full";
-      // Type-specific options
-      min?: number;
-      max?: number;
-      options?: { value: string; label: string }[];
-    }[];
-  }[];
+	version: '2.0';
+	meta: {
+		name: string;
+		description?: string;
+		schema: 'zod' | 'valibot' | 'arktype';
+		mode: 'superforms' | 'remote';
+	};
+	rows: {
+		id: string;
+		fields: {
+			id: string;
+			type: string; // "text", "email", "select", etc.
+			category: string;
+			label: string;
+			name: string; // Form field name (named_id)
+			placeholder?: string;
+			description?: string;
+			required?: boolean;
+			disabled?: boolean;
+			position: 'left' | 'right' | 'full';
+			// Type-specific options
+			min?: number;
+			max?: number;
+			options?: { value: string; label: string }[];
+		}[];
+	}[];
 }
 ```
 
 ### Use Cases
+
 1. **Export:** Save form as JSON for backup/sharing
 2. **Import:** Paste JSON to recreate form instantly
 3. **Templates:** Pre-built forms stored as JSON
@@ -561,6 +597,7 @@ interface FormBuilderJSON {
 5. **AI Generation:** Generate JSON from natural language descriptions
 
 ### Future AI Feature Workflow
+
 ```
 User: "Create a contact form with name, email, message, and terms checkbox"
         ↓

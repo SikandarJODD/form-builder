@@ -6,14 +6,14 @@
  * This allows filtering by specific field types, schemas, etc.
  */
 
-import { configure, event } from "onedollarstats";
+import { configure, event } from 'onedollarstats';
 
 // Initialize analytics - call this once in the root layout
 export function initAnalytics() {
-  configure({
-    autocollect: true, // automatically tracks pageviews & clicks
-    trackLocalhostAs: "svelte-form-builder.vercel.app", // for dev testing
-  });
+	configure({
+		autocollect: true, // automatically tracks pageviews & clicks
+		trackLocalhostAs: 'svelte-form-builder.vercel.app' // for dev testing
+	});
 }
 
 // ============================================
@@ -25,8 +25,8 @@ export function initAnalytics() {
  * Event: field_added:input, field_added:email, field_added:textarea, etc.
  */
 export function trackFieldAdded(fieldType: string, _fieldName?: string) {
-  // Use specific event name for each field type
-  event(`field_added:${fieldType}`);
+	// Use specific event name for each field type
+	event(`field_added:${fieldType}`);
 }
 
 /**
@@ -34,7 +34,7 @@ export function trackFieldAdded(fieldType: string, _fieldName?: string) {
  * Event: field_removed:input, field_removed:email, etc.
  */
 export function trackFieldRemoved(fieldType: string, _fieldName?: string) {
-  event(`field_removed:${fieldType}`);
+	event(`field_removed:${fieldType}`);
 }
 
 /**
@@ -42,18 +42,18 @@ export function trackFieldRemoved(fieldType: string, _fieldName?: string) {
  * Event: field_edited:input, field_edited:email, etc.
  */
 export function trackFieldEdited(fieldType: string, property: string) {
-  event(`field_edited:${fieldType}`, {
-    property: property,
-  });
+	event(`field_edited:${fieldType}`, {
+		property: property
+	});
 }
 
 /**
  * Track when a user reorders fields via drag and drop
  */
 export function trackFieldReordered(fieldCount: number) {
-  event("field_reordered", {
-    field_count: String(fieldCount),
-  });
+	event('field_reordered', {
+		field_count: String(fieldCount)
+	});
 }
 
 // ============================================
@@ -65,7 +65,7 @@ export function trackFieldReordered(fieldCount: number) {
  * Event: schema_selected:zod, schema_selected:valibot, schema_selected:arktype
  */
 export function trackSchemaSelected(schemaType: string) {
-  event(`schema_selected:${schemaType}`);
+	event(`schema_selected:${schemaType}`);
 }
 
 // ============================================
@@ -77,14 +77,14 @@ export function trackSchemaSelected(schemaType: string) {
  * Event: code_copied:schema, code_copied:client, code_copied:server
  */
 export function trackCodeCopied(
-  codeType: "schema" | "client" | "server",
-  schemaType: string,
-  isFormsnap: boolean = false
+	codeType: 'schema' | 'client' | 'server',
+	schemaType: string,
+	isFormsnap: boolean = false
 ) {
-  const formsnapSuffix = isFormsnap ? ":formsnap" : "";
-  event(`code_copied:${codeType}${formsnapSuffix}`, {
-    schema_type: schemaType,
-  });
+	const formsnapSuffix = isFormsnap ? ':formsnap' : '';
+	event(`code_copied:${codeType}${formsnapSuffix}`, {
+		schema_type: schemaType
+	});
 }
 
 // ============================================
@@ -96,19 +96,16 @@ export function trackCodeCopied(
  * Event: tab_viewed:preview, tab_viewed:code, tab_viewed:schema, tab_viewed:formsnap
  */
 export function trackTabViewed(tabName: string) {
-  event(`tab_viewed:${tabName}`);
+	event(`tab_viewed:${tabName}`);
 }
 
 /**
  * Track when a user switches between client/server code tabs
  * Event: code_tab:client, code_tab:server, code_tab:client:formsnap, code_tab:server:formsnap
  */
-export function trackCodeTabSwitched(
-  tabName: "client" | "server",
-  isFormsnap: boolean = false
-) {
-  const formsnapSuffix = isFormsnap ? ":formsnap" : "";
-  event(`code_tab:${tabName}${formsnapSuffix}`);
+export function trackCodeTabSwitched(tabName: 'client' | 'server', isFormsnap: boolean = false) {
+	const formsnapSuffix = isFormsnap ? ':formsnap' : '';
+	event(`code_tab:${tabName}${formsnapSuffix}`);
 }
 
 // ============================================
@@ -120,6 +117,5 @@ export function trackCodeTabSwitched(
  * Event: formsnap:enabled, formsnap:disabled
  */
 export function trackFormsnapToggled(enabled: boolean) {
-  event(`formsnap:${enabled ? "enabled" : "disabled"}`);
+	event(`formsnap:${enabled ? 'enabled' : 'disabled'}`);
 }
-

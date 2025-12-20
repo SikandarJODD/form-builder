@@ -8,27 +8,27 @@ import type { SchemaType, ModeType } from './form-v2.svelte';
  * Uses Svelte 5 class-based approach with $state runes
  */
 class GlobalFormState {
-  // Schema type selection (zod, valibot, arktype)
-  schema: SchemaType = $state('zod');
+	// Schema type selection (zod, valibot, arktype)
+	schema: SchemaType = $state('zod');
 
-  // Mode selection (superforms, remote)
-  mode: ModeType = $state('superforms');
+	// Mode selection (superforms, remote)
+	mode: ModeType = $state('superforms');
 
-  // Set schema type
-  setSchema(newSchema: SchemaType) {
-    this.schema = newSchema;
-  }
+	// Set schema type
+	setSchema(newSchema: SchemaType) {
+		this.schema = newSchema;
+	}
 
-  // Set mode type
-  setMode(newMode: ModeType) {
-    this.mode = newMode;
-  }
+	// Set mode type
+	setMode(newMode: ModeType) {
+		this.mode = newMode;
+	}
 
-  // Reset to defaults
-  reset() {
-    this.schema = 'zod';
-    this.mode = 'superforms';
-  }
+	// Reset to defaults
+	reset() {
+		this.schema = 'zod';
+		this.mode = 'superforms';
+	}
 }
 
 // Export singleton instance for global access

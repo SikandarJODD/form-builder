@@ -1,69 +1,62 @@
 <script lang="ts">
-  import {
-    formV2,
-    type SchemaType,
-    type ModeType,
-    type TabType,
-  } from "../state/form-v2.svelte";
-  import { globalFormState } from "../state/global-state.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import * as Select from "$lib/components/ui/select/index";
-  import { Separator } from "$lib/components/ui/separator";
-  import Switch from "$lib/components/ui/switch/switch.svelte";
-  import CodeModal from "../modal/CodeModal.svelte";
-  import LayoutGrid from "@lucide/svelte/icons/layout-grid";
-  import LayoutTemplate from "@lucide/svelte/icons/layout-template";
-  import Settings from "@lucide/svelte/icons/settings";
-  import Sparkles from "@lucide/svelte/icons/sparkles";
-  import RotateCcw from "@lucide/svelte/icons/rotate-ccw";
-  import Code from "@lucide/svelte/icons/code";
+	import { formV2, type SchemaType, type ModeType, type TabType } from '../state/form-v2.svelte';
+	import { globalFormState } from '../state/global-state.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import * as Select from '$lib/components/ui/select/index';
+	import { Separator } from '$lib/components/ui/separator';
+	import Switch from '$lib/components/ui/switch/switch.svelte';
+	import CodeModal from '../modal/CodeModal.svelte';
+	import LayoutGrid from '@lucide/svelte/icons/layout-grid';
+	import LayoutTemplate from '@lucide/svelte/icons/layout-template';
+	import Settings from '@lucide/svelte/icons/settings';
+	import Sparkles from '@lucide/svelte/icons/sparkles';
+	import RotateCcw from '@lucide/svelte/icons/rotate-ccw';
+	import Code from '@lucide/svelte/icons/code';
 
-  const schemas: { value: SchemaType; label: string }[] = [
-    { value: "zod", label: "Zod" },
-    { value: "valibot", label: "Valibot" },
-    { value: "arktype", label: "ArkType" },
-  ];
+	const schemas: { value: SchemaType; label: string }[] = [
+		{ value: 'zod', label: 'Zod' },
+		{ value: 'valibot', label: 'Valibot' },
+		{ value: 'arktype', label: 'ArkType' }
+	];
 
-  // const tabs: { id: TabType; label: string; icon: typeof LayoutGrid }[] = [
-  //   { id: "fields", label: "Fields", icon: LayoutGrid },
-  //   { id: "template", label: "Template", icon: LayoutTemplate },
-  //   { id: "settings", label: "Settings", icon: Settings },
-  // ];
+	// const tabs: { id: TabType; label: string; icon: typeof LayoutGrid }[] = [
+	//   { id: "fields", label: "Fields", icon: LayoutGrid },
+	//   { id: "template", label: "Template", icon: LayoutTemplate },
+	//   { id: "settings", label: "Settings", icon: Settings },
+	// ];
 
-  let codeModalOpen = $state(false);
+	let codeModalOpen = $state(false);
 
-  // Use global state
-  let schemaValue = $derived(globalFormState.schema);
-  let isRemoteMode = $derived(globalFormState.mode === "remote");
+	// Use global state
+	let schemaValue = $derived(globalFormState.schema);
+	let isRemoteMode = $derived(globalFormState.mode === 'remote');
 
-  const handleSchemaChange = (value: string) => {
-    globalFormState.setSchema(value as SchemaType);
-  };
+	const handleSchemaChange = (value: string) => {
+		globalFormState.setSchema(value as SchemaType);
+	};
 
-  const handleModeSwitch = (checked: boolean) => {
-    const newMode: ModeType = checked ? "remote" : "superforms";
-    globalFormState.setMode(newMode);
-  };
+	const handleModeSwitch = (checked: boolean) => {
+		const newMode: ModeType = checked ? 'remote' : 'superforms';
+		globalFormState.setMode(newMode);
+	};
 
-  const handleReset = () => {
-    formV2.reset();
-  };
+	const handleReset = () => {
+		formV2.reset();
+	};
 
-  const handleCodeClick = () => {
-    codeModalOpen = true;
-  };
+	const handleCodeClick = () => {
+		codeModalOpen = true;
+	};
 
-  const handleTabClick = (tab: TabType) => {
-    formV2.activeTab = tab;
-  };
+	const handleTabClick = (tab: TabType) => {
+		formV2.activeTab = tab;
+	};
 </script>
 
-<header
-  class="flex h-14 items-center justify-between border-b bg-background px-4"
->
-  <!-- Left side: Tabs -->
-  <div class="flex items-center gap-1">
-    <!-- {#each tabs as tab}
+<header class="flex h-14 items-center justify-between border-b bg-background px-4">
+	<!-- Left side: Tabs -->
+	<div class="flex items-center gap-1">
+		<!-- {#each tabs as tab}
       <Button
         variant={formV2.activeTab === tab.id ? "secondary" : "ghost"}
         size="sm"
@@ -81,62 +74,51 @@
       <Sparkles class="h-4 w-4" />
       <span class="hidden sm:inline">Generate with AI</span>
     </Button> -->
-  </div>
+	</div>
 
-  <!-- Right side: Controls -->
-  <div class="flex items-center gap-2">
-    <!-- Schema Selector -->
-    <Select.Root
-      type="single"
-      value={schemaValue}
-      onValueChange={handleSchemaChange}
-    >
-      <Select.Trigger class="w-25 h-8">
-        {schemas.find((s) => s.value === schemaValue)?.label ?? "Schema"}
-      </Select.Trigger>
-      <Select.Content>
-        {#each schemas as schema}
-          <Select.Item value={schema.value} label={schema.label} />
-        {/each}
-      </Select.Content>
-    </Select.Root>
+	<!-- Right side: Controls -->
+	<div class="flex items-center gap-2">
+		<!-- Schema Selector -->
+		<Select.Root type="single" value={schemaValue} onValueChange={handleSchemaChange}>
+			<Select.Trigger class="h-8 w-25">
+				{schemas.find((s) => s.value === schemaValue)?.label ?? 'Schema'}
+			</Select.Trigger>
+			<Select.Content>
+				{#each schemas as schema}
+					<Select.Item value={schema.value} label={schema.label} />
+				{/each}
+			</Select.Content>
+		</Select.Root>
 
-    <!-- Mode Toggle: Superforms <-> Remote -->
-    <div class="flex items-center gap-2">
-      <span
-        class="text-xs text-muted-foreground {!isRemoteMode
-          ? 'text-foreground font-medium'
-          : ''}"
-      >
-        Superforms
-      </span>
-      <Switch checked={isRemoteMode} onCheckedChange={handleModeSwitch} />
-      <span
-        class="text-xs text-muted-foreground {isRemoteMode
-          ? 'text-foreground font-medium'
-          : ''}"
-      >
-        Remote
-      </span>
-    </div>
+		<!-- Mode Toggle: Superforms <-> Remote -->
+		<div class="flex items-center gap-2">
+			<span
+				class="text-xs text-muted-foreground {!isRemoteMode ? 'font-medium text-foreground' : ''}"
+			>
+				Superforms
+			</span>
+			<Switch checked={isRemoteMode} onCheckedChange={handleModeSwitch} />
+			<span
+				class="text-xs text-muted-foreground {isRemoteMode ? 'font-medium text-foreground' : ''}"
+			>
+				Remote
+			</span>
+		</div>
 
-    <Separator orientation="vertical" class="h-6" />
+		<Separator orientation="vertical" class="h-6" />
 
-    <!-- Reset Button -->
-    <Button variant="ghost" size="icon-sm" onclick={handleReset} title="Reset">
-      <RotateCcw class="h-4 w-4" />
-    </Button>
+		<!-- Reset Button -->
+		<Button variant="ghost" size="icon-sm" onclick={handleReset} title="Reset">
+			<RotateCcw class="h-4 w-4" />
+		</Button>
 
-    <!-- Code Button -->
-    <Button variant="default" size="sm" onclick={handleCodeClick} class="gap-2">
-      <Code class="h-4 w-4" />
-      <span class="hidden sm:inline">Code</span>
-    </Button>
-  </div>
+		<!-- Code Button -->
+		<Button variant="default" size="sm" onclick={handleCodeClick} class="gap-2">
+			<Code class="h-4 w-4" />
+			<span class="hidden sm:inline">Code</span>
+		</Button>
+	</div>
 </header>
 
 <!-- Code Modal -->
-<CodeModal
-  bind:open={codeModalOpen}
-  onOpenChange={(v) => (codeModalOpen = v)}
-/>
+<CodeModal bind:open={codeModalOpen} onOpenChange={(v) => (codeModalOpen = v)} />

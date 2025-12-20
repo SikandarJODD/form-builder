@@ -5,198 +5,191 @@
 -->
 
 <script lang="ts">
-  import type { TagsInputProps } from "./types";
-  import TagsInputTag from "./tags-input-tag.svelte";
-  import { untrack } from "svelte";
+	import type { TagsInputProps } from './types';
+	import TagsInputTag from './tags-input-tag.svelte';
+	import { untrack } from 'svelte';
 
-  const defaultValidate: TagsInputProps["validate"] = (val, tags) => {
-    const transformed = val.trim();
+	const defaultValidate: TagsInputProps['validate'] = (val, tags) => {
+		const transformed = val.trim();
 
-    // disallow empties
-    if (transformed.length === 0) return undefined;
+		// disallow empties
+		if (transformed.length === 0) return undefined;
 
-    // disallow duplicates
-    if (tags.find((t) => transformed === t)) return undefined;
+		// disallow duplicates
+		if (tags.find((t) => transformed === t)) return undefined;
 
-    return transformed;
-  };
+		return transformed;
+	};
 
-  let {
-    value = $bindable([]),
-    placeholder,
-    class: className,
-    disabled = false,
-    validate = defaultValidate,
-    ...rest
-  }: TagsInputProps = $props();
+	let {
+		value = $bindable([]),
+		placeholder,
+		class: className,
+		disabled = false,
+		validate = defaultValidate,
+		...rest
+	}: TagsInputProps = $props();
 
-  let inputValue = $state("");
-  let tagIndex = $state<number>();
-  let invalid = $state(false);
+	let inputValue = $state('');
+	let tagIndex = $state<number>();
+	let invalid = $state(false);
 
-  $effect(() => {
-    // whenever input value changes reset invalid
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    inputValue;
+	$effect(() => {
+		// whenever input value changes reset invalid
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		inputValue;
 
-    untrack(() => {
-      invalid = false;
-    });
-  });
+		untrack(() => {
+			invalid = false;
+		});
+	});
 
-  const enter = () => {
-    const validated = validate(inputValue, value);
+	const enter = () => {
+		const validated = validate(inputValue, value);
 
-    if (!validated) {
-      invalid = true;
-      return;
-    }
+		if (!validated) {
+			invalid = true;
+			return;
+		}
 
-    value.push(validated);
+		value.push(validated);
 
-    inputValue = "";
-  };
+		inputValue = '';
+	};
 
-  const keydown = (e: KeyboardEvent) => {
-    const target = e.target as HTMLInputElement;
+	const keydown = (e: KeyboardEvent) => {
+		const target = e.target as HTMLInputElement;
 
-    if (e.key === "Enter") {
-      enter();
-      e.preventDefault();
-      return;
-    }
+		if (e.key === 'Enter') {
+			enter();
+			e.preventDefault();
+			return;
+		}
 
-    const isAtBeginning =
-      target.selectionStart === 0 && target.selectionEnd === 0;
+		const isAtBeginning = target.selectionStart === 0 && target.selectionEnd === 0;
 
-    let shouldResetIndex = true;
+		let shouldResetIndex = true;
 
-    if (e.key === "Backspace") {
-      if (isAtBeginning) {
-        e.preventDefault();
+		if (e.key === 'Backspace') {
+			if (isAtBeginning) {
+				e.preventDefault();
 
-        if (tagIndex !== undefined) {
-          deleteIndex(tagIndex);
+				if (tagIndex !== undefined) {
+					deleteIndex(tagIndex);
 
-          // focus previous
-          const prev = tagIndex - 1;
+					// focus previous
+					const prev = tagIndex - 1;
 
-          if (prev < 0) {
-            tagIndex = undefined;
-          } else {
-            tagIndex = prev;
-          }
-        } else {
-          tagIndex = value.length - 1;
-        }
+					if (prev < 0) {
+						tagIndex = undefined;
+					} else {
+						tagIndex = prev;
+					}
+				} else {
+					tagIndex = value.length - 1;
+				}
 
-        shouldResetIndex = false;
-      }
-    }
+				shouldResetIndex = false;
+			}
+		}
 
-    if (e.key === "Delete") {
-      if (isAtBeginning) {
-        if (inputValue.length === 0) {
-          if (tagIndex !== undefined) {
-            e.preventDefault();
+		if (e.key === 'Delete') {
+			if (isAtBeginning) {
+				if (inputValue.length === 0) {
+					if (tagIndex !== undefined) {
+						e.preventDefault();
 
-            deleteIndex(tagIndex);
+						deleteIndex(tagIndex);
 
-            // stay focused on the same index unless value.length === 0
-            if (value.length === 0) tagIndex = undefined;
+						// stay focused on the same index unless value.length === 0
+						if (value.length === 0) tagIndex = undefined;
 
-            shouldResetIndex = false;
-          }
-        }
-      }
-    }
+						shouldResetIndex = false;
+					}
+				}
+			}
+		}
 
-    // controls for tag selection
-    if (isAtBeginning) {
-      // left
-      if (e.key === "ArrowLeft") {
-        if (tagIndex !== undefined) {
-          const prev = tagIndex - 1;
+		// controls for tag selection
+		if (isAtBeginning) {
+			// left
+			if (e.key === 'ArrowLeft') {
+				if (tagIndex !== undefined) {
+					const prev = tagIndex - 1;
 
-          if (prev < 0) {
-            tagIndex = 0;
-          } else {
-            tagIndex = prev;
-          }
-        } else {
-          // set initial index
-          tagIndex = value.length - 1;
-        }
+					if (prev < 0) {
+						tagIndex = 0;
+					} else {
+						tagIndex = prev;
+					}
+				} else {
+					// set initial index
+					tagIndex = value.length - 1;
+				}
 
-        shouldResetIndex = false;
-      }
+				shouldResetIndex = false;
+			}
 
-      // right
-      // we can only move right if the value is empty
-      if (inputValue.length === 0) {
-        if (e.key === "ArrowRight") {
-          if (tagIndex !== undefined) {
-            const next = tagIndex + 1;
+			// right
+			// we can only move right if the value is empty
+			if (inputValue.length === 0) {
+				if (e.key === 'ArrowRight') {
+					if (tagIndex !== undefined) {
+						const next = tagIndex + 1;
 
-            if (next > value.length - 1) {
-              tagIndex = undefined;
-            } else {
-              tagIndex = next;
-            }
+						if (next > value.length - 1) {
+							tagIndex = undefined;
+						} else {
+							tagIndex = next;
+						}
 
-            shouldResetIndex = false;
-          }
-        }
-      }
-    }
+						shouldResetIndex = false;
+					}
+				}
+			}
+		}
 
-    // reset the tag index to undefined
-    if (shouldResetIndex) {
-      tagIndex = undefined;
-    }
+		// reset the tag index to undefined
+		if (shouldResetIndex) {
+			tagIndex = undefined;
+		}
+	};
 
-  };
+	const deleteValue = (val: string) => {
+		const index = value.findIndex((v) => val === v);
 
-  const deleteValue = (val: string) => {
-    const index = value.findIndex((v) => val === v);
+		if (index === -1) return;
 
-    if (index === -1) return;
+		deleteIndex(index);
+	};
 
-    deleteIndex(index);
-  };
+	const deleteIndex = (index: number) => {
+		value = [...value.slice(0, index), ...value.slice(index + 1)];
+	};
 
-  const deleteIndex = (index: number) => {
-    value = [...value.slice(0, index), ...value.slice(index + 1)];
-  };
-
-  const blur = () => {
-    tagIndex = undefined;
-  };
+	const blur = () => {
+		tagIndex = undefined;
+	};
 </script>
 
 <div
-  class={[
-    "flex min-h-[40px] w-full flex-wrap place-items-center gap-1 rounded-lg border border-input bg-background px-1 py-1 disabled:opacity-50 aria-disabled:cursor-not-allowed",
-    className,
-  ]}
-  aria-disabled={disabled}
+	class={[
+		'flex min-h-[40px] w-full flex-wrap place-items-center gap-1 rounded-lg border border-input bg-background px-1 py-1 disabled:opacity-50 aria-disabled:cursor-not-allowed',
+		className
+	]}
+	aria-disabled={disabled}
 >
-  {#each value as tag, i (tag)}
-    <TagsInputTag
-      value={tag}
-      {disabled}
-      onDelete={deleteValue}
-      active={i === tagIndex}
-    />
-  {/each}
-  <input
-    {...rest}
-    bind:value={inputValue}
-    onblur={blur}
-    {disabled}
-    {placeholder}
-    data-invalid={invalid}
-    onkeydown={keydown}
-    class="min-w-16 shrink grow basis-0 border-none bg-transparent px-2 outline-hidden placeholder:text-muted-foreground focus:outline-hidden disabled:cursor-not-allowed data-[invalid=true]:text-red-500 md:text-sm"
-  />
+	{#each value as tag, i (tag)}
+		<TagsInputTag value={tag} {disabled} onDelete={deleteValue} active={i === tagIndex} />
+	{/each}
+	<input
+		{...rest}
+		bind:value={inputValue}
+		onblur={blur}
+		{disabled}
+		{placeholder}
+		data-invalid={invalid}
+		onkeydown={keydown}
+		class="min-w-16 shrink grow basis-0 border-none bg-transparent px-2 outline-hidden placeholder:text-muted-foreground focus:outline-hidden disabled:cursor-not-allowed data-[invalid=true]:text-red-500 md:text-sm"
+	/>
 </div>

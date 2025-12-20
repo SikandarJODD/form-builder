@@ -1,9 +1,9 @@
 <script>
-  import TemplatesSidebar from "$lib/components/templates/TemplatesSidebar.svelte";
+	import TemplatesSidebar from '$lib/components/templates/TemplatesSidebar.svelte';
 
-  let { children } = $props();
+	let { children } = $props();
 </script>
 
 <TemplatesSidebar>
-  {@render children()}
+	{@render children()}
 </TemplatesSidebar>

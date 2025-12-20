@@ -1,4 +1,4 @@
-export let pageServerCode =`import type { Actions } from '@sveltejs/kit';
+export let pageServerCode = `import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 import { fail, message, superValidate } from 'sveltekit-superforms';
@@ -21,4 +21,4 @@ export const actions: Actions = {
         return message(form, 'Form Posted Successfully!');
     }
 };
-`
+`;

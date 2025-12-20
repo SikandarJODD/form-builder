@@ -1,2 +1,2 @@
-import AnimatedShinyText from "./AnimatedShinyText.svelte";
+import AnimatedShinyText from './AnimatedShinyText.svelte';
 export default AnimatedShinyText;

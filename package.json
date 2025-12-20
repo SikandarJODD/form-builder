@@ -1,7 +1,7 @@
 {
 	"name": "form-builder",
-	"private": true,
 	"version": "0.0.1",
+	"private": true,
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -10,7 +10,19 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"build:registry": "jsrepo build"
+		"build:registry": "jsrepo build",
+		"format": "prettier --write .",
+		"lint": "prettier --check ."
+	},
+	"dependencies": {
+		"@sveltejs/adapter-vercel": "^6.2.0",
+		"arktype": "^2.1.29",
+		"chrono-node": "^2.9.0",
+		"formsnap": "^2.0.1",
+		"motion-start": "^0.1.18",
+		"onedollarstats": "^0.0.11",
+		"package-manager-detector": "^1.6.0",
+		"runed": "^0.37.0"
 	},
 	"devDependencies": {
 		"@internationalized/date": "^3.10.1",
@@ -25,6 +37,9 @@
 		"jsrepo": "^3.0.8",
 		"mode-watcher": "^1.1.0",
 		"paneforge": "1.0.2",
+		"prettier": "^3.7.4",
+		"prettier-plugin-svelte": "^3.4.0",
+		"prettier-plugin-tailwindcss": "^0.7.2",
 		"shiki": "^3.20.0",
 		"svelte": "^5.46.0",
 		"svelte-check": "^4.3.4",
@@ -40,15 +55,5 @@
 		"valibot": "^1.2.0",
 		"vite": "^7.3.0",
 		"zod": "^4.2.1"
-	},
-	"dependencies": {
-		"@sveltejs/adapter-vercel": "^6.2.0",
-		"arktype": "^2.1.29",
-		"chrono-node": "^2.9.0",
-		"formsnap": "^2.0.1",
-		"motion-start": "^0.1.18",
-		"onedollarstats": "^0.0.11",
-		"package-manager-detector": "^1.6.0",
-		"runed": "^0.37.0"
 	}
 }

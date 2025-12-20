@@ -1,10 +1,6 @@
 {
 	"$schema": "https://unpkg.com/jsrepo@1.44.2/schemas/registry-config.json",
-	"dirs": [
-		"./src/lib/components",
-		"./src/lib/components/templates",
-		"./src"
-	],
+	"dirs": ["./src/lib/components", "./src/lib/components/templates", "./src"],
 	"doNotListBlocks": [],
 	"doNotListCategories": [],
 	"listBlocks": ["location-input", "PasswordInput"],
