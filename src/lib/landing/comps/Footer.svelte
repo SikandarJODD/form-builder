@@ -1,5 +1,5 @@
 <script>
-  import { ArrowUpRightIcon } from "lucide-svelte";
+  import ArrowUpRightIcon from "@lucide/svelte/icons/arrow-up-right";
 
   let NAVIGATE = [
     {
@@ -76,7 +76,7 @@
 {#snippet blur()}
   <div
     aria-hidden="true"
-    class="pointer-events-none absolute -top-1 left-1/2 h-[200px] w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2"
+    class="pointer-events-none absolute -top-1 left-1/2 h-50 w-full max-w-100 -translate-x-1/2 -translate-y-1/2"
     style="
       background:
         conic-gradient(from 90deg at 50% 50%, #00000000 50%, #0a0a0a 50%),radial-gradient(rgba(134, 134, 134, 0.1) 0%, transparent 80%)"

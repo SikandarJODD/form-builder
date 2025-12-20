@@ -5,7 +5,7 @@
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
   import EditSelectedInputs from "$lib/form-generator/comps/EditSelectedInputs.svelte";
   import { fly } from "svelte/transition";
-  import GripVertical from "lucide-svelte/icons/grip-vertical";
+  import GripVertical from "@lucide/svelte/icons/grip-vertical";
   import { trackFieldRemoved, trackFieldReordered } from "$lib/analytics";
 
   let flipDurationMs = 300;

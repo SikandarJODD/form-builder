@@ -9,10 +9,10 @@
     TabsList,
     TabsTrigger,
   } from "$lib/components/ui/tabs";
-  import Box from "lucide-svelte/icons/box";
-  import Dock from "lucide-svelte/icons/dock";
-  import CodeXML from "lucide-svelte/icons/code-xml";
-  import Zap from "lucide-svelte/icons/zap";
+  import Box from "@lucide/svelte/icons/box";
+  import Dock from "@lucide/svelte/icons/dock";
+  import CodeXML from "@lucide/svelte/icons/code-xml";
+  import Zap from "@lucide/svelte/icons/zap";
   import { form_generator } from "$lib/form-generator/form-gen.svelte";
   import { trackTabViewed, trackFormsnapToggled } from "$lib/analytics";
 

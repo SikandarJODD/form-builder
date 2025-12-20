@@ -3,7 +3,8 @@
   import { Button } from "$lib/components/ui/button";
   import * as Command from "$lib/components/ui/command";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
-  import { Check, ChevronsUpDown } from "lucide-svelte";
+  import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
+  import Check from "@lucide/svelte/icons/check";
   import Flag from "./flag.svelte";
   import type { Country, CountryCode } from "svelte-tel-input/types";
   import { cn } from "$lib/utils";

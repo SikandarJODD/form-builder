@@ -23,7 +23,6 @@
 		"bits-ui": "^2.14.4",
 		"clsx": "^2.1.1",
 		"jsrepo": "^3.0.8",
-		"lucide-svelte": "^0.561.0",
 		"mode-watcher": "^1.1.0",
 		"paneforge": "1.0.2",
 		"shiki": "^3.20.0",

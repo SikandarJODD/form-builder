@@ -1,12 +1,4 @@
 <script>
-  import {
-    FileCode2,
-    FilePenLine,
-    Repeat2,
-    ShieldCheck,
-    ShieldClose,
-    Workflow,
-  } from "lucide-svelte";
   import Section from "./Section.svelte";
   import Card from "$lib/components/ui/card/card.svelte";
   import CardContent from "$lib/components/ui/card/card-content.svelte";
@@ -45,7 +37,7 @@
           <div
             class="w-12 h-12 text-primary bg-primary/10 rounded-full flex items-center justify-center"
           >
-            <Icon  />
+            <Icon />
           </div>
           <div class="space-y-1.5">
             <h3 class="text-xl font-semibold">{problem.title}</h3>

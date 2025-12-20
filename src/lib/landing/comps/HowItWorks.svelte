@@ -1,5 +1,7 @@
 <script>
-  import { MousePointerClick, Code, ArrowUpDown } from "lucide-svelte";
+  import MousePointerClick from "@lucide/svelte/icons/mouse-pointer-click";
+  import Code from "@lucide/svelte/icons/code";
+  import ArrowUpDown from "@lucide/svelte/icons/arrow-up-down";
   import Section from "./Section.svelte";
   import Features from "$lib/components/magicui/Features/Features.svelte";
 

@@ -56,7 +56,7 @@ class PMCommand {
       } else if (input === "date-picker") {
         shadcnComponents.push("popover", "calendar", "range-calendar");
       } else if (input === "combobox") {
-        shadcnComponents.push("popover", "command", "lucide-svelte");
+        shadcnComponents.push("popover", "command", "@lucide/svelte");
       } else if (input === "slider") {
         shadcnComponents.push("slider");
       }

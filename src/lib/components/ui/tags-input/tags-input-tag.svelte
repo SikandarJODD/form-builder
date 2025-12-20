@@ -5,7 +5,7 @@
 -->
 
 <script lang="ts">
-  import X from "lucide-svelte/icons/x";
+  import X from "@lucide/svelte/icons/x";
 
   type Props = {
     value: string;

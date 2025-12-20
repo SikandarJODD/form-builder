@@ -740,7 +740,8 @@ export const actions: Actions = {
   import * as InputOTP from "$lib/components/ui/input-otp/index";
   import { REGEXP_ONLY_DIGITS } from "bits-ui";`;
       } else if (input === "date-picker") {
-        clientrawCode += `import { CalendarIcon } from "lucide-svelte";
+        clientrawCode += `import CalendarIcon from "@lucide/svelte/icons/calendar";
+
   import * as Popover from "$lib/components/ui/popover";
   import * as Select from "$lib/components/ui/select";
   import * as Calendar from "$lib/components/ui/calendar/index";
@@ -790,8 +791,8 @@ export const actions: Actions = {
   import PhoneInput from "$lib/components/ui/phone-input/phone-input.svelte";`;
       } else if (input === "combobox") {
         clientrawCode += `
-  import Check from "lucide-svelte/icons/check";
-  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
+  import Check from "@lucide/svelte/icons/check";
+  import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
   import * as Popover from "$lib/components/ui/popover/index";
   import * as Command from "$lib/components/ui/command/index";
   import { tick } from "svelte";
@@ -830,7 +831,7 @@ export const actions: Actions = {
     type FileDropZoneProps,
   } from "$lib/components/ui/file-drop-zone";
   import { fly, slide } from "svelte/transition";
-  import { Trash2 } from "lucide-svelte";
+  import Trash2 from "@lucide/svelte/icons/trash-2";
   const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
     reason,
     file,
@@ -1576,7 +1577,7 @@ export const actions: Actions = {
   import { REGEXP_ONLY_DIGITS } from "bits-ui";`;
       } else if (input === "date-picker") {
         formsnapCode += `
-  import { CalendarIcon } from "lucide-svelte";
+  import CalendarIcon from "@lucide/svelte/icons/calendar";
   import * as Popover from "$lib/components/ui/popover";
   import * as Select from "$lib/components/ui/select";
   import * as Calendar from "$lib/components/ui/calendar/index";
@@ -1627,8 +1628,8 @@ export const actions: Actions = {
       } else if (input === "combobox") {
         formsnapCode += `
   // Combobox
-  import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-  import Check from "lucide-svelte/icons/check";
+  import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
+  import Check from "@lucide/svelte/icons/check";
   import * as Popover from "$lib/components/ui/popover/index";
   import * as Command from "$lib/components/ui/command/index";
   import { tick } from "svelte";
@@ -1665,7 +1666,7 @@ export const actions: Actions = {
     type FileDropZoneProps,
   } from "$lib/components/ui/file-drop-zone";
   import { fly, slide } from "svelte/transition";
-  import { Trash2 } from "lucide-svelte";
+  import Trash2 from "@lucide/svelte/icons/trash-2";
 
   const onFileRejected: FileDropZoneProps["onFileRejected"] = async ({
     reason,
