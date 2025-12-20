@@ -10,6 +10,7 @@
   import * as Select from "$lib/components/ui/select/index";
   import { Separator } from "$lib/components/ui/separator";
   import Switch from "$lib/components/ui/switch/switch.svelte";
+  import * as Tooltip from "$lib/components/ui/tooltip/index";
   import CodeModal from "../modal/CodeModal.svelte";
   import LayoutGrid from "@lucide/svelte/icons/layout-grid";
   import LayoutTemplate from "@lucide/svelte/icons/layout-template";
@@ -123,9 +124,18 @@
     <Separator orientation="vertical" class="h-6" />
 
     <!-- Reset Button -->
-    <Button variant="ghost" size="icon-sm" onclick={handleReset} title="Reset">
-      <RotateCcw class="h-4 w-4" />
-    </Button>
+    <Tooltip.Provider>
+      <Tooltip.Root delayDuration={100}>
+        <Tooltip.Trigger>
+          <Button variant="ghost" size="icon-sm" onclick={handleReset}>
+            <RotateCcw class="h-4 w-4" />
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content>
+          <p>Reset Form</p>
+        </Tooltip.Content>
+      </Tooltip.Root>
+    </Tooltip.Provider>
 
     <!-- Code Button -->
     <Button variant="default" size="sm" onclick={handleCodeClick} class="gap-2">
