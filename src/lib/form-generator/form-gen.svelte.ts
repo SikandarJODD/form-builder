@@ -2507,7 +2507,7 @@ export const actions: Actions = {
       } else if (input === "date-picker") {
         installCommand += ` popover calendar range-calendar`;
       } else if (input === "combobox") {
-        installCommand += ` popover command lucide-svelte`;
+        installCommand += ` popover command @lucide/svelte`;
       } else if (input === "slider") {
         installCommand += ` slider`;
       }
