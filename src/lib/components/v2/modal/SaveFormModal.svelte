@@ -7,6 +7,8 @@
   import { formV2, savedFormsV2 } from "../state/form-v2.svelte";
   import Save from "@lucide/svelte/icons/save";
   import FilePlus from "@lucide/svelte/icons/file-plus";
+  import { toast } from "svelte-sonner";
+  import { watch } from "runed";
 
   interface Props {
     open: boolean;
@@ -21,18 +23,21 @@
   let errorMessage = $state("");
 
   // Load current form name if editing an existing form
-  $effect(() => {
-    if (open && formV2.currentFormId) {
-      const currentForm = savedFormsV2.current.find(
-        (f) => f.id === formV2.currentFormId
-      );
-      if (currentForm) {
-        formName = currentForm.name;
+  watch(
+    () => open,
+    () => {
+      if (open && formV2.currentFormId) {
+        const currentForm = savedFormsV2.current.find(
+          (f) => f.id === formV2.currentFormId
+        );
+        if (currentForm) {
+          formName = currentForm.name;
+        }
+      } else if (open) {
+        formName = "";
       }
-    } else if (open) {
-      formName = "";
     }
-  });
+  );
 
   function checkDuplicateName(name: string): boolean {
     return savedFormsV2.current.some(
@@ -67,6 +72,9 @@
 
     // Save the form
     formV2.saveForm(trimmedName, false);
+    toast.success("Form saved", {
+      description: `"${trimmedName}" has been updated successfully.`,
+    });
     closeModal();
   }
 
@@ -85,6 +93,9 @@
 
     // Save as new form
     formV2.saveForm(trimmedName, true);
+    toast.success("New template added", {
+      description: `"${trimmedName}" has been saved to your templates.`,
+    });
     closeModal();
   }
 
@@ -100,11 +111,17 @@
         formV2.deleteForm(existingForm.id);
       }
       formV2.saveForm(trimmedName, true);
+      toast.success("Form replaced", {
+        description: `"${trimmedName}" has been replaced with the new version.`,
+      });
     } else if (duplicateAction === "saveAsNew") {
       // Generate unique name and save
       const uniqueName = generateUniqueName(trimmedName);
       formName = uniqueName;
       formV2.saveForm(uniqueName, true);
+      toast.success("New template added", {
+        description: `"${uniqueName}" has been saved to your templates.`,
+      });
     }
 
     showDuplicateDialog = false;

@@ -439,9 +439,13 @@ class FormGeneratorV2 {
 
     const existingIndex = savedFormsV2.current.findIndex((f) => f.id === formId);
     if (existingIndex >= 0) {
-      savedFormsV2.current[existingIndex] = savedForm;
+      // Update existing form - create new array for reactivity
+      savedFormsV2.current = savedFormsV2.current.map((f, i) =>
+        i === existingIndex ? savedForm : f
+      );
     } else {
-      savedFormsV2.current = [...savedFormsV2.current, savedForm];
+      // Add new form at the beginning for better visibility
+      savedFormsV2.current = [savedForm, ...savedFormsV2.current];
     }
 
     this.currentFormId = formId;
@@ -492,7 +496,8 @@ class FormGeneratorV2 {
       updatedAt: Date.now(),
     };
 
-    savedFormsV2.current = [...savedFormsV2.current, duplicatedForm];
+    // Add at the beginning for better visibility
+    savedFormsV2.current = [duplicatedForm, ...savedFormsV2.current];
     return newId;
   };
 
