@@ -12,26 +12,29 @@
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import * as Tooltip from "$lib/components/ui/tooltip/index";
   import CodeModal from "../modal/CodeModal.svelte";
+  import SaveFormModal from "../modal/SaveFormModal.svelte";
   import LayoutGrid from "@lucide/svelte/icons/layout-grid";
   import LayoutTemplate from "@lucide/svelte/icons/layout-template";
   import Settings from "@lucide/svelte/icons/settings";
   import Sparkles from "@lucide/svelte/icons/sparkles";
   import RotateCcw from "@lucide/svelte/icons/rotate-ccw";
   import Code from "@lucide/svelte/icons/code";
+  import Save from "@lucide/svelte/icons/save";
 
   const schemas: { value: SchemaType; label: string }[] = [
-    { value: "zod", label: "Zod" },
     { value: "valibot", label: "Valibot" },
+    { value: "zod", label: "Zod" },
     { value: "arktype", label: "ArkType" },
   ];
 
-  // const tabs: { id: TabType; label: string; icon: typeof LayoutGrid }[] = [
-  //   { id: "fields", label: "Fields", icon: LayoutGrid },
-  //   { id: "template", label: "Template", icon: LayoutTemplate },
-  //   { id: "settings", label: "Settings", icon: Settings },
-  // ];
+  const tabs: { id: TabType; label: string; icon: typeof LayoutGrid }[] = [
+    { id: "fields", label: "Fields", icon: LayoutGrid },
+    { id: "template", label: "Templates", icon: LayoutTemplate },
+    // { id: "settings", label: "Settings", icon: Settings },
+  ];
 
   let codeModalOpen = $state(false);
+  let saveModalOpen = $state(false);
 
   // Use global state
   let schemaValue = $derived(globalFormState.schema);
@@ -54,6 +57,10 @@
     codeModalOpen = true;
   };
 
+  const handleSaveClick = () => {
+    saveModalOpen = true;
+  };
+
   const handleTabClick = (tab: TabType) => {
     formV2.activeTab = tab;
   };
@@ -64,7 +71,7 @@
 >
   <!-- Left side: Tabs -->
   <div class="flex items-center gap-1">
-    <!-- {#each tabs as tab}
+    {#each tabs as tab}
       <Button
         variant={formV2.activeTab === tab.id ? "secondary" : "ghost"}
         size="sm"
@@ -81,7 +88,7 @@
     <Button variant="ghost" size="sm" class="gap-2">
       <Sparkles class="h-4 w-4" />
       <span class="hidden sm:inline">Generate with AI</span>
-    </Button> -->
+    </Button>
   </div>
 
   <!-- Right side: Controls -->
@@ -123,6 +130,12 @@
 
     <Separator orientation="vertical" class="h-6" />
 
+    <!-- Save Button -->
+    <Button variant="ghost" size="sm" onclick={handleSaveClick} class="gap-2">
+      <Save class="h-4 w-4" />
+      <span class="hidden sm:inline">Save</span>
+    </Button>
+
     <!-- Reset Button -->
     <Tooltip.Provider>
       <Tooltip.Root delayDuration={100}>
@@ -149,4 +162,10 @@
 <CodeModal
   bind:open={codeModalOpen}
   onOpenChange={(v) => (codeModalOpen = v)}
+/>
+
+<!-- Save Form Modal -->
+<SaveFormModal
+  bind:open={saveModalOpen}
+  onOpenChange={(v) => (saveModalOpen = v)}
 />

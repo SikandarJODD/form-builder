@@ -13,6 +13,7 @@ export type InputType = {
   disabled?: boolean;
   isNew?: boolean;
 };
+
 let dummyInput: InputType[] = [
   // Title and Description
   // {
@@ -326,7 +327,6 @@ class FormGenerator {
   handleDndFinalize = (e: CustomEvent) => {
     this.selected_inputs = e.detail.items;
   };
-
   generateZodSchemaString(inputs: InputType[]): string {
     let schemaString = `import { z } from 'zod';
 ${

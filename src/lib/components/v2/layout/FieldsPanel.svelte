@@ -1,61 +1,61 @@
 <script lang="ts">
-  import { formV2 } from '../state/form-v2.svelte';
-  import Button from '$lib/components/ui/button/button.svelte';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  
-  // Field Icons
-  import TextCursorInput from '@lucide/svelte/icons/text-cursor-input';
-  import Mail from '@lucide/svelte/icons/mail';
-  import Lock from '@lucide/svelte/icons/lock';
-  import Hash from '@lucide/svelte/icons/hash';
-  import AlignLeft from '@lucide/svelte/icons/align-left';
-  import ToggleLeft from '@lucide/svelte/icons/toggle-left';
-  import CheckSquare from '@lucide/svelte/icons/check-square';
-  import ChevronDown from '@lucide/svelte/icons/chevron-down';
-  import Circle from '@lucide/svelte/icons/circle';
-  import Calendar from '@lucide/svelte/icons/calendar';
-  import SlidersHorizontal from '@lucide/svelte/icons/sliders-horizontal';
-  import Keyboard from '@lucide/svelte/icons/keyboard';
-  import Phone from '@lucide/svelte/icons/phone';
-  import Search from '@lucide/svelte/icons/search';
-  import Tags from '@lucide/svelte/icons/tags';
-  import Upload from '@lucide/svelte/icons/upload';
-  import MapPin from '@lucide/svelte/icons/map-pin';
-  // Display Icons
-  import Heading1 from '@lucide/svelte/icons/heading-1';
-  import Heading2 from '@lucide/svelte/icons/heading-2';
-  import Heading3 from '@lucide/svelte/icons/heading-3';
-  import Text from '@lucide/svelte/icons/text';
-  import Minus from '@lucide/svelte/icons/minus';
+  import { formV2 } from "../state/form-v2.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import { ScrollArea } from "$lib/components/ui/scroll-area";
 
-  import type { InputType } from '$lib/form-generator/form-gen.svelte';
+  // Field Icons
+  import TextCursorInput from "@lucide/svelte/icons/text-cursor-input";
+  import Mail from "@lucide/svelte/icons/mail";
+  import Lock from "@lucide/svelte/icons/lock";
+  import Hash from "@lucide/svelte/icons/hash";
+  import AlignLeft from "@lucide/svelte/icons/align-left";
+  import ToggleLeft from "@lucide/svelte/icons/toggle-left";
+  import CheckSquare from "@lucide/svelte/icons/check-square";
+  import ChevronDown from "@lucide/svelte/icons/chevron-down";
+  import Circle from "@lucide/svelte/icons/circle";
+  import Calendar from "@lucide/svelte/icons/calendar";
+  import SlidersHorizontal from "@lucide/svelte/icons/sliders-horizontal";
+  import Keyboard from "@lucide/svelte/icons/keyboard";
+  import Phone from "@lucide/svelte/icons/phone";
+  import Search from "@lucide/svelte/icons/search";
+  import Tags from "@lucide/svelte/icons/tags";
+  import Upload from "@lucide/svelte/icons/upload";
+  import MapPin from "@lucide/svelte/icons/map-pin";
+  // Display Icons
+  import Heading1 from "@lucide/svelte/icons/heading-1";
+  import Heading2 from "@lucide/svelte/icons/heading-2";
+  import Heading3 from "@lucide/svelte/icons/heading-3";
+  import Text from "@lucide/svelte/icons/text";
+  import Minus from "@lucide/svelte/icons/minus";
+
+  import type { InputType } from "$lib/form-generator/form-gen.svelte";
 
   // Map field types to icons
   const getFieldIcon = (category: string) => {
     const iconMap: Record<string, typeof TextCursorInput> = {
-      'text': TextCursorInput,
-      'email': Mail,
-      'password': Lock,
-      'number': Hash,
-      'textarea': AlignLeft,
-      'switch': ToggleLeft,
-      'checkbox': CheckSquare,
-      'select': ChevronDown,
-      'radio': Circle,
-      'date-picker': Calendar,
-      'slider': SlidersHorizontal,
-      'input-otp': Keyboard,
-      'phone': Phone,
-      'combobox': Search,
-      'tags-input': Tags,
-      'file': Upload,
-      'location-input': MapPin,
+      text: TextCursorInput,
+      email: Mail,
+      password: Lock,
+      number: Hash,
+      textarea: AlignLeft,
+      switch: ToggleLeft,
+      checkbox: CheckSquare,
+      select: ChevronDown,
+      radio: Circle,
+      "date-picker": Calendar,
+      slider: SlidersHorizontal,
+      "input-otp": Keyboard,
+      phone: Phone,
+      combobox: Search,
+      "tags-input": Tags,
+      file: Upload,
+      "location-input": MapPin,
       // Display elements
-      'h1': Heading1,
-      'h2': Heading2,
-      'h3': Heading3,
-      'desc': Text,
-      'separator': Minus,
+      h1: Heading1,
+      h2: Heading2,
+      h3: Heading3,
+      desc: Text,
+      separator: Minus,
     };
     return iconMap[category] || TextCursorInput;
   };
@@ -76,7 +76,9 @@
   <ScrollArea class="flex-1 p-3">
     <!-- Field Elements -->
     <div class="mb-4">
-      <h4 class="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+      <h4
+        class="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide"
+      >
         Field Elements
       </h4>
       <div class="grid grid-cols-2 gap-1.5">
@@ -97,7 +99,9 @@
 
     <!-- Display Elements -->
     <div>
-      <h4 class="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+      <h4
+        class="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide"
+      >
         Display Elements
       </h4>
       <div class="grid grid-cols-2 gap-1.5">
@@ -117,4 +121,3 @@
     </div>
   </ScrollArea>
 </div>
-
