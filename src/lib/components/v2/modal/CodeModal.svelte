@@ -74,7 +74,11 @@
     { value: "bun", label: "bun" },
   ];
 
-  const tabs: { id: CodeTab | "import"; label: string; icon: typeof FileCode }[] = [
+  const tabs: {
+    id: CodeTab | "import";
+    label: string;
+    icon: typeof FileCode;
+  }[] = [
     { id: "import", label: "Import", icon: Upload },
     { id: "client", label: "Client", icon: FileCode },
     { id: "server", label: "Server", icon: Server },
@@ -310,7 +314,7 @@
       }
     ]
   }
-]`
+]`,
     },
     {
       name: "User Registration",
@@ -391,7 +395,7 @@
       }
     ]
   }
-]`
+]`,
     },
     {
       name: "Survey Form",
@@ -457,15 +461,15 @@
       }
     ]
   }
-]`
-    }
+]`,
+    },
   ];
 
   // Load template into import textarea
   const loadTemplate = (templateJson: string) => {
     importJson = templateJson;
     toast.success("Template loaded", {
-      description: "You can now edit or import this template"
+      description: "You can now edit or import this template",
     });
   };
 
@@ -473,7 +477,7 @@
   const handleImport = () => {
     if (!importJson.trim()) {
       toast.error("Import failed", {
-        description: "Please provide JSON data to import"
+        description: "Please provide JSON data to import",
       });
       return;
     }
@@ -490,11 +494,15 @@
       // Basic validation of row structure
       for (const row of parsed) {
         if (!row.id || !row.fields || !Array.isArray(row.fields)) {
-          throw new Error("Invalid row structure: each row must have 'id' and 'fields' array");
+          throw new Error(
+            "Invalid row structure: each row must have 'id' and 'fields' array"
+          );
         }
         for (const field of row.fields) {
           if (!field.id || !field.type || !field.category) {
-            throw new Error("Invalid field structure: each field must have 'id', 'type', and 'category'");
+            throw new Error(
+              "Invalid field structure: each field must have 'id', 'type', and 'category'"
+            );
           }
         }
       }
@@ -505,11 +513,12 @@
       activeTab = "client";
 
       toast.success("Import successful!", {
-        description: `Imported ${parsed.length} rows with ${parsed.reduce((acc: number, row: any) => acc + row.fields.length, 0)} fields`
+        description: `Imported ${parsed.length} rows with ${parsed.reduce((acc: number, row: any) => acc + row.fields.length, 0)} fields`,
       });
     } catch (error) {
       toast.error("Import failed", {
-        description: error instanceof Error ? error.message : "Invalid JSON format"
+        description:
+          error instanceof Error ? error.message : "Invalid JSON format",
       });
     } finally {
       isImporting = false;
@@ -596,7 +605,9 @@
                 <div class="space-y-2">
                   <div class="flex items-center justify-between">
                     <h4 class="text-sm font-medium">Quick Start Templates</h4>
-                    <span class="text-xs text-muted-foreground">Click to load</span>
+                    <span class="text-xs text-muted-foreground"
+                      >Click to load</span
+                    >
                   </div>
                   <div class="grid grid-cols-3 gap-2">
                     {#each templateExamples as template}
@@ -627,7 +638,7 @@
                         variant="ghost"
                         size="sm"
                         class="h-7"
-                        onclick={() => importJson = ""}
+                        onclick={() => (importJson = "")}
                       >
                         Clear
                       </Button>
@@ -639,7 +650,8 @@
                     class="w-full h-64 p-3 text-sm font-mono border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                   ></textarea>
                   <p class="text-xs text-muted-foreground">
-                    Paste form JSON exported from this builder or use a template above
+                    Paste form JSON exported from this builder or use a template
+                    above
                   </p>
                 </div>
 

@@ -59,10 +59,15 @@
   // Validate a field
   function validateField(field: any) {
     const value = fieldValues[field.id];
-    
+
     // Required validation
     if (field.required) {
-      if (value === undefined || value === null || value === "" || value === false) {
+      if (
+        value === undefined ||
+        value === null ||
+        value === "" ||
+        value === false
+      ) {
         validationErrors[field.id] = `${field.label} is required`;
         return false;
       }
@@ -118,8 +123,8 @@
   function testValidation() {
     showValidation = true;
     validationErrors = {};
-    
-    formV2.allFields.forEach(field => {
+
+    formV2.allFields.forEach((field) => {
       if (field.category !== "display") {
         validateField(field);
       }
@@ -216,12 +221,22 @@
                       type={field.type}
                       placeholder={field.placeholder}
                       disabled={field.disabled}
-                      value={field.id ? (fieldValues[field.id] || "") : ""}
-                      oninput={(e) => field.id && handleFieldChange(field.id, e.currentTarget.value, field)}
-                      class={field.id && validationErrors[field.id] ? "border-destructive" : ""}
+                      value={field.id ? fieldValues[field.id] || "" : ""}
+                      oninput={(e) =>
+                        field.id &&
+                        handleFieldChange(
+                          field.id,
+                          e.currentTarget.value,
+                          field
+                        )}
+                      class={field.id && validationErrors[field.id]
+                        ? "border-destructive"
+                        : ""}
                     />
                     {#if field.id && validationErrors[field.id]}
-                      <p class="text-xs text-destructive flex items-center gap-1">
+                      <p
+                        class="text-xs text-destructive flex items-center gap-1"
+                      >
                         <AlertCircle class="h-3 w-3" />
                         {validationErrors[field.id]}
                       </p>
@@ -241,12 +256,22 @@
                     <Textarea
                       placeholder={field.placeholder}
                       disabled={field.disabled}
-                      value={field.id ? (fieldValues[field.id] || "") : ""}
-                      oninput={(e) => field.id && handleFieldChange(field.id, e.currentTarget.value, field)}
-                      class={field.id && validationErrors[field.id] ? "border-destructive" : ""}
+                      value={field.id ? fieldValues[field.id] || "" : ""}
+                      oninput={(e) =>
+                        field.id &&
+                        handleFieldChange(
+                          field.id,
+                          e.currentTarget.value,
+                          field
+                        )}
+                      class={field.id && validationErrors[field.id]
+                        ? "border-destructive"
+                        : ""}
                     />
                     {#if field.id && validationErrors[field.id]}
-                      <p class="text-xs text-destructive flex items-center gap-1">
+                      <p
+                        class="text-xs text-destructive flex items-center gap-1"
+                      >
                         <AlertCircle class="h-3 w-3" />
                         {validationErrors[field.id]}
                       </p>
@@ -258,15 +283,20 @@
                   </div>
                 {:else if field.category === "checkbox"}
                   <div class="flex items-start gap-2 p-4 border rounded-lg">
-                    <Checkbox 
+                    <Checkbox
                       disabled={field.disabled}
-                      checked={field.id ? (fieldValues[field.id] || false) : false}
-                      onCheckedChange={(checked) => field.id && handleFieldChange(field.id, checked, field)}
+                      checked={field.id
+                        ? fieldValues[field.id] || false
+                        : false}
+                      onCheckedChange={(checked) =>
+                        field.id && handleFieldChange(field.id, checked, field)}
                     />
                     <div class="flex-1">
                       <Label>{field.label}</Label>
                       {#if field.id && validationErrors[field.id]}
-                        <p class="text-xs text-destructive flex items-center gap-1 mt-1">
+                        <p
+                          class="text-xs text-destructive flex items-center gap-1 mt-1"
+                        >
                           <AlertCircle class="h-3 w-3" />
                           {validationErrors[field.id]}
                         </p>

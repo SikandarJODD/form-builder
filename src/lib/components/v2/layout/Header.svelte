@@ -88,11 +88,13 @@
       await navigator.clipboard.writeText(shareUrl);
 
       toast.success("Link copied!", {
-        description: "Share link expires in 24 hours. Anyone with this link can view and edit the form.",
+        description:
+          "Share link expires in 24 hours. Anyone with this link can view and edit the form.",
       });
     } catch (error) {
       toast.error("Failed to create share link", {
-        description: error instanceof Error ? error.message : "Please try again",
+        description:
+          error instanceof Error ? error.message : "Please try again",
       });
     }
   };

@@ -29,7 +29,8 @@
 
         if (hoursSinceCreation > 24) {
           toast.error("Share link expired", {
-            description: "This link is older than 24 hours and is no longer valid.",
+            description:
+              "This link is older than 24 hours and is no longer valid.",
           });
           // Clean URL
           window.history.replaceState({}, "", "/v2");
