@@ -8,15 +8,15 @@
 </script>
 
 <svelte:head>
-  <title>Svelte Form Builder</title>
+  <title>Svelte Form Builder V2</title>
   <meta
     name="description"
-    content="Svelte Form Builder - A powerful, easy-to-use form builder for Svelte with built-in support for Zod and Valibot validation. Easily create dynamic, validated forms in SvelteKit with sveltekit-superforms."
+    content="Svelte Form Builder V2 - A powerful, easy-to-use form builder for Svelte with built-in support for Zod, Valibot, and Arktype validation. Create dynamic forms with templates, save/load functionality, 3-panel layout, and more."
   />
-  <meta property="og:title" content="Svelte Form Builder" />
+  <meta property="og:title" content="Svelte Form Builder V2" />
   <meta
     property="og:description"
-    content="A powerful form builder for Svelte with Zod and Valibot validation. Create validated forms effortlessly in SvelteKit."
+    content="A powerful form builder for Svelte with Zod, Valibot, Arktype validation, templates, and advanced V2 features. Create validated forms effortlessly in SvelteKit."
   />
   <meta
     property="og:image"
@@ -28,15 +28,15 @@
   <meta property="og:site_name" content="Svelte Form Builder" />
   <meta
     name="keywords"
-    content="Svelte Form Builder, Svelte forms, Zod validation, Valibot validation, sveltekit-superforms, form validation, SvelteKit, form library, svelte, form, builder, sveltekit, sveltekit form builder, svelte form builder, svelte form, sveltekit form, form validation, sveltekit superform builder, superform zod form builder, sveltekit zod form builder, svelte-form builder, svelte valibot validation, formsnap builder, valibot forms builder"
+    content="Svelte Form Builder V2, Svelte forms, Zod validation, Valibot validation, Arktype validation, sveltekit-superforms, form validation, SvelteKit, form library, svelte, form, builder, sveltekit, sveltekit form builder, svelte form builder, svelte form, sveltekit form, form validation, sveltekit superform builder, superform zod form builder, sveltekit zod form builder, svelte-form builder, svelte valibot validation, formsnap builder, valibot forms builder, form templates, save forms, 3-panel layout, side-by-side fields, form sharing, JSON import"
   />
   <!-- Twitter -->
   <meta property="og:url" content="https://svelte-form-builder.vercel.app" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Svelte Form Builder" />
+  <meta name="twitter:title" content="Svelte Form Builder V2" />
   <meta
     name="twitter:description"
-    content="Easily build dynamic, validated forms in SvelteKit with Zod and Valibot."
+    content="Easily build dynamic, validated forms in SvelteKit with Zod, Valibot, Arktype, templates, and advanced V2 features."
   />
   <meta
     name="twitter:image"
@@ -48,9 +48,14 @@
     {
       "@context": "https://schema.org",
       "@type": "Website",
-      "name": "Svelte Form Builder",
+      "name": "Svelte Form Builder V2",
       "url": "https://svelte-form-builder.vercel.app",
       "potentialAction": [
+        {
+          "@type": "ViewAction",
+          "target": "https://svelte-form-builder.vercel.app/v2",
+          "name": "V2 Builder"
+        },
         {
           "@type": "ViewAction",
           "target": "https://svelte-form-builder.vercel.app/playground",

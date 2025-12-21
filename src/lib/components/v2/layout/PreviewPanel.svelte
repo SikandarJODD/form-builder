@@ -159,7 +159,7 @@
 <div class="flex h-full flex-col">
   <!-- Panel Header -->
   <div class="border-b p-4">
-    <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center justify-between">
       <div>
         <h3 class="font-semibold text-sm">Preview</h3>
         <p class="text-xs text-muted-foreground">See how your form looks</p>

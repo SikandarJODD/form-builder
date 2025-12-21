@@ -63,7 +63,7 @@
 </script>
 
 <div class="bg-background">
-  <div class="relative isolate px-6 pt-0 md:pt-20 lg:px-8">
+  <div class="relative isolate px-6 pt-0 md:pt-3 lg:px-8">
     <GridPattern
       width={30}
       height={30}
@@ -107,7 +107,7 @@
             class="group"
           >
             <Button
-              class="h-9 sm:h-10 w-38 flex justify-start rounded-full border-2 border-white dark:border-gray-800 shadow-xs"
+              class="h-9 sm:h-10 w-38 flex justify-start rounded-full border-2 border-white dark:border-gray-800 shadow-xs cursor-pointer"
             >
               <HeartIcon />
               Sponsor
@@ -200,7 +200,8 @@
       >
         Superforms
       </a>{" "}
-      and schema within minutes.
+      and schema within minutes. Now with V2: templates, save/load forms, 3-panel
+      layout, and more advanced features.
     </Motion.p>
   </div>
 {/snippet}
@@ -212,6 +213,13 @@
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.8, ease }}
   >
+    <Button
+      data-umami-event="Hero V2"
+      variant="default"
+      href="/v2"
+      class="rounded-full sm:rounded-lg w-full sm:w-fit"
+      >Try V2 Playground
+    </Button>
     <Button
       data-umami-event="Hero Playground"
       variant="secondary"

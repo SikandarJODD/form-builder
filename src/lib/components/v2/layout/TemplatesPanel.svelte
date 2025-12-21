@@ -17,8 +17,8 @@
 <div class="flex h-full flex-col bg-background">
   <!-- Header -->
   <div class="border-b p-4">
-    <h2 class="text-lg font-semibold">Templates</h2>
-    <p class="text-sm text-muted-foreground">Saved forms & templates</p>
+    <h3 class="font-semibold text-sm">Templates</h3>
+    <p class="text-xs text-muted-foreground">Saved forms & templates</p>
   </div>
 
   <ScrollArea class="flex-1" scrollbarYClasses="hidden">
