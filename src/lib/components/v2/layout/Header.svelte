@@ -13,6 +13,7 @@
   import * as Tooltip from "$lib/components/ui/tooltip/index";
   import CodeModal from "../modal/CodeModal.svelte";
   import SaveFormModal from "../modal/SaveFormModal.svelte";
+  import ImportFormModal from "../modal/ImportFormModal.svelte";
   import LayoutGrid from "@lucide/svelte/icons/layout-grid";
   import LayoutTemplate from "@lucide/svelte/icons/layout-template";
   import Settings from "@lucide/svelte/icons/settings";
@@ -20,6 +21,9 @@
   import RotateCcw from "@lucide/svelte/icons/rotate-ccw";
   import Code from "@lucide/svelte/icons/code";
   import Save from "@lucide/svelte/icons/save";
+  import Share2 from "@lucide/svelte/icons/share-2";
+  import FileDown from "@lucide/svelte/icons/file-down";
+  import { toast } from "svelte-sonner";
 
   const schemas: { value: SchemaType; label: string }[] = [
     { value: "valibot", label: "Valibot" },
@@ -35,6 +39,7 @@
 
   let codeModalOpen = $state(false);
   let saveModalOpen = $state(false);
+  let importModalOpen = $state(false);
 
   // Use global state
   let schemaValue = $derived(globalFormState.schema);
@@ -61,8 +66,44 @@
     saveModalOpen = true;
   };
 
+  const handleImportClick = () => {
+    importModalOpen = true;
+  };
+
   const handleTabClick = (tab: TabType) => {
     formV2.activeTab = tab;
+  };
+
+  // Share form via link
+  const handleShare = async () => {
+    try {
+      const formData = {
+        rows: formV2.rows,
+        schema: globalFormState.schema,
+        mode: globalFormState.mode,
+        timestamp: Date.now(),
+      };
+
+      // Encode to base64
+      const jsonString = JSON.stringify(formData);
+      const encoded = btoa(unescape(encodeURIComponent(jsonString)));
+
+      // Create shareable URL
+      const shareUrl = `${window.location.origin}/v2?share=${encoded}`;
+
+      // Copy to clipboard
+      await navigator.clipboard.writeText(shareUrl);
+
+      toast.success("Link copied!", {
+        description:
+          "Share link expires in 24 hours. Anyone with this link can view and edit the form.",
+      });
+    } catch (error) {
+      toast.error("Failed to create share link", {
+        description:
+          error instanceof Error ? error.message : "Please try again",
+      });
+    }
   };
 </script>
 
@@ -130,6 +171,41 @@
 
     <Separator orientation="vertical" class="h-6" />
 
+    <!-- Import Button -->
+    <Tooltip.Provider>
+      <Tooltip.Root delayDuration={100}>
+        <Tooltip.Trigger>
+          <Button
+            variant="ghost"
+            size="sm"
+            onclick={handleImportClick}
+            class="gap-2"
+          >
+            <FileDown class="h-4 w-4" />
+            <span class="hidden sm:inline">Import</span>
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content>
+          <p>Import form from JSON</p>
+        </Tooltip.Content>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+
+    <!-- Share Button -->
+    <Tooltip.Provider>
+      <Tooltip.Root delayDuration={100}>
+        <Tooltip.Trigger>
+          <Button variant="ghost" size="sm" onclick={handleShare} class="gap-2">
+            <Share2 class="h-4 w-4" />
+            <span class="hidden sm:inline">Share</span>
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content>
+          <p>Share form via link (expires in 24h)</p>
+        </Tooltip.Content>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+
     <!-- Save Button -->
     <Button variant="ghost" size="sm" onclick={handleSaveClick} class="gap-2">
       <Save class="h-4 w-4" />
@@ -168,4 +244,10 @@
 <SaveFormModal
   bind:open={saveModalOpen}
   onOpenChange={(v) => (saveModalOpen = v)}
+/>
+
+<!-- Import Form Modal -->
+<ImportFormModal
+  bind:open={importModalOpen}
+  onOpenChange={(v) => (importModalOpen = v)}
 />

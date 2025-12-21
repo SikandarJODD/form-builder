@@ -28,6 +28,7 @@
   import Terminal from "@lucide/svelte/icons/terminal";
   import Braces from "@lucide/svelte/icons/braces";
   import FolderTree from "@lucide/svelte/icons/folder-tree";
+  import { toast } from "svelte-sonner";
 
   interface Props {
     open: boolean;
@@ -69,7 +70,11 @@
     { value: "bun", label: "bun" },
   ];
 
-  const tabs: { id: CodeTab; label: string; icon: typeof FileCode }[] = [
+  const tabs: {
+    id: CodeTab;
+    label: string;
+    icon: typeof FileCode;
+  }[] = [
     { id: "client", label: "Client", icon: FileCode },
     { id: "server", label: "Server", icon: Server },
     { id: "schema", label: "Schema", icon: Braces },
@@ -322,6 +327,7 @@
 
       {#each tabs as tab}
         <Tabs.Content value={tab.id} class="flex-1 min-h-0 mt-2">
+          <!-- Code Tab Content -->
           <div class="h-full flex flex-col border rounded-lg">
             <!-- Code Header -->
             <div
@@ -353,7 +359,7 @@
                 variant="ghost"
                 size="sm"
                 class="h-7 gap-2"
-                onclick={() => copyToClipboard(tab.id)}
+                onclick={() => copyToClipboard(tab.id as CodeTab)}
               >
                 {#if copiedTab === tab.id}
                   <Check class="h-3.5 w-3.5 text-green-500" />

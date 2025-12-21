@@ -15,6 +15,7 @@
   import Trash2 from "@lucide/svelte/icons/trash-2";
   import Check from "@lucide/svelte/icons/check";
   import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
+  import AlertCircle from "@lucide/svelte/icons/alert-circle";
   import { toast } from "svelte-sonner";
   import { cn } from "$lib/utils";
   // New component imports
@@ -29,6 +30,11 @@
     displaySize,
   } from "$lib/components/ui/file-drop-zone";
   import DatePickerSimple from "$lib/components/templates/comps/date-picker/DatePickerSimple.svelte";
+
+  // State for validation errors
+  let validationErrors: Record<string, string> = $state({});
+  let fieldValues: Record<string, any> = $state({});
+  let showValidation = $state(false);
 
   // State for file uploads in preview (keyed by field id)
   let uploadedFiles: Record<string, File[]> = $state({});
@@ -50,6 +56,92 @@
     { value: "option5", label: "Option 5" },
   ];
 
+  // Validate a field
+  function validateField(field: any) {
+    const value = fieldValues[field.id];
+
+    // Required validation
+    if (field.required) {
+      if (
+        value === undefined ||
+        value === null ||
+        value === "" ||
+        value === false
+      ) {
+        validationErrors[field.id] = `${field.label} is required`;
+        return false;
+      }
+    }
+
+    // Email validation
+    if (field.type === "email" && value) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        validationErrors[field.id] = "Invalid email address";
+        return false;
+      }
+    }
+
+    // Number validation
+    if (field.type === "number" && value) {
+      if (isNaN(value)) {
+        validationErrors[field.id] = "Must be a valid number";
+        return false;
+      }
+      if (field.min !== undefined && value < field.min) {
+        validationErrors[field.id] = `Minimum value is ${field.min}`;
+        return false;
+      }
+      if (field.max !== undefined && value > field.max) {
+        validationErrors[field.id] = `Maximum value is ${field.max}`;
+        return false;
+      }
+    }
+
+    // Password validation (basic)
+    if (field.type === "password" && value && field.required) {
+      if (value.length < 8) {
+        validationErrors[field.id] = "Password must be at least 8 characters";
+        return false;
+      }
+    }
+
+    // Clear error if valid
+    delete validationErrors[field.id];
+    return true;
+  }
+
+  // Handle field value change
+  function handleFieldChange(fieldId: string, value: any, field: any) {
+    fieldValues[fieldId] = value;
+    if (showValidation) {
+      validateField(field);
+    }
+  }
+
+  // Test validation (for preview purposes)
+  function testValidation() {
+    showValidation = true;
+    validationErrors = {};
+
+    formV2.allFields.forEach((field) => {
+      if (field.category !== "display") {
+        validateField(field);
+      }
+    });
+
+    const errorCount = Object.keys(validationErrors).length;
+    if (errorCount > 0) {
+      toast.error("Validation errors", {
+        description: `Found ${errorCount} error(s). Check the form fields.`,
+      });
+    } else {
+      toast.success("All fields valid!", {
+        description: "No validation errors found.",
+      });
+    }
+  }
+
   function handleFileUpload(fieldId: string) {
     return async (files: File[]) => {
       uploadedFiles[fieldId] = [...(uploadedFiles[fieldId] || []), ...files];
@@ -67,8 +159,23 @@
 <div class="flex h-full flex-col">
   <!-- Panel Header -->
   <div class="border-b p-4">
-    <h3 class="font-semibold text-sm">Preview</h3>
-    <p class="text-xs text-muted-foreground">See how your form looks</p>
+    <div class="flex items-center justify-between mb-2">
+      <div>
+        <h3 class="font-semibold text-sm">Preview</h3>
+        <p class="text-xs text-muted-foreground">See how your form looks</p>
+      </div>
+      {#if formV2.allFields.length > 0}
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={testValidation}
+          class="gap-2"
+        >
+          <AlertCircle class="h-3.5 w-3.5" />
+          <span>Test Validation</span>
+        </Button>
+      {/if}
+    </div>
   </div>
 
   <!-- Scrollable Preview Content -->
@@ -114,8 +221,26 @@
                       type={field.type}
                       placeholder={field.placeholder}
                       disabled={field.disabled}
+                      value={field.id ? fieldValues[field.id] || "" : ""}
+                      oninput={(e) =>
+                        field.id &&
+                        handleFieldChange(
+                          field.id,
+                          e.currentTarget.value,
+                          field
+                        )}
+                      class={field.id && validationErrors[field.id]
+                        ? "border-destructive"
+                        : ""}
                     />
-                    {#if field.description}
+                    {#if field.id && validationErrors[field.id]}
+                      <p
+                        class="text-xs text-destructive flex items-center gap-1"
+                      >
+                        <AlertCircle class="h-3 w-3" />
+                        {validationErrors[field.id]}
+                      </p>
+                    {:else if field.description}
                       <p class="text-xs text-muted-foreground">
                         {field.description}
                       </p>
@@ -131,8 +256,26 @@
                     <Textarea
                       placeholder={field.placeholder}
                       disabled={field.disabled}
+                      value={field.id ? fieldValues[field.id] || "" : ""}
+                      oninput={(e) =>
+                        field.id &&
+                        handleFieldChange(
+                          field.id,
+                          e.currentTarget.value,
+                          field
+                        )}
+                      class={field.id && validationErrors[field.id]
+                        ? "border-destructive"
+                        : ""}
                     />
-                    {#if field.description}
+                    {#if field.id && validationErrors[field.id]}
+                      <p
+                        class="text-xs text-destructive flex items-center gap-1"
+                      >
+                        <AlertCircle class="h-3 w-3" />
+                        {validationErrors[field.id]}
+                      </p>
+                    {:else if field.description}
                       <p class="text-xs text-muted-foreground">
                         {field.description}
                       </p>
@@ -140,10 +283,24 @@
                   </div>
                 {:else if field.category === "checkbox"}
                   <div class="flex items-start gap-2 p-4 border rounded-lg">
-                    <Checkbox disabled={field.disabled} />
-                    <div>
+                    <Checkbox
+                      disabled={field.disabled}
+                      checked={field.id
+                        ? fieldValues[field.id] || false
+                        : false}
+                      onCheckedChange={(checked) =>
+                        field.id && handleFieldChange(field.id, checked, field)}
+                    />
+                    <div class="flex-1">
                       <Label>{field.label}</Label>
-                      {#if field.description}
+                      {#if field.id && validationErrors[field.id]}
+                        <p
+                          class="text-xs text-destructive flex items-center gap-1 mt-1"
+                        >
+                          <AlertCircle class="h-3 w-3" />
+                          {validationErrors[field.id]}
+                        </p>
+                      {:else if field.description}
                         <p class="text-xs text-muted-foreground">
                           {field.description}
                         </p>
