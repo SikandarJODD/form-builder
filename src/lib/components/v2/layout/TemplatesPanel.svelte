@@ -43,11 +43,11 @@
     {/if}
 
     <!-- Templates Section -->
-    <div class="px-4 pt-0 pb-2">
+    <div class="px-4 pt-2 pb-2">
       <h3
         class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
       >
-        <FileText class="h-3.5 w-3.5" />
+        <FileText class="h-3.5 w-3.5" strokeWidth={1.6} />
         Templates
       </h3>
     </div>

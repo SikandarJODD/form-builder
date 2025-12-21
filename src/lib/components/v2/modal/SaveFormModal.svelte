@@ -168,7 +168,7 @@
       <Button variant="outline" onclick={closeModal}>Cancel</Button>
       {#if formV2.currentFormId}
         <Button onclick={handleSave}>
-          <Save class="w-4 h-4 mr-2" />
+          <Save class="w-4 h-4 mr-2" strokeWidth={1.6} />
           Save
         </Button>
       {/if}
@@ -176,7 +176,7 @@
         onclick={handleSaveAs}
         variant={formV2.currentFormId ? "secondary" : "default"}
       >
-        <FilePlus class="w-4 h-4 mr-2" />
+        <FilePlus class="w-4 h-4 mr-2" strokeWidth={1.6} />
         Save As
       </Button>
     </Dialog.Footer>
