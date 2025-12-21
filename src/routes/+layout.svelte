@@ -13,7 +13,7 @@
   });
 </script>
 
-<Toaster />
+<Toaster position="top-center" />
 <ModeWatcher defaultMode="dark" />
 <Navbar />
 {@render children()}

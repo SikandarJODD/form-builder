@@ -62,14 +62,22 @@
 
     // Required validation
     if (field.required) {
-      if (
-        value === undefined ||
-        value === null ||
-        value === "" ||
-        value === false
-      ) {
-        validationErrors[field.id] = `${field.label} is required`;
-        return false;
+      // For boolean fields (switch/checkbox), false is a valid value
+      const isBooleanField =
+        field.category === "switch" || field.category === "checkbox";
+
+      if (isBooleanField) {
+        // For boolean fields, only undefined/null means not set
+        if (value === undefined || value === null) {
+          validationErrors[field.id] = `${field.label} is required`;
+          return false;
+        }
+      } else {
+        // For other fields, check for empty values
+        if (value === undefined || value === null || value === "") {
+          validationErrors[field.id] = `${field.label} is required`;
+          return false;
+        }
       }
     }
 
@@ -136,9 +144,64 @@
         description: `Found ${errorCount} error(s). Check the form fields.`,
       });
     } else {
-      toast.success("All fields valid!", {
-        description: "No validation errors found.",
-      });
+      // Format the form data for display
+      const filledFields = formV2.allFields
+        .filter((f) => {
+          if (f.category === "display" || !f.id) return false;
+
+          const value = fieldValues[f.id];
+          // Include fields that have been interacted with
+          // For booleans, include if explicitly set (even if false)
+          const isBooleanField =
+            f.category === "switch" || f.category === "checkbox";
+          if (isBooleanField) {
+            return value !== undefined && value !== null;
+          }
+
+          // For other fields, include if not empty
+          return value !== undefined && value !== null && value !== "";
+        })
+        .map((f) => {
+          let displayValue = fieldValues[f.id!];
+
+          // Format different value types
+          if (typeof displayValue === "boolean") {
+            displayValue = displayValue ? "Yes" : "No";
+          } else if (Array.isArray(displayValue)) {
+            displayValue =
+              displayValue.length > 0 ? displayValue.join(", ") : "(empty)";
+          } else if (
+            typeof displayValue === "object" &&
+            displayValue !== null
+          ) {
+            // Handle location selector and other objects
+            if (displayValue.name || displayValue.label) {
+              displayValue = displayValue.name || displayValue.label;
+            } else {
+              displayValue = JSON.stringify(displayValue);
+            }
+          } else if (displayValue === "") {
+            displayValue = "(empty)";
+          }
+
+          return `${f.label}: ${displayValue}`;
+        });
+
+      // Show success toast with form data
+      if (filledFields.length > 0) {
+        toast.success("Form validated successfully!", {
+          description: filledFields.join("\n"),
+          duration: 6000, // Show for 6 seconds so user can read the data
+        });
+      } else {
+        toast.success("Form validated successfully!", {
+          description: "No fields filled yet.",
+          duration: 4000,
+        });
+      }
+
+      // Also log to console for reference
+      console.log("=== Form Data ===", fieldValues);
     }
   }
 
@@ -311,15 +374,29 @@
                   <div
                     class="flex items-center justify-between p-4 border rounded-lg"
                   >
-                    <div>
+                    <div class="flex-1">
                       <Label>{field.label}</Label>
-                      {#if field.description}
+                      {#if field.id && validationErrors[field.id]}
+                        <p
+                          class="text-xs text-destructive flex items-center gap-1 mt-1"
+                        >
+                          <AlertCircle class="h-3 w-3" />
+                          {validationErrors[field.id]}
+                        </p>
+                      {:else if field.description}
                         <p class="text-xs text-muted-foreground">
                           {field.description}
                         </p>
                       {/if}
                     </div>
-                    <Switch disabled={field.disabled} />
+                    <Switch
+                      disabled={field.disabled}
+                      checked={field.id
+                        ? fieldValues[field.id] || false
+                        : false}
+                      onCheckedChange={(checked) =>
+                        field.id && handleFieldChange(field.id, checked, field)}
+                    />
                   </div>
                 {:else if field.type === "select"}
                   <div class="space-y-1.5">

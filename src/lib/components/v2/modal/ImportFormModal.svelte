@@ -804,7 +804,7 @@ type FormSchema = Row[];`,
               {#each templateExamples as template}
                 <button
                   type="button"
-                  class="w-full flex items-start gap-2 p-2.5 border rounded-lg hover:bg-accent hover:border-primary transition-colors text-left"
+                  class="w-full flex items-start gap-2 p-2.5 border border-dashed rounded-lg hover:bg-accent/50 hover:border-primary/30 transition-colors text-left"
                   onclick={() => loadTemplate(template.json)}
                 >
                   <FileUp class="h-4 w-4 text-primary mt-0.5 shrink-0" />

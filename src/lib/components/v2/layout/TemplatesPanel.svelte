@@ -6,6 +6,8 @@
   import FileText from "@lucide/svelte/icons/file-text";
   import Heart from "@lucide/svelte/icons/heart";
   import SavedFormItem from "../ui/SavedFormItem.svelte";
+  import { fly, fade, scale } from "svelte/transition";
+  import { flip } from "svelte/animate";
 
   const handleTemplateClick = (templateIndex: number) => {
     const template = templates[templateIndex];
@@ -24,17 +26,26 @@
   <ScrollArea class="flex-1" scrollbarYClasses="hidden">
     <!-- Saved Forms Section -->
     {#if savedFormsV2.current.length > 0}
-      <div class="px-4 pt-4 pb-2">
+      <div class="px-4 pt-4 pb-2" in:fade={{ duration: 200 }}>
         <h3
           class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
         >
           <Heart class="h-3.5 w-3.5" />
           Saved Forms
+          <span class="ml-auto text-xs font-normal tabular-nums">
+            {savedFormsV2.current.length}
+          </span>
         </h3>
       </div>
       <div class="px-2 pb-4">
-        {#each savedFormsV2.current as form}
-          <SavedFormItem {form} />
+        {#each savedFormsV2.current as form (form.id)}
+          <div
+            animate:flip={{ duration: 300 }}
+            in:fly={{ y: -20, duration: 300, delay: 50 }}
+            out:scale={{ duration: 200, start: 0.95 }}
+          >
+            <SavedFormItem {form} />
+          </div>
         {/each}
       </div>
 
@@ -43,18 +54,22 @@
     {/if}
 
     <!-- Templates Section -->
-    <div class="px-4 pt-2 pb-2">
+    <div class={["px-4 pb-2", savedFormsV2.current.length > 0 ? "" : "pt-4"]}>
       <h3
         class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
       >
         <FileText class="h-3.5 w-3.5" strokeWidth={1.6} />
         Templates
+        <span class="ml-auto text-xs font-normal tabular-nums">
+          {templates.length}
+        </span>
       </h3>
     </div>
     <div class="px-2 pb-4">
-      {#each templates as template, index}
+      {#each templates as template, index (template.name)}
         <button
           onclick={() => handleTemplateClick(index)}
+          in:fade={{ duration: 200, delay: Math.min(index * 30, 300) }}
           class="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-accent"
         >
           <!-- Template Icon -->

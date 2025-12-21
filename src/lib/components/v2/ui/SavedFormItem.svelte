@@ -1,6 +1,5 @@
 <script lang="ts">
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
-  import * as AlertDialog from "$lib/components/ui/alert-dialog";
   import * as Dialog from "$lib/components/ui/dialog";
   import Button from "$lib/components/ui/button/button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
@@ -12,6 +11,7 @@
   import Pencil from "@lucide/svelte/icons/pencil";
   import Copy from "@lucide/svelte/icons/copy";
   import Trash2 from "@lucide/svelte/icons/trash-2";
+  import { toast } from "svelte-sonner";
 
   interface Props {
     form: SavedFormV2;
@@ -59,18 +59,28 @@
   function confirmRename() {
     if (newName.trim()) {
       formV2.renameForm(form.id, newName.trim());
+      toast.success("Form renamed", {
+        description: `Form has been renamed to "${newName.trim()}".`,
+      });
       showRenameDialog = false;
     }
   }
 
   function handleDuplicate() {
     formV2.duplicateForm(form.id);
+    toast.success("Form duplicated", {
+      description: `"${form.name} (Copy)" has been created.`,
+    });
   }
 
-  function confirmDelete() {
+  let confirmDelete = () => {
+    const formName = form.name;
     formV2.deleteForm(form.id);
+    toast.success("Form deleted", {
+      description: `"${formName}" has been removed.`,
+    });
     showDeleteDialog = false;
-  }
+  };
 </script>
 
 <button
@@ -167,18 +177,20 @@
 </Dialog.Root>
 
 <!-- Delete Confirmation Dialog -->
-<AlertDialog.Root bind:open={showDeleteDialog}>
-  <AlertDialog.Content>
-    <AlertDialog.Header>
-      <AlertDialog.Title>Delete Form</AlertDialog.Title>
-      <AlertDialog.Description>
-        Are you sure you want to delete "{form.name}"? This action cannot be
-        undone.
-      </AlertDialog.Description>
-    </AlertDialog.Header>
-    <AlertDialog.Footer>
-      <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+<Dialog.Root bind:open={showDeleteDialog}>
+  <Dialog.Content class="sm:max-w-[425px]">
+    <Dialog.Header>
+      <Dialog.Title>Delete Form</Dialog.Title>
+      <Dialog.Description>
+        Are you sure you want to delete the form "{form.name}"? This action
+        cannot be undone.
+      </Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Button variant="outline" onclick={() => (showDeleteDialog = false)}>
+        Cancel
+      </Button>
       <Button variant="destructive" onclick={confirmDelete}>Delete</Button>
-    </AlertDialog.Footer>
-  </AlertDialog.Content>
-</AlertDialog.Root>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
