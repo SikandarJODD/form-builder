@@ -216,9 +216,9 @@
         {/each}
         <a
           onclick={() => (isMobileMenu = false)}
-          href="/playground"
+          href="/v2"
           class="block rounded-md px-3 py-2 text-base font-medium text-primary"
-          >Playground</a
+          >Try V2 Playground</a
         >
       </div>
       <div class="flex justify-end pb-2 pr-4">

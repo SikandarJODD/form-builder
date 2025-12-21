@@ -54,7 +54,7 @@
     {/if}
 
     <!-- Templates Section -->
-    <div class="px-4 pt-2 pb-2">
+    <div class={["px-4 pb-2", savedFormsV2.current.length > 0 ? "" : "pt-4"]}>
       <h3
         class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
       >
