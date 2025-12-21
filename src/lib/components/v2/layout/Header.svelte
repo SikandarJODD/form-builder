@@ -124,12 +124,12 @@
       </Button>
     {/each}
 
-    <Separator orientation="vertical" class="mx-2 h-6" />
+    <!-- <Separator orientation="vertical" class="mx-2 h-6" /> -->
 
-    <Button variant="ghost" size="sm" class="gap-2">
+    <!-- <Button variant="ghost" size="sm" class="gap-2">
       <Sparkles class="h-4 w-4" />
       <span class="hidden sm:inline">Generate with AI</span>
-    </Button>
+    </Button> -->
   </div>
 
   <!-- Right side: Controls -->

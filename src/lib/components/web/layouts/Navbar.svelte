@@ -11,8 +11,8 @@
       url: "/docs",
     },
     {
-      name: "Smart Playground",
-      url: "/v2",
+      name: "Playground",
+      url: "/playground",
     },
   ];
   import Button from "$lib/components/ui/button/button.svelte";
@@ -70,13 +70,86 @@
           </div>
           <div>
             <Button
+              data-umami-event="Smart Playground"
+              class="font-normal rounded-full flex items-center gap-1"
+              href="/v2"
+              variant="default"
+            >
+              <span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="128"
+                  height="128"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  role="img"
+                  color="currentColor"
+                >
+                  <path
+                    d="M6.08938 14.9959C5.71097 14.1457 5.5 13.1998 5.5 12.203C5.5 8.50105 8.41015 5.5 12 5.5C15.5899 5.5 18.5 8.50105 18.5 12.203C18.5 13.1998 18.289 14.1457 17.9106 14.9959"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M12 2.00098V2.99993"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M22 11.9961H21"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M3 11.9961H2"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M19.0704 4.92773L18.3633 5.63411"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M5.6368 5.63606L4.92969 4.92969"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    d="M14.5053 19.3063C15.5156 18.9796 15.9208 18.0553 16.0348 17.1256C16.0689 16.8477 15.8402 16.6172 15.5603 16.6172L8.46514 16.6174C8.17554 16.6174 7.94295 16.8632 7.97756 17.1507C8.08923 18.0786 8.37108 18.7564 9.44173 19.3063M14.5053 19.3063C14.5053 19.3063 9.618 19.3063 9.44173 19.3063M14.5053 19.3063C14.3838 21.2504 13.8221 22.0204 11.9951 21.9988C10.0408 22.0349 9.59131 21.0832 9.44173 19.3063"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </svg>
+              </span>
+              Try V2 Playground
+            </Button>
+            <!-- <Button
               data-umami-event="Navbar Playground"
               class="font-normal rounded-full"
               href="/playground"
               variant="secondary"
             >
               Playground
-            </Button>
+            </Button> -->
           </div>
         </div>
       </div>
