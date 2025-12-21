@@ -69,7 +69,7 @@
       {#each templates as template, index (template.name)}
         <button
           onclick={() => handleTemplateClick(index)}
-          in:fade={{ duration: 200, delay: index * 30 }}
+          in:fade={{ duration: 200, delay: Math.min(index * 30, 300) }}
           class="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-accent"
         >
           <!-- Template Icon -->

@@ -75,16 +75,12 @@
 
   let confirmDelete = () => {
     const formName = form.name;
-    console.log("Deleting form:", form.id);
     formV2.deleteForm(form.id);
     toast.success("Form deleted", {
       description: `"${formName}" has been removed.`,
     });
-    console.log("Form deleted:", form.id);
     showDeleteDialog = false;
   };
-
-  $inspect(showDeleteDialog, "showDeleteDialog");
 </script>
 
 <button
@@ -181,22 +177,20 @@
 </Dialog.Root>
 
 <!-- Delete Confirmation Dialog -->
-{#key showDeleteDialog}
-  <Dialog.Root bind:open={showDeleteDialog}>
-    <Dialog.Content class="sm:max-w-[425px]">
-      <Dialog.Header>
-        <Dialog.Title>Delete Form</Dialog.Title>
-        <Dialog.Description>
-          Are you sure you want to delete the form "{form.name}"? This action
-          cannot be undone.
-        </Dialog.Description>
-      </Dialog.Header>
-      <Dialog.Footer>
-        <Button variant="outline" onclick={() => (showDeleteDialog = false)}>
-          Cancel
-        </Button>
-        <Button variant="destructive" onclick={confirmDelete}>Delete</Button>
-      </Dialog.Footer>
-    </Dialog.Content>
-  </Dialog.Root>
-{/key}
+<Dialog.Root bind:open={showDeleteDialog}>
+  <Dialog.Content class="sm:max-w-[425px]">
+    <Dialog.Header>
+      <Dialog.Title>Delete Form</Dialog.Title>
+      <Dialog.Description>
+        Are you sure you want to delete the form "{form.name}"? This action
+        cannot be undone.
+      </Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Button variant="outline" onclick={() => (showDeleteDialog = false)}>
+        Cancel
+      </Button>
+      <Button variant="destructive" onclick={confirmDelete}>Delete</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
