@@ -1,11 +1,29 @@
 <script lang="ts">
   import * as Resizable from "$lib/components/ui/resizable";
   import { formV2 } from "../state/form-v2.svelte";
+  import { onMount } from "svelte";
   import Header from "./Header.svelte";
   import FieldsPanel from "./FieldsPanel.svelte";
   import TemplatesPanel from "./TemplatesPanel.svelte";
   import EditorPanel from "./EditorPanel.svelte";
   import PreviewPanel from "./PreviewPanel.svelte";
+
+  // Watch for unsaved changes and warn before unload
+  onMount(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (formV2.hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  });
 </script>
 
 <div class="flex h-screen flex-col bg-background">

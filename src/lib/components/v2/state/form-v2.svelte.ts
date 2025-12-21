@@ -1,5 +1,7 @@
 // V2 Form Builder State Management
 import type { InputType } from '$lib/form-generator/form-gen.svelte';
+import { PersistedState } from "runed";
+import { globalFormState } from "./global-state.svelte";
 
 // Option type for select, combobox, and radio fields
 export type FieldOption = {
@@ -22,6 +24,35 @@ export type FieldRow = {
   fields: InputTypeV2[];
   // Max 2 fields per row (side-by-side)
 };
+
+// Saved Form type for V2
+export type SavedFormV2 = {
+  id: string;
+  name: string;
+  schema: {
+    rows: FieldRow[];
+    schemaType: SchemaType;
+    mode: ModeType;
+  };
+  createdAt: number;
+  updatedAt: number;
+  meta: {
+    fieldCount: number;
+    rowCount: number;
+    validationLibrary: string;
+    version: string;
+  };
+};
+
+// Persisted array of saved forms using PersistedState
+export const savedFormsV2 = new PersistedState<SavedFormV2[]>(
+  "form-builder-v2-saved-forms",
+  [],
+  {
+    storage: "local",
+    syncTabs: true,
+  }
+);
 
 export type SchemaType = 'zod' | 'valibot' | 'arktype';
 export type ModeType = 'superforms' | 'remote';
@@ -251,6 +282,7 @@ class FormGeneratorV2 {
   // Reset all fields
   reset = () => {
     this.rows = [];
+    this.currentFormId = null;
   };
 
   // Load a template into the form
@@ -376,6 +408,103 @@ class FormGeneratorV2 {
       )
     }));
   };
+
+  // Current loaded form ID
+  currentFormId: string | null = $state(null);
+
+  // Save/Load Form Management Methods
+  saveForm = (name: string, isNew: boolean = false): string => {
+    const now = Date.now();
+    const formId = isNew || !this.currentFormId ? crypto.randomUUID() : this.currentFormId;
+
+    const fieldCount = this.rows.reduce((acc, row) => acc + row.fields.length, 0);
+
+    const savedForm: SavedFormV2 = {
+      id: formId,
+      name: name,
+      schema: {
+        rows: JSON.parse(JSON.stringify(this.rows)),
+        schemaType: globalFormState.schema,
+        mode: globalFormState.mode,
+      },
+      createdAt: isNew || !this.currentFormId ? now : savedFormsV2.current.find((f) => f.id === formId)?.createdAt || now,
+      updatedAt: now,
+      meta: {
+        fieldCount: fieldCount,
+        rowCount: this.rows.length,
+        validationLibrary: globalFormState.schema,
+        version: "2.0",
+      },
+    };
+
+    const existingIndex = savedFormsV2.current.findIndex((f) => f.id === formId);
+    if (existingIndex >= 0) {
+      savedFormsV2.current[existingIndex] = savedForm;
+    } else {
+      savedFormsV2.current = [...savedFormsV2.current, savedForm];
+    }
+
+    this.currentFormId = formId;
+    return formId;
+  };
+
+  loadForm = (formId: string) => {
+    const form = savedFormsV2.current.find((f) => f.id === formId);
+    if (!form) return;
+
+    this.rows = JSON.parse(JSON.stringify(form.schema.rows));
+    this.schema = form.schema.schemaType;
+    this.mode = form.schema.mode;
+
+    // Sync globalFormState with loaded form's schema and mode
+    globalFormState.setSchema(form.schema.schemaType);
+    globalFormState.setMode(form.schema.mode);
+
+    this.currentFormId = formId;
+  };
+
+  deleteForm = (formId: string) => {
+    savedFormsV2.current = savedFormsV2.current.filter((f) => f.id !== formId);
+    if (this.currentFormId === formId) {
+      this.currentFormId = null;
+    }
+  };
+
+  renameForm = (formId: string, newName: string) => {
+    const formIndex = savedFormsV2.current.findIndex((f) => f.id === formId);
+    if (formIndex >= 0) {
+      savedFormsV2.current[formIndex].name = newName;
+      savedFormsV2.current[formIndex].updatedAt = Date.now();
+      savedFormsV2.current = [...savedFormsV2.current];
+    }
+  };
+
+  duplicateForm = (formId: string): string => {
+    const form = savedFormsV2.current.find((f) => f.id === formId);
+    if (!form) return "";
+
+    const newId = crypto.randomUUID();
+    const duplicatedForm: SavedFormV2 = {
+      ...JSON.parse(JSON.stringify(form)),
+      id: newId,
+      name: `${form.name} (Copy)`,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+
+    savedFormsV2.current = [...savedFormsV2.current, duplicatedForm];
+    return newId;
+  };
+
+  hasUnsavedChanges = $derived.by(() => {
+    if (!this.currentFormId) return false;
+    const savedForm = savedFormsV2.current.find((f) => f.id === this.currentFormId);
+    if (!savedForm) return false;
+    return (
+      JSON.stringify(this.rows) !==
+      JSON.stringify(savedForm.schema.rows)
+    );
+  });
 }
 
 // Export singleton instance

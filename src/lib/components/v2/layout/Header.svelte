@@ -12,12 +12,14 @@
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import * as Tooltip from "$lib/components/ui/tooltip/index";
   import CodeModal from "../modal/CodeModal.svelte";
+  import SaveFormModal from "../modal/SaveFormModal.svelte";
   import LayoutGrid from "@lucide/svelte/icons/layout-grid";
   import LayoutTemplate from "@lucide/svelte/icons/layout-template";
   import Settings from "@lucide/svelte/icons/settings";
   import Sparkles from "@lucide/svelte/icons/sparkles";
   import RotateCcw from "@lucide/svelte/icons/rotate-ccw";
   import Code from "@lucide/svelte/icons/code";
+  import Save from "@lucide/svelte/icons/save";
 
   const schemas: { value: SchemaType; label: string }[] = [
     { value: "valibot", label: "Valibot" },
@@ -32,6 +34,7 @@
   ];
 
   let codeModalOpen = $state(false);
+  let saveModalOpen = $state(false);
 
   // Use global state
   let schemaValue = $derived(globalFormState.schema);
@@ -52,6 +55,10 @@
 
   const handleCodeClick = () => {
     codeModalOpen = true;
+  };
+
+  const handleSaveClick = () => {
+    saveModalOpen = true;
   };
 
   const handleTabClick = (tab: TabType) => {
@@ -123,6 +130,12 @@
 
     <Separator orientation="vertical" class="h-6" />
 
+    <!-- Save Button -->
+    <Button variant="ghost" size="sm" onclick={handleSaveClick} class="gap-2">
+      <Save class="h-4 w-4" />
+      <span class="hidden sm:inline">Save</span>
+    </Button>
+
     <!-- Reset Button -->
     <Tooltip.Provider>
       <Tooltip.Root delayDuration={100}>
@@ -149,4 +162,10 @@
 <CodeModal
   bind:open={codeModalOpen}
   onOpenChange={(v) => (codeModalOpen = v)}
+/>
+
+<!-- Save Form Modal -->
+<SaveFormModal
+  bind:open={saveModalOpen}
+  onOpenChange={(v) => (saveModalOpen = v)}
 />
