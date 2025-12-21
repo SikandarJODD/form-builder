@@ -119,7 +119,7 @@
         onclick={() => handleTabClick(tab.id)}
         class="gap-2"
       >
-        <tab.icon class="h-4 w-4" />
+        <tab.icon class="h-4 w-4" strokeWidth={1.6} />
         <span class="hidden sm:inline">{tab.label}</span>
       </Button>
     {/each}
@@ -181,7 +181,7 @@
             onclick={handleImportClick}
             class="gap-2"
           >
-            <FileDown class="h-4 w-4" />
+            <FileDown class="h-4 w-4" strokeWidth={1.6} />
             <span class="hidden sm:inline">Import</span>
           </Button>
         </Tooltip.Trigger>
@@ -196,7 +196,7 @@
       <Tooltip.Root delayDuration={100}>
         <Tooltip.Trigger>
           <Button variant="ghost" size="sm" onclick={handleShare} class="gap-2">
-            <Share2 class="h-4 w-4" />
+            <Share2 class="h-4 w-4" strokeWidth={1.6} />
             <span class="hidden sm:inline">Share</span>
           </Button>
         </Tooltip.Trigger>
@@ -208,7 +208,7 @@
 
     <!-- Save Button -->
     <Button variant="ghost" size="sm" onclick={handleSaveClick} class="gap-2">
-      <Save class="h-4 w-4" />
+      <Save class="h-4 w-4" strokeWidth={1.6} />
       <span class="hidden sm:inline">Save</span>
     </Button>
 
