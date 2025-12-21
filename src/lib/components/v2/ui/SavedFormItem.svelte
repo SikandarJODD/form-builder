@@ -82,7 +82,7 @@
 >
   <!-- Form Icon -->
   <div class="shrink-0 rounded-md bg-muted p-1.5">
-    <FileText class="h-4 w-4 text-muted-foreground" />
+    <FileText class="h-4 w-4 text-muted-foreground" strokeWidth={1.6} />
   </div>
 
   <!-- Form Info -->

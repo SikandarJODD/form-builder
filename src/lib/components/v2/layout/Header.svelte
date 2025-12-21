@@ -13,6 +13,7 @@
   import * as Tooltip from "$lib/components/ui/tooltip/index";
   import CodeModal from "../modal/CodeModal.svelte";
   import SaveFormModal from "../modal/SaveFormModal.svelte";
+  import ImportFormModal from "../modal/ImportFormModal.svelte";
   import LayoutGrid from "@lucide/svelte/icons/layout-grid";
   import LayoutTemplate from "@lucide/svelte/icons/layout-template";
   import Settings from "@lucide/svelte/icons/settings";
@@ -21,6 +22,7 @@
   import Code from "@lucide/svelte/icons/code";
   import Save from "@lucide/svelte/icons/save";
   import Share2 from "@lucide/svelte/icons/share-2";
+  import FileDown from "@lucide/svelte/icons/file-down";
   import { toast } from "svelte-sonner";
 
   const schemas: { value: SchemaType; label: string }[] = [
@@ -37,6 +39,7 @@
 
   let codeModalOpen = $state(false);
   let saveModalOpen = $state(false);
+  let importModalOpen = $state(false);
 
   // Use global state
   let schemaValue = $derived(globalFormState.schema);
@@ -61,6 +64,10 @@
 
   const handleSaveClick = () => {
     saveModalOpen = true;
+  };
+
+  const handleImportClick = () => {
+    importModalOpen = true;
   };
 
   const handleTabClick = (tab: TabType) => {
@@ -164,6 +171,26 @@
 
     <Separator orientation="vertical" class="h-6" />
 
+    <!-- Import Button -->
+    <Tooltip.Provider>
+      <Tooltip.Root delayDuration={100}>
+        <Tooltip.Trigger>
+          <Button
+            variant="ghost"
+            size="sm"
+            onclick={handleImportClick}
+            class="gap-2"
+          >
+            <FileDown class="h-4 w-4" />
+            <span class="hidden sm:inline">Import</span>
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content>
+          <p>Import form from JSON</p>
+        </Tooltip.Content>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+
     <!-- Share Button -->
     <Tooltip.Provider>
       <Tooltip.Root delayDuration={100}>
@@ -217,4 +244,10 @@
 <SaveFormModal
   bind:open={saveModalOpen}
   onOpenChange={(v) => (saveModalOpen = v)}
+/>
+
+<!-- Import Form Modal -->
+<ImportFormModal
+  bind:open={importModalOpen}
+  onOpenChange={(v) => (importModalOpen = v)}
 />

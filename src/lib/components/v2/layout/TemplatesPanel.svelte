@@ -21,7 +21,7 @@
     <p class="text-sm text-muted-foreground">Saved forms & templates</p>
   </div>
 
-  <ScrollArea class="flex-1">
+  <ScrollArea class="flex-1" scrollbarYClasses="hidden">
     <!-- Saved Forms Section -->
     {#if savedFormsV2.current.length > 0}
       <div class="px-4 pt-4 pb-2">
@@ -43,7 +43,7 @@
     {/if}
 
     <!-- Templates Section -->
-    <div class="px-4 pt-2 pb-2">
+    <div class="px-4 pt-0 pb-2">
       <h3
         class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
       >
@@ -59,7 +59,7 @@
         >
           <!-- Template Icon -->
           <div class="shrink-0 rounded-md bg-muted p-1.5">
-            <FileText class="h-4 w-4 text-muted-foreground" />
+            <FileText class="h-4 w-4 text-muted-foreground" strokeWidth={1.6} />
           </div>
 
           <!-- Template Info -->
