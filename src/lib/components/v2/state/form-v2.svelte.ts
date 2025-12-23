@@ -17,6 +17,7 @@ export type InputTypeV2 = InputType & {
   position?: 'left' | 'right' | 'full';
   expanded?: boolean;
   options?: FieldOption[]; // For select, combobox, radio fields
+  multiple?: boolean; // For select and combobox fields
 };
 
 // Row structure for side-by-side fields
@@ -151,6 +152,7 @@ class FormGeneratorV2 {
       expanded: false,
       required: true,
       options: this.generateDefaultOptions(field.category),
+      multiple: field.category === 'select' || field.category === 'combobox' ? false : undefined,
     };
 
     const newRow: FieldRow = {
@@ -193,6 +195,7 @@ class FormGeneratorV2 {
       expanded: false,
       required: true,
       options: this.generateDefaultOptions(templateField.category),
+      multiple: templateField.category === 'select' || templateField.category === 'combobox' ? false : undefined,
     };
 
     // Update positions
