@@ -8,10 +8,18 @@
   import SavedFormItem from "../ui/SavedFormItem.svelte";
   import { fly, fade, scale } from "svelte/transition";
   import { flip } from "svelte/animate";
+  import * as analyticsV2 from "../utils/analytics-v2";
 
   const handleTemplateClick = (templateIndex: number) => {
     const template = templates[templateIndex];
-    formV2.loadTemplate(template.rows);
+    const fieldCount = template.rows.reduce(
+      (count, row) => count + row.fields.length,
+      0
+    );
+
+    // Load template with name for tracking
+    formV2.loadTemplate(template.rows, template.name);
+
     // Stay on templates tab so user can see all templates
   };
 </script>

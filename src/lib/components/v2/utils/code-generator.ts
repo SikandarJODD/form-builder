@@ -106,6 +106,7 @@ function generateZodSchema(fields: InputTypeV2[]): string {
     }
 
     const label = field.label?.toLowerCase() || 'value';
+    const isMultiChoice = (field.type === 'select' || field.type === 'combobox') && Boolean(field.multiple);
     let fieldSchema = `z.string({ error: "Please enter your ${label}." })`;
 
     if (field.type === 'number' || field.type === 'slider') {
@@ -122,6 +123,8 @@ function generateZodSchema(fields: InputTypeV2[]): string {
       fieldSchema = `z.string({ error: "Please enter a valid phone number." })`;
     } else if (field.type === 'tags-input') {
       fieldSchema = `z.array(z.string()).min(1, { error: "Please add at least one tag." })`;
+    } else if (isMultiChoice) {
+      fieldSchema = `z.array(z.string()).default([])`;
     } else if (field.type === 'file') {
       fieldSchema = `z.array(z.any()).optional()`;
     } else if (field.type === 'location-input') {
@@ -131,8 +134,12 @@ function generateZodSchema(fields: InputTypeV2[]): string {
       return; // Skip the normal field addition
     }
 
-    if (field.required && field.type !== 'boolean' && field.type !== 'tags-input' && field.type !== 'file') {
+    if (field.required && isMultiChoice) {
       fieldSchema += `.min(1, { error: "This field is required." })`;
+    } else if (field.required && field.type !== 'boolean' && field.type !== 'tags-input' && field.type !== 'file') {
+      fieldSchema += `.min(1, { error: "This field is required." })`;
+    } else if (!field.required && isMultiChoice) {
+      // Keep default([]) and allow empty
     }
 
     schema += `  ${field.named_id || 'field'}: ${fieldSchema},\n`;
@@ -152,6 +159,7 @@ function generateValibotSchema(fields: InputTypeV2[]): string {
     }
 
     const label = field.label?.toLowerCase() || 'value';
+    const isMultiChoice = (field.type === 'select' || field.type === 'combobox') && Boolean(field.multiple);
     let fieldSchema = `v.pipe(v.string(), v.nonEmpty('Please enter your ${label}.'))`;
 
     if (field.type === 'number' || field.type === 'slider') {
@@ -168,6 +176,10 @@ function generateValibotSchema(fields: InputTypeV2[]): string {
       fieldSchema = `v.pipe(v.string(), v.nonEmpty('Please enter a valid phone number.'))`;
     } else if (field.type === 'tags-input') {
       fieldSchema = `v.pipe(v.array(v.string()), v.minLength(1, 'Please add at least one tag.'))`;
+    } else if (isMultiChoice) {
+      fieldSchema = field.required
+        ? `v.pipe(v.array(v.string()), v.minLength(1, 'This field is required.'))`
+        : `v.optional(v.array(v.string()), [])`;
     } else if (field.type === 'file') {
       fieldSchema = `v.optional(v.array(v.any()))`;
     } else if (field.type === 'location-input') {
@@ -192,6 +204,7 @@ function generateArkTypeSchema(fields: InputTypeV2[]): string {
       return;
     }
 
+    const isMultiChoice = (field.type === 'select' || field.type === 'combobox') && Boolean(field.multiple);
     let fieldSchema = `"string >= 1"`;
 
     if (field.type === 'number' || field.type === 'slider') {
@@ -208,6 +221,8 @@ function generateArkTypeSchema(fields: InputTypeV2[]): string {
       fieldSchema = `"string >= 1"`;
     } else if (field.type === 'tags-input') {
       fieldSchema = `"string[] >= 1"`;
+    } else if (isMultiChoice) {
+      fieldSchema = field.required ? `"string[] >= 1"` : `"string[]?"`;
     } else if (field.type === 'file') {
       fieldSchema = `"unknown[]?"`;
     } else if (field.type === 'location-input') {
@@ -217,7 +232,11 @@ function generateArkTypeSchema(fields: InputTypeV2[]): string {
     }
 
     if (!field.required && field.type !== 'boolean') {
-      fieldSchema = `"string | undefined"`;
+      if (isMultiChoice || field.type === 'tags-input') {
+        fieldSchema = `"string[]?"`;
+      } else if (field.type !== 'file') {
+        fieldSchema = `"string | undefined"`;
+      }
     }
 
     schema += `  ${field.named_id || 'field'}: ${fieldSchema},\n`;
@@ -352,9 +371,25 @@ export function generateSuperformsClient(rows: FieldRow[], schemaType: SchemaTyp
 
   // Add state variables for components that need them
   const hasLocationInput = fields.some(f => f.type === 'location-input');
+  const hasCombobox = fields.some(f => f.type === 'combobox');
+  const multiChoiceFields = fields.filter(
+    f => (f.type === 'select' || f.type === 'combobox') && Boolean(f.multiple)
+  );
 
   if (hasLocationInput) {
     code += `\n\n  // Location selector state\n  let selectedCountry = $state(null);\n  let selectedState = $state(null);`;
+  }
+
+  if (hasCombobox) {
+    code += `\n\n  // Combobox popover state\n  let comboOpen = $state(false);\n  let triggerRef = $state<HTMLElement | null>(null);`;
+  }
+
+  if (multiChoiceFields.length > 0) {
+    code += `\n\n  // Initialize multi-select fields\n`;
+    multiChoiceFields.forEach(f => {
+      const key = f.named_id || 'field';
+      code += `  if (!Array.isArray($formData.${key})) $formData.${key} = [];\n`;
+    });
   }
 
   code += `
@@ -495,9 +530,14 @@ function generateFieldCode(field: InputTypeV2): string {
       `          <Select.Item value="${opt.value}">${opt.label}</Select.Item>`
     ).join('\n');
 
+    const selectType = field.multiple ? 'multiple' : 'single';
+    const hiddenInputs = field.multiple
+      ? `      {#each $formData.${named_id} as v (v)}\n        <input type=\"hidden\" name=\"${named_id}\" value={v} />\n      {/each}\n`
+      : '';
+
     return `    <Field.Field>
       <Field.Label>${label}</Field.Label>
-      <Select.Root type="single" name="${named_id}" bind:value={$formData.${named_id}}>
+      <Select.Root type="${selectType}" name="${named_id}" bind:value={$formData.${named_id}}>
         <Select.Trigger>
           <Select.Value placeholder="${placeholder}" />
         </Select.Trigger>
@@ -505,6 +545,7 @@ function generateFieldCode(field: InputTypeV2): string {
 ${optionsCode}
         </Select.Content>
       </Select.Root>
+${hiddenInputs}
       {#if $errors.${named_id}}
         <Field.Error>{$errors.${named_id}}</Field.Error>
       {/if}
@@ -657,6 +698,60 @@ ${radioItemsCode}
       .split('\n')
       .map((line, i) => i === 0 ? line : '    ' + line)
       .join('\n');
+
+    if (field.multiple) {
+      return `    <Field.Field>
+      <Field.Label>${label}</Field.Label>
+      {@const options = ${optionsArrayCode}}
+      {@const selectedValues = $formData.${named_id}}
+      {@const selectedLabels = options
+        .filter((opt) => selectedValues.includes(opt.value))
+        .map((opt) => opt.label)
+        .join(', ')}
+      <Popover.Root bind:open={comboOpen}>
+        <Popover.Trigger bind:ref={triggerRef}>
+          {#snippet child({ props })}
+            <Button variant="outline" class="w-full justify-between" {...props} role="combobox">
+              {selectedValues.length > 0 ? selectedLabels : '${placeholder || 'Select...'}'}
+              <ChevronsUpDown class="opacity-50" />
+            </Button>
+          {/snippet}
+        </Popover.Trigger>
+        <Popover.Content align="start" class="w-full p-0">
+          <Command.Root>
+            <Command.Input placeholder="${placeholder || 'Search...'}" class="h-9" />
+            <Command.List class="w-full">
+              <Command.Empty>No results found.</Command.Empty>
+              <Command.Group>
+                {#each options as option}
+                  <Command.Item
+                    value={option.value}
+                    onSelect={() => {
+                      const current = $formData.${named_id};
+                      $formData.${named_id} = current.includes(option.value)
+                        ? current.filter((v) => v !== option.value)
+                        : [...current, option.value];
+                    }}
+                  >
+                    <Check class={cn(!selectedValues.includes(option.value) && 'text-transparent')} />
+                    {option.label}
+                  </Command.Item>
+                {/each}
+              </Command.Group>
+            </Command.List>
+          </Command.Root>
+        </Popover.Content>
+      </Popover.Root>
+      {#each $formData.${named_id} as v (v)}
+        <input type="hidden" name="${named_id}" value={v} />
+      {/each}
+      {#if $errors.${named_id}}
+        <Field.Error>{$errors.${named_id}}</Field.Error>
+      {/if}
+      <Field.Description>${description}</Field.Description>
+    </Field.Field>
+`;
+    }
 
     return `    <Field.Field>
       <Field.Label>${label}</Field.Label>
@@ -999,19 +1094,16 @@ function generateRemoteFieldCode(field: InputTypeV2): string {
       : [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }, { value: 'option3', label: 'Option 3' }];
 
     const optionsCode = options.map(opt =>
-      `          <Select.Item value="${opt.value}">${opt.label}</Select.Item>`
+      `        <option value="${opt.value}">${opt.label}</option>`
     ).join('\n');
+
+    const multipleAttr = field.multiple ? ' multiple' : '';
 
     return `    <Field.Field>
       <Field.Label>${label}</Field.Label>
-      <Select.Root type="single" name="${named_id}">
-        <Select.Trigger>
-          <Select.Value placeholder="${placeholder}" />
-        </Select.Trigger>
-        <Select.Content>
+      <select class="w-full border rounded-md px-3 py-2 bg-background" name="${named_id}"${multipleAttr}>
 ${optionsCode}
-        </Select.Content>
-      </Select.Root>
+      </select>
       <Field.Description>${description}</Field.Description>
     </Field.Field>
 `;
@@ -1146,44 +1238,17 @@ ${radioItemsCode}
       ? field.options
       : [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }, { value: 'option3', label: 'Option 3' }];
 
-    const optionsArrayCode = JSON.stringify(options, null, 2)
-      .split('\n')
-      .map((line, i) => i === 0 ? line : '    ' + line)
-      .join('\n');
+    const optionsCode = options.map(opt =>
+      `        <option value="${opt.value}">${opt.label}</option>`
+    ).join('\n');
+
+    const multipleAttr = field.multiple ? ' multiple' : '';
 
     return `    <Field.Field>
       <Field.Label>${label}</Field.Label>
-      {@const options = ${optionsArrayCode}}
-      <Popover.Root bind:open={comboOpen}>
-        <Popover.Trigger bind:ref={triggerRef}>
-          {#snippet child({ props })}
-            <Button variant="outline" class="w-full justify-between" {...props} role="combobox">
-              {selectedValue || '${placeholder || 'Select...'}'}
-              <ChevronsUpDown class="opacity-50" />
-            </Button>
-          {/snippet}
-        </Popover.Trigger>
-        <Popover.Content align="start" class="w-full p-0">
-          <Command.Root>
-            <Command.Input placeholder="${placeholder || 'Search...'}" class="h-9" />
-            <Command.List class="w-full">
-              <Command.Empty>No results found.</Command.Empty>
-              <Command.Group>
-                {#each options as option}
-                  <Command.Item
-                    value={option.value}
-                    onSelect={() => { selectedValue = option.value; comboOpen = false; }}
-                  >
-                    <Check class={cn(selectedValue !== option.value && 'text-transparent')} />
-                    {option.label}
-                  </Command.Item>
-                {/each}
-              </Command.Group>
-            </Command.List>
-          </Command.Root>
-        </Popover.Content>
-      </Popover.Root>
-      <input type="hidden" name="${named_id}" value={selectedValue} />
+      <select class="w-full border rounded-md px-3 py-2 bg-background" name="${named_id}"${multipleAttr}>
+${optionsCode}
+      </select>
       <Field.Description>${description}</Field.Description>
     </Field.Field>
 `;
@@ -1278,12 +1343,15 @@ export function generateJSON(fields: InputTypeV2[]): string {
       name: f.name,
       type: f.type,
       category: f.category,
+      named_id: f.named_id,
       label: f.label,
       placeholder: f.placeholder,
       description: f.description,
       required: f.required,
       disabled: f.disabled,
       position: f.position,
+      multiple: f.multiple,
+      options: f.options,
     }))
   };
   return JSON.stringify(exportData, null, 2);

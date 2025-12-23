@@ -601,6 +601,23 @@
                             </div>
                           {/if}
 
+                          {#if field.category === "select" || field.category === "combobox"}
+                            <div
+                              class="flex items-center gap-2 pt-3 border-t mt-3"
+                            >
+                              <Checkbox
+                                checked={field.multiple ?? false}
+                                onCheckedChange={(checked) =>
+                                  handleUpdateField(
+                                    field.id!,
+                                    "multiple",
+                                    checked
+                                  )}
+                              />
+                              <Label class="text-xs">Multiple</Label>
+                            </div>
+                          {/if}
+
                           <!-- Checkboxes -->
                           <div class="flex gap-4 pt-3 border-t mt-3">
                             <div class="flex items-center gap-2">

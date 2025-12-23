@@ -2,6 +2,7 @@
 // Manages schema selection and mode across all components
 
 import type { SchemaType, ModeType } from './form-v2.svelte';
+import * as analyticsV2 from '../utils/analytics-v2';
 
 /**
  * Global state class for managing form configuration
@@ -15,12 +16,27 @@ class GlobalFormState {
   mode: ModeType = $state('superforms');
 
   // Set schema type
-  setSchema(newSchema: SchemaType) {
+  setSchema(newSchema: SchemaType, trackChange: boolean = true) {
+    const oldSchema = this.schema;
+
+    // Only track if schema actually changed and tracking is enabled
+    if (trackChange && oldSchema !== newSchema) {
+      analyticsV2.trackV2ValidationLibraryChanged(oldSchema, newSchema);
+      analyticsV2.trackV2SchemaSelected(newSchema);
+    }
+
     this.schema = newSchema;
   }
 
   // Set mode type
-  setMode(newMode: ModeType) {
+  setMode(newMode: ModeType, trackChange: boolean = true) {
+    const oldMode = this.mode;
+
+    // Only track if mode actually changed and tracking is enabled
+    if (trackChange && oldMode !== newMode) {
+      analyticsV2.trackV2ModeChanged(oldMode, newMode);
+    }
+
     this.mode = newMode;
   }
 

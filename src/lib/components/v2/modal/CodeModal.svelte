@@ -29,6 +29,7 @@
   import Braces from "@lucide/svelte/icons/braces";
   import FolderTree from "@lucide/svelte/icons/folder-tree";
   import { toast } from "svelte-sonner";
+  import * as analyticsV2 from "../utils/analytics-v2";
 
   interface Props {
     open: boolean;
@@ -163,6 +164,14 @@
 
     isGenerating = false;
 
+    // Track code generation
+    const fieldCount = formV2.allFields.length;
+    if (mode === "superforms") {
+      analyticsV2.trackV2CodeGeneratedSuperforms(schema, fieldCount);
+    } else {
+      analyticsV2.trackV2CodeGeneratedRemoteFunction(schema, fieldCount);
+    }
+
     // Then highlight in background (non-blocking)
     highlightInBackground(code);
   };
@@ -233,6 +242,16 @@
     setTimeout(() => {
       copiedTab = null;
     }, 2000);
+
+    // Track code copied event
+    if (tab === "client" || tab === "server" || tab === "schema") {
+      const codeTypeMap = {
+        client: "client" as const,
+        server: "server" as const,
+        schema: "schema" as const,
+      };
+      analyticsV2.trackV2CodeCopied(codeTypeMap[tab], schema, mode);
+    }
   };
 
   // Get filename for each tab

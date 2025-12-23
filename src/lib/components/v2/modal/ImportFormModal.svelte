@@ -15,6 +15,7 @@
   import Sparkles from "@lucide/svelte/icons/sparkles";
   import BookOpen from "@lucide/svelte/icons/book-open";
   import { toast } from "svelte-sonner";
+  import { watch } from "runed";
 
   interface Props {
     open: boolean;
@@ -65,7 +66,8 @@ type SelectField = {
   label?: string;
   placeholder?: string;
   required?: boolean;
-  options: string[];
+  multiple?: boolean; // false = single, true = multiple
+  options: Array<{ id: string; value: string; label: string }>;
 };`,
     sideBySide: `// Side-by-Side Fields (Row with multiple fields)
 type Row = {
@@ -109,7 +111,8 @@ type Field = {
   label?: string;
   placeholder?: string;
   required?: boolean;
-  options?: string[];
+  multiple?: boolean; // select/combobox only
+  options?: Array<{ id: string; value: string; label: string }>;
   [key: string]: any;
 };
 
@@ -120,41 +123,44 @@ type Row = {
 type FormSchema = Row[];`,
   };
 
-  // Generate highlighted schemas on mount
-  $effect(() => {
-    if (schemaPopoverOpen && !highlightedSchemas.basicField) {
-      Promise.all([
-        codeToHtml(typeDefinitions.basicField, {
-          lang: "typescript",
-          theme: "vesper",
-        }),
-        codeToHtml(typeDefinitions.selectField, {
-          lang: "typescript",
-          theme: "vesper",
-        }),
-        codeToHtml(typeDefinitions.sideBySide, {
-          lang: "typescript",
-          theme: "vesper",
-        }),
-        codeToHtml(typeDefinitions.fieldType, {
-          lang: "typescript",
-          theme: "vesper",
-        }),
-        codeToHtml(typeDefinitions.rowType, {
-          lang: "typescript",
-          theme: "vesper",
-        }),
-      ]).then(([basicField, selectField, sideBySide, fieldType, rowType]) => {
-        highlightedSchemas = {
-          basicField,
-          selectField,
-          sideBySide,
-          fieldType,
-          rowType,
-        };
-      });
+  // Generate highlighted schemas on demand (prefer watch() over $effect)
+  watch(
+    () => schemaPopoverOpen,
+    (open) => {
+      if (open && !highlightedSchemas.basicField) {
+        Promise.all([
+          codeToHtml(typeDefinitions.basicField, {
+            lang: "typescript",
+            theme: "vesper",
+          }),
+          codeToHtml(typeDefinitions.selectField, {
+            lang: "typescript",
+            theme: "vesper",
+          }),
+          codeToHtml(typeDefinitions.sideBySide, {
+            lang: "typescript",
+            theme: "vesper",
+          }),
+          codeToHtml(typeDefinitions.fieldType, {
+            lang: "typescript",
+            theme: "vesper",
+          }),
+          codeToHtml(typeDefinitions.rowType, {
+            lang: "typescript",
+            theme: "vesper",
+          }),
+        ]).then(([basicField, selectField, sideBySide, fieldType, rowType]) => {
+          highlightedSchemas = {
+            basicField,
+            selectField,
+            sideBySide,
+            fieldType,
+            rowType,
+          };
+        });
+      }
     }
-  });
+  );
 
   // Copy schema to clipboard
   function copySchema(schema: keyof typeof typeDefinitions) {
@@ -183,6 +189,7 @@ type FormSchema = Row[];`,
   - "required": boolean
   - "position": "full" (or "left"/"right" for side-by-side, max 2 per row)
   - "options": array for select/radio/combobox (each with "id", "value", "label")
+  - "multiple": boolean (optional) for select/combobox (false=single, true=multiple)
 
 **Example:**
 \`\`\`json
@@ -471,8 +478,51 @@ type FormSchema = Row[];`,
         }
       }
 
+      const normalizeOptions = (field: any) => {
+        if (!Array.isArray(field.options)) return field.options;
+        if (field.options.length === 0) return field.options;
+
+        // Legacy: options as string[]
+        if (typeof field.options[0] === "string") {
+          return (field.options as string[]).map((value, index) => ({
+            id: `opt-${index + 1}`,
+            value,
+            label: value,
+          }));
+        }
+
+        return (field.options as any[]).map((opt, index) => {
+          const label = String(
+            opt?.label ?? opt?.value ?? `Option ${index + 1}`
+          );
+          const value = String(
+            opt?.value ?? opt?.label ?? `option${index + 1}`
+          );
+          return {
+            id: String(opt?.id ?? `opt-${index + 1}`),
+            value,
+            label,
+          };
+        });
+      };
+
+      const normalizedRows = parsed.map((row: any) => ({
+        ...row,
+        fields: row.fields.map((field: any) => {
+          const isSelectOrCombobox =
+            field.category === "select" || field.category === "combobox";
+          return {
+            ...field,
+            options: normalizeOptions(field),
+            multiple: isSelectOrCombobox
+              ? Boolean(field.multiple)
+              : field.multiple,
+          };
+        }),
+      }));
+
       // Import the data
-      formV2.rows = parsed;
+      formV2.rows = normalizedRows;
       importJson = "";
       onOpenChange(false);
 
