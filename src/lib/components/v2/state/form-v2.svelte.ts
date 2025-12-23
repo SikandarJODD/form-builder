@@ -2,6 +2,7 @@
 import type { InputType } from '$lib/form-generator/form-gen.svelte';
 import { PersistedState } from "runed";
 import { globalFormState } from "./global-state.svelte";
+import * as analyticsV2 from '../utils/analytics-v2';
 
 // Option type for select, combobox, and radio fields
 export type FieldOption = {
@@ -158,6 +159,9 @@ class FormGeneratorV2 {
     };
 
     this.rows.push(newRow);
+
+    // Track field added event
+    analyticsV2.trackV2FieldAdded(field.category as analyticsV2.FieldType, 'full');
   };
 
   // Generate a unique named_id for a field
@@ -197,10 +201,17 @@ class FormGeneratorV2 {
 
     // Trigger reactivity
     this.rows = [...this.rows];
+
+    // Track side-by-side field added and layout enabled
+    analyticsV2.trackV2FieldAdded(templateField.category as analyticsV2.FieldType, 'right');
+    analyticsV2.trackV2SideBySideEnabled(rowId);
   };
 
   // Remove a field by ID
   removeField = (fieldId: string) => {
+    // Find the field to track its type before removal
+    const fieldToRemove = this.rows.flatMap(r => r.fields).find(f => f.id === fieldId);
+
     this.rows = this.rows.map(row => {
       const filteredFields = row.fields.filter(f => f.id !== fieldId);
       // If only one field left, reset its position to full
@@ -212,6 +223,12 @@ class FormGeneratorV2 {
         fields: filteredFields
       };
     }).filter(row => row.fields.length > 0);
+
+    // Track field removed event
+    if (fieldToRemove) {
+      const remainingFieldCount = this.allFields.length;
+      analyticsV2.trackV2FieldRemoved(fieldToRemove.category as analyticsV2.FieldType, remainingFieldCount);
+    }
   };
 
   // Ungroup side-by-side fields into separate rows
@@ -239,6 +256,9 @@ class FormGeneratorV2 {
       newRowB,
       ...this.rows.slice(rowIndex + 1),
     ];
+
+    // Track layout change
+    analyticsV2.trackV2LayoutChanged('ungroup', this.rows.length);
   };
 
   // Toggle field expansion (for accordion)
@@ -253,12 +273,21 @@ class FormGeneratorV2 {
 
   // Update field properties
   updateField = (fieldId: string, updates: Partial<InputTypeV2>) => {
+    // Find the field for tracking
+    const field = this.rows.flatMap(r => r.fields).find(f => f.id === fieldId);
+
     this.rows = this.rows.map(row => ({
       ...row,
       fields: row.fields.map(f =>
         f.id === fieldId ? { ...f, ...updates } : f
       )
     }));
+
+    // Track field update with the first updated property
+    if (field && Object.keys(updates).length > 0) {
+      const updatedProperty = Object.keys(updates)[0];
+      analyticsV2.trackV2FieldUpdated(field.category as analyticsV2.FieldType, updatedProperty);
+    }
   };
 
   // Swap fields within a row (for side-by-side reordering)
@@ -277,6 +306,9 @@ class FormGeneratorV2 {
         ]
       };
     });
+
+    // Track layout change
+    analyticsV2.trackV2LayoutChanged('swap', this.rows.length);
   };
 
   // Reset all fields
@@ -286,7 +318,7 @@ class FormGeneratorV2 {
   };
 
   // Load a template into the form
-  loadTemplate = (templateRows: FieldRow[]) => {
+  loadTemplate = (templateRows: FieldRow[], templateName?: string) => {
     this.reset();
 
     // Deep clone and regenerate IDs for the template
@@ -314,6 +346,12 @@ class FormGeneratorV2 {
         })
       };
     });
+
+    // Track template loaded
+    if (templateName) {
+      const fieldCount = this.allFields.length;
+      analyticsV2.trackV2TemplateSelected(templateName, fieldCount);
+    }
   };
 
   // Get all fields as flat array
@@ -328,6 +366,10 @@ class FormGeneratorV2 {
 
   handleDndFinalize = (e: CustomEvent<{ items: FieldRow[] }>) => {
     this.rows = e.detail.items;
+
+    // Track field reordering
+    const fieldCount = this.allFields.length;
+    analyticsV2.trackV2FieldReordered(this.rows.length, fieldCount);
   };
 
   // Move a row from one index to another
@@ -346,6 +388,8 @@ class FormGeneratorV2 {
 
   // Add a new option to a field
   addOption = (fieldId: string) => {
+    const field = this.rows.flatMap(r => r.fields).find(f => f.id === fieldId);
+
     this.rows = this.rows.map(row => ({
       ...row,
       fields: row.fields.map(f => {
@@ -363,10 +407,22 @@ class FormGeneratorV2 {
         return f;
       })
     }));
+
+    // Track option added
+    if (field) {
+      const updatedField = this.rows.flatMap(r => r.fields).find(f => f.id === fieldId);
+      analyticsV2.trackV2FieldOptionsModified(
+        field.category as analyticsV2.FieldType,
+        'add',
+        updatedField?.options?.length || 0
+      );
+    }
   };
 
   // Update an option
   updateOption = (fieldId: string, optionId: string, updates: Partial<FieldOption>) => {
+    const field = this.rows.flatMap(r => r.fields).find(f => f.id === fieldId);
+
     this.rows = this.rows.map(row => ({
       ...row,
       fields: row.fields.map(f => {
@@ -381,10 +437,21 @@ class FormGeneratorV2 {
         return f;
       })
     }));
+
+    // Track option update
+    if (field) {
+      analyticsV2.trackV2FieldOptionsModified(
+        field.category as analyticsV2.FieldType,
+        'update',
+        field.options?.length || 0
+      );
+    }
   };
 
   // Delete an option
   deleteOption = (fieldId: string, optionId: string) => {
+    const field = this.rows.flatMap(r => r.fields).find(f => f.id === fieldId);
+
     this.rows = this.rows.map(row => ({
       ...row,
       fields: row.fields.map(f => {
@@ -397,16 +464,37 @@ class FormGeneratorV2 {
         return f;
       })
     }));
+
+    // Track option deletion
+    if (field) {
+      const updatedField = this.rows.flatMap(r => r.fields).find(f => f.id === fieldId);
+      analyticsV2.trackV2FieldOptionsModified(
+        field.category as analyticsV2.FieldType,
+        'delete',
+        updatedField?.options?.length || 0
+      );
+    }
   };
 
   // Reorder options (for drag and drop)
   reorderOptions = (fieldId: string, newOptions: FieldOption[]) => {
+    const field = this.rows.flatMap(r => r.fields).find(f => f.id === fieldId);
+
     this.rows = this.rows.map(row => ({
       ...row,
       fields: row.fields.map(f =>
         f.id === fieldId ? { ...f, options: newOptions } : f
       )
     }));
+
+    // Track option reordering
+    if (field) {
+      analyticsV2.trackV2FieldOptionsModified(
+        field.category as analyticsV2.FieldType,
+        'reorder',
+        newOptions.length
+      );
+    }
   };
 
   // Current loaded form ID
@@ -449,6 +537,10 @@ class FormGeneratorV2 {
     }
 
     this.currentFormId = formId;
+
+    // Track form saved
+    analyticsV2.trackV2FormSaved(formId, isNew, fieldCount);
+
     return formId;
   };
 
@@ -460,18 +552,27 @@ class FormGeneratorV2 {
     this.schema = form.schema.schemaType;
     this.mode = form.schema.mode;
 
-    // Sync globalFormState with loaded form's schema and mode
-    globalFormState.setSchema(form.schema.schemaType);
-    globalFormState.setMode(form.schema.mode);
+    // Sync globalFormState with loaded form's schema and mode (without tracking)
+    globalFormState.setSchema(form.schema.schemaType, false);
+    globalFormState.setMode(form.schema.mode, false);
 
     this.currentFormId = formId;
+
+    // Track form loaded
+    analyticsV2.trackV2FormLoaded(formId, form.meta.fieldCount);
   };
 
   deleteForm = (formId: string) => {
+    const form = savedFormsV2.current.find((f) => f.id === formId);
+    const fieldCount = form?.meta.fieldCount || 0;
+
     savedFormsV2.current = savedFormsV2.current.filter((f) => f.id !== formId);
     if (this.currentFormId === formId) {
       this.currentFormId = null;
     }
+
+    // Track form deleted
+    analyticsV2.trackV2FormDeleted(formId, fieldCount);
   };
 
   renameForm = (formId: string, newName: string) => {
@@ -498,6 +599,10 @@ class FormGeneratorV2 {
 
     // Add at the beginning for better visibility
     savedFormsV2.current = [duplicatedForm, ...savedFormsV2.current];
+
+    // Track form duplicated
+    analyticsV2.trackV2FormDuplicated(formId, newId);
+
     return newId;
   };
 
