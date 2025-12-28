@@ -10,10 +10,10 @@
     //   name: "Docs",
     //   url: "/docs",
     // },
-    {
-      name: "New Docs",
-      url: "/v2/docs",
-    },
+    // {
+    //   name: "New Docs",
+    //   url: "/v2/docs",
+    // },
     // {
     //   name: "Playground",
     //   url: "/playground",
