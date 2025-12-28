@@ -24,6 +24,7 @@
 		"clsx": "^2.1.1",
 		"jsrepo": "^3.0.8",
 		"mode-watcher": "^1.1.0",
+		"package-manager-detector": "^1.5.0",
 		"paneforge": "1.0.2",
 		"shiki": "^3.20.0",
 		"svelte": "^5.46.0",
@@ -48,7 +49,6 @@
 		"formsnap": "^2.0.1",
 		"motion-start": "^0.1.18",
 		"onedollarstats": "^0.0.11",
-		"package-manager-detector": "^1.6.0",
 		"runed": "^0.37.0"
 	}
 }

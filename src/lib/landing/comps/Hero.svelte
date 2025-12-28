@@ -107,7 +107,7 @@
             class="group"
           >
             <Button
-              class="h-9 sm:h-10 w-38 flex justify-start rounded-full border-2 border-white dark:border-gray-800 shadow-xs cursor-pointer"
+              class="h-9 sm:h-10 w-38 flex justify-start rounded-full border-2 border-white dark:border-gray-800 shadow-xs cursor-pointer z-10"
             >
               <HeartIcon />
               Sponsor
@@ -116,7 +116,7 @@
           <a
             href="https://github.com/SikandarJODD/form-builder"
             target="_blank"
-            class="h-9 sm:h-10 cursor-pointer flex w-auto items-center space-x-1 rounded-full bg-muted px-3 group border-2 border-white whitespace-pre shadow-xs hover:shadow-lg"
+            class="h-9 sm:h-10 cursor-pointer flex w-auto items-center space-x-1 rounded-full bg-muted px-3 group border-2 border-white whitespace-pre z-50 shadow-xs hover:shadow-lg"
           >
             <p class="hidden md:flex font-medium text-primary text-sm">
               Star Project on GitHub

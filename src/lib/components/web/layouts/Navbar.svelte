@@ -6,14 +6,18 @@
       name: "Templates",
       url: "/templates",
     },
+    // {
+    //   name: "Docs",
+    //   url: "/docs",
+    // },
     {
-      name: "Docs",
-      url: "/docs",
+      name: "New Docs",
+      url: "/v2/docs",
     },
-    {
-      name: "Playground",
-      url: "/playground",
-    },
+    // {
+    //   name: "Playground",
+    //   url: "/playground",
+    // },
   ];
   import Button from "$lib/components/ui/button/button.svelte";
 
