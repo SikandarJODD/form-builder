@@ -5,3 +5,6 @@ export { default as FieldsPanel } from './layout/FieldsPanel.svelte';
 export { default as EditorPanel } from './layout/EditorPanel.svelte';
 export { default as PreviewPanel } from './layout/PreviewPanel.svelte';
 
+// V2 Analytics
+export * as analyticsV2 from './utils/analytics-v2';
+
